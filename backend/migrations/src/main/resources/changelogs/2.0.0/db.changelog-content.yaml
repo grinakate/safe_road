@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: content-001-enums
+      author: copilot
+      changes:
+        - sqlFile:
+            path: sql/content/001_create_content_enums.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: content-002-tables
+      author: copilot
+      changes:
+        - sqlFile:
+            path: sql/content/002_create_content_tables.sql
+            relativeToChangelogFile: true

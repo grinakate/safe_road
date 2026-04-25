@@ -9,9 +9,12 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>domain</module>
-		<module>services</module>
-		<module>app</module>
+		<module>main-app</module>
+		<module>learning-engine</module>
+		<module>content-provider</module>
+		<module>gamification</module>
+		<module>profile</module>
+		<module>shared-kernel</module>
 		<module>migrations</module>
 	</modules>
 

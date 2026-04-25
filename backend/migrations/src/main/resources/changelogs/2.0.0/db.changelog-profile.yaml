@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: profile-001-enums
+      author: copilot
+      changes:
+        - sqlFile:
+            path: sql/profile/001_create_profile_enums.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: profile-002-tables
+      author: copilot
+      changes:
+        - sqlFile:
+            path: sql/profile/002_create_profile_tables.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: profile-003-seed-levels
+      author: copilot
+      changes:
+        - sqlFile:
+            path: sql/profile/003_seed_levels.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: profile-004-seed-avatars
+      author: copilot
+      changes:
+        - sqlFile:
+            path: sql/profile/004_seed_avatars.sql
+            relativeToChangelogFile: true

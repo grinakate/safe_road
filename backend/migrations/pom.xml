@@ -29,7 +29,7 @@
 					<execution>
 						<id>migrate-backend</id>
 						<configuration>
-							<changeLogFile>src/main/resources/changelogs/db.root-master.xml</changeLogFile>
+							<changeLogFile>src/main/resources/changelogs/db.changelog-master.yaml</changeLogFile>
 							<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
 						</configuration>
 					</execution>

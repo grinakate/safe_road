@@ -50,7 +50,7 @@
 				<tableExists tableName="USER_VERIFICATION_TOKENS"/>
 			</not>
 		</preConditions>
-		<sqlFile path="sql/createTableUserVerificationTokens.sql" relativeToChangelogFile="true"/>
+		<sqlFile path="sql/createTableUserSessions.sql" relativeToChangelogFile="true"/>
 	</changeSet>
 
 </databaseChangeLog>

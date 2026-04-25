@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: gamification-001-tables
+      author: copilot
+      changes:
+        - sqlFile:
+            path: sql/gamification/001_create_gamification_tables.sql
+            relativeToChangelogFile: true

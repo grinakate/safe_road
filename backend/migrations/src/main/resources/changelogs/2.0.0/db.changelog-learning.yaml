@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: learning-001-enums
+      author: copilot
+      changes:
+        - sqlFile:
+            path: sql/learning/001_create_learning_enums.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: learning-002-tables
+      author: copilot
+      changes:
+        - sqlFile:
+            path: sql/learning/002_create_learning_tables.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: learning-003-seed-review-intervals
+      author: copilot
+      changes:
+        - sqlFile:
+            path: sql/learning/003_seed_review_intervals.sql
+            relativeToChangelogFile: true

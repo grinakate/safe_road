@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - include:
+      file: db.root-master.xml
+      relativeToChangelogFile: true
+  - include:
+      file: 2.0.0/db.changelog-profile.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2.0.0/db.changelog-content.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2.0.0/db.changelog-learning.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2.0.0/db.changelog-gamification.yaml
+      relativeToChangelogFile: true

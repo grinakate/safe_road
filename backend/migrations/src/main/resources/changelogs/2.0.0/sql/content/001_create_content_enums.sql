@@ -1,0 +1,1 @@
+CREATE TYPE IF NOT EXISTS question_type AS ENUM ('CHOICE', 'MATCH');
