@@ -1,0 +1,52 @@
+spring:
+  datasource:
+    hikari:
+      idle-timeout: 60000
+      maximum-pool-size: 50
+      connection-timeout: 2000
+      minimum-idle: 1
+      auto-commit: false
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    database: postgresql
+    properties:
+      hibernate:
+        query:
+          in_clause_parameter_padding: true
+          mutation_strategy:
+            global_temporary:
+              create_tables: false
+              drop_tables: false
+          immutable_entity_update_query_handling_mode: exception
+        criteria:
+          literal_handling_mode: bind
+        default_batch_fetch_size: 300
+      jakarta:
+        persistence:
+          sharedCache:
+            mode: ENABLE_SELECTIVE
+  web:
+    error:
+      include-message: ALWAYS
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: safe_road
+    password: safe_road
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized

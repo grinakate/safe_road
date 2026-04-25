@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+	<changeSet author="tercom" id="create-enum-USER_ROLE">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT count(*)
+				FROM pg_type
+				WHERE typname = 'user_role';
+			</sqlCheck>
+		</preConditions>
+		<sqlFile path="sql/createEnumUserRole.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+	<changeSet id="create_table-AVATARS" author="tercom">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="avatars"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/createTableAvatars.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+	<changeSet id="create_table-LEVELS" author="tercom">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="levels"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/createTableLevels.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+	<changeSet id="create_table-USERS" author="tercom">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="users"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/createTableUsers.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+	<changeSet id="create_table-USER_VERIFICATION_TOKENS" author="tercom">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="USER_VERIFICATION_TOKENS"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/createTableUserVerificationTokens.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+</databaseChangeLog>

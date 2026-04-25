@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jaxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			   xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+			   jaxb:extensionBindingPrefixes="xjc"
+			   jaxb:version="3.0">
+	<jaxb:globalBindings>
+		<jaxb:javaType name="java.time.LocalDate" xmlType="xs:date"
+					   parseMethod="emias.appointment.core.utils.time.mapping.LocalDateMapper.fromString"
+					   printMethod="emias.appointment.core.utils.time.mapping.LocalDateMapper.toString"/>
+
+		<jaxb:javaType name="java.time.LocalTime" xmlType="xs:time"
+					   parseMethod="emias.appointment.core.utils.time.mapping.LocalTimeMapper.fromString"
+					   printMethod="emias.appointment.core.utils.time.mapping.LocalTimeMapper.toString"/>
+
+		<jaxb:javaType name="java.time.LocalDateTime" xmlType="xs:dateTime"
+					   parseMethod="emias.appointment.core.utils.time.mapping.LocalDateTimeMapper.fromString"
+					   printMethod="emias.appointment.core.utils.time.mapping.LocalDateTimeMapper.toString"/>
+	</jaxb:globalBindings>
+
+</jaxb:bindings>

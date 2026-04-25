@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Annotation profile for safe-road-backend" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.6.3/mapstruct-processor-1.6.3.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.6.3/mapstruct-1.6.3.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/springframework/boot/spring-boot-configuration-processor/4.0.3/spring-boot-configuration-processor-4.0.3.jar" />
+        </processorPath>
+        <module name="app" />
+        <module name="services" />
+        <module name="migrations" />
+        <module name="domain" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="app.main" target="25" />
+      <module name="app.test" target="25" />
+      <module name="backend.main" target="25" />
+      <module name="backend.test" target="25" />
+      <module name="domain.main" target="25" />
+      <module name="domain.test" target="25" />
+      <module name="migrations.main" target="25" />
+      <module name="migrations.test" target="25" />
+      <module name="services.main" target="25" />
+      <module name="services.test" target="25" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="app" options="-parameters" />
+      <module name="app.main" options="-parameters" />
+      <module name="app.test" options="-parameters" />
+      <module name="backend" options="" />
+      <module name="backend.main" options="-parameters" />
+      <module name="backend.test" options="-parameters" />
+      <module name="domain" options="-parameters" />
+      <module name="domain.main" options="-parameters" />
+      <module name="domain.test" options="-parameters" />
+      <module name="migrations" options="-parameters" />
+      <module name="migrations.main" options="-parameters" />
+      <module name="migrations.test" options="-parameters" />
+      <module name="services" options="-parameters" />
+      <module name="services.main" options="-parameters" />
+      <module name="services.test" options="-parameters" />
+    </option>
+  </component>
+</project>
