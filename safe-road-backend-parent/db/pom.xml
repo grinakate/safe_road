@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ru.itmo</groupId>
+		<artifactId>safe-road-backend-parent</artifactId>
+		<relativePath>../pom.xml</relativePath>
+		<version>1.0.0</version>
+	</parent>
+
+	<artifactId>db</artifactId>
+	<packaging>jar</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>migrate-backend</id>
+						<configuration>
+							<changeLogFile>src/main/resources/changelogs/db.root-master.xml</changeLogFile>
+							<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<outputFileEncoding>UTF-8</outputFileEncoding>
+					<url>${db.url}</url>
+					<username>${db.username}</username>
+					<password>${db.password}</password>
+					<logging>debug</logging>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

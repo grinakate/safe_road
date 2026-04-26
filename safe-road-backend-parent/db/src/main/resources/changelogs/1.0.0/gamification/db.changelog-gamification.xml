@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+	<changeSet id="gamification-001-achievements" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="achievements"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/001_create_achievements_table.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+	<changeSet id="gamification-002-user-achievements" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="user_achievements"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/002_create_user_achievements_table.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+	<changeSet id="gamification-003-user-metrics" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="user_metrics"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/003_create_user_metrics_table.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+</databaseChangeLog>
+

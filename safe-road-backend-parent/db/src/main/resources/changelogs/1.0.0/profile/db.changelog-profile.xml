@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+	<changeSet id="profile-001-enums" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT COUNT(*)
+				FROM pg_type
+				WHERE typname = 'user_role'
+			</sqlCheck>
+		</preConditions>
+		<sqlFile path="sql/001_create_profile_enums.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+	<changeSet id="profile-002-levels" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="levels"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/002_create_levels_table.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+	<changeSet id="profile-003-avatars" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="avatars"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/003_create_avatars_table.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+	<changeSet id="profile-004-users" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="users"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/004_create_users_table.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+</databaseChangeLog>
+
+

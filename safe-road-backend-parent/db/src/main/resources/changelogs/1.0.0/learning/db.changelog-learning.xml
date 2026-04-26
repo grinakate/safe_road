@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+	<changeSet id="learning-001-enums" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT COUNT(*)
+				FROM pg_type
+				WHERE typname = 'progress_status'
+			</sqlCheck>
+		</preConditions>
+		<sqlFile path="sql/001_create_learning_enums.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+	<changeSet id="learning-002-user-topic-progress" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="user_topic_progress"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/002_create_user_topic_progress_table.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+	<changeSet id="learning-003-user-section-progress" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="user_section_progress"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/003_create_user_section_progress_table.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+	<changeSet id="learning-004-user-question-stats" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="user_question_stats"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/004_create_user_question_stats_table.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+	<changeSet id="learning-005-review-intervals" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="review_intervals"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/005_create_review_intervals_table.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+</databaseChangeLog>
+

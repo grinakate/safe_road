@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+	<changeSet id="content-001-enums" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT COUNT(*)
+				FROM pg_type
+				WHERE typname = 'question_type'
+			</sqlCheck>
+		</preConditions>
+		<sqlFile path="sql/001_create_content_enums.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+	<changeSet id="content-002-sections" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="sections"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/002_create_sections_table.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+	<changeSet id="content-003-topics" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="topics"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/003_create_topics_table.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+	<changeSet id="content-004-questions" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="questions"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/004_create_questions_table.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+	<changeSet id="content-005-answers" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="answers"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/005_create_answers_table.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
+</databaseChangeLog>
+

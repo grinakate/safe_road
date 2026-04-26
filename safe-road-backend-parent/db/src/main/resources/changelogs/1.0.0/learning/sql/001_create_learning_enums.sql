@@ -1,0 +1,1 @@
+CREATE TYPE progress_status AS ENUM ('LOCKED', 'UNLOCKED', 'COMPLETED');
