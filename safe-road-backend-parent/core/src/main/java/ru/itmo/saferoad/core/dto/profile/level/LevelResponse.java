@@ -1,4 +1,4 @@
-package ru.itmo.saferoad.core.dto;
+package ru.itmo.saferoad.core.dto.profile.level;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

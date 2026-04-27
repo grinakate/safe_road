@@ -6,20 +6,21 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import ru.itmo.saferoad.core.dto.UserRegisterRequest;
-import ru.itmo.saferoad.core.dto.UserResponse;
+import ru.itmo.saferoad.core.dto.profile.user.UserRegisterRequest;
+import ru.itmo.saferoad.core.dto.profile.user.UserRegisterResponse;
+import ru.itmo.saferoad.core.dto.profile.user.UserResponse;
 import ru.itmo.saferoad.profile.config.NewUserProperties;
 import ru.itmo.saferoad.profile.domain.User;
 import ru.itmo.saferoad.profile.service.AvatarService;
 import ru.itmo.saferoad.profile.service.LevelService;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Objects;
 
 /**
  * Маппер для данных пользователя.
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {LevelMapper.class})
 public abstract class UserMapper {
 
 	@Setter(onMethod_ = {@Autowired})
@@ -34,36 +35,19 @@ public abstract class UserMapper {
 	@Setter(onMethod_ = {@Autowired})
 	protected NewUserProperties newUserProperties;
 
-	/**
-	 * Метод маппит сущность пользователя в ДТО.
-	 *
-	 * @param user сущность пользователя.
-	 * @return ДТО.
-	 */
 	@Mapping(target = "avatarUrl", source = "user.avatar.url")
-	public abstract UserResponse mapToResponse(User user, String token);
+	public abstract UserRegisterResponse mapToRegisterResponse(User user, String token);
 
-	/**
-	 * Метод маппит список сущностей пользователей в ДТО.
-	 *
-	 * @param users список сущностей пользователя.
-	 * @return список ДТО.
-	 */
-	public abstract List<UserResponse> mapToResponse(List<User> users);
+	@Mapping(target = "avatarUrl", source = "user.avatar.url")
+	public abstract UserResponse mapToResponse(User user);
 
-	/**
-	 * Метод маппит данные из запроса в сущность для сохранения в БД.
-	 *
-	 * @param source данные пользователя из запроса.
-	 * @return сущность пользователя.
-	 */
-	public User mapForCreateUser(@NonNull UserRegisterRequest source) {
+	public User mapToEntity(@NonNull UserRegisterRequest source) {
 		User user = new User();
 		user.setEmail(source.getEmail());
 		user.setName(source.getName());
 		user.setBirthDate(source.getBirthDate().atStartOfDay());
 		user.setRole(ru.itmo.saferoad.profile.domain.UserRole.USER);
-		user.setPasswordHash(passwordEncoder.encode(source.getPassword()));
+		user.setPasswordHash(Objects.requireNonNull(passwordEncoder.encode(source.getPassword())));
 		user.setAvatar(avatarService.existingById(source.getAvatarId()));
 		user.setCreatedAt(LocalDateTime.now());
 		user.setUpdatedAt(LocalDateTime.now());

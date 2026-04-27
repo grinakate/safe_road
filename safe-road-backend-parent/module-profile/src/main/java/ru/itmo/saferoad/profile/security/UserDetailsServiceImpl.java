@@ -23,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 		// Возвращаем объект MyUserDetails, который Spring Security будет использовать
 		// для проверки пароля и авторизации.
-		return new AppUserDetails(
+		return new AppUserDetailsImpl(
 				user.getId(),
 				user.getEmail(),
 				user.getPasswordHash(),

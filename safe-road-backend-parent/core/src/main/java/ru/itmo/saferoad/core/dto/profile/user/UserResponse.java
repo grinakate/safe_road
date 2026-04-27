@@ -1,7 +1,8 @@
-package ru.itmo.saferoad.core.dto;
+package ru.itmo.saferoad.core.dto.profile.user;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import ru.itmo.saferoad.core.dto.profile.level.LevelResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,7 +39,4 @@ public class UserResponse {
 
 	@NotNull
 	private String avatarUrl;
-
-	@NotNull
-	private String token;
 }

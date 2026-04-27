@@ -31,4 +31,10 @@ public class UserServiceImpl implements UserService {
 	public Optional<User> findByEmail(@NonNull String email) {
 		return repository.findByEmail(email);
 	}
+
+	@Override
+	public @NonNull User existingById(@NonNull Long id) {
+		return repository.findById(id).orElseThrow(
+				() -> new IllegalArgumentException("User with id " + id + " does not exist"));
+	}
 }

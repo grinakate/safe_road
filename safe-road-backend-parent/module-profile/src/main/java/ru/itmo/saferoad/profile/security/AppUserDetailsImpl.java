@@ -1,10 +1,12 @@
 package ru.itmo.saferoad.profile.security;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import ru.itmo.saferoad.core.security.AppUserDetails;
 
 import java.util.Collection;
 
@@ -16,10 +18,11 @@ import java.util.Collection;
  */
 @NoArgsConstructor
 @AllArgsConstructor
-public class AppUserDetails implements UserDetails {
+public class AppUserDetailsImpl implements AppUserDetails {
 
+	@Getter
 	@NonNull
-	private Long userId;
+	private Long id;
 
 	@NonNull
 	private String email;

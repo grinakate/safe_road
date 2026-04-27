@@ -7,6 +7,8 @@ import ru.itmo.saferoad.profile.domain.Level;
 import ru.itmo.saferoad.profile.domain.repository.LevelRepository;
 import ru.itmo.saferoad.profile.service.LevelService;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class LevelServiceImpl implements LevelService {
@@ -18,5 +20,10 @@ public class LevelServiceImpl implements LevelService {
 	public Level existingByNumber(@NonNull Integer number) {
 		return repository.findById(number)
 				.orElseThrow(() -> new IllegalArgumentException("Level with number " + number + " does not exist"));
+	}
+
+	@Override
+	public @NonNull List<Level> getAll() {
+		return repository.findAll();
 	}
 }

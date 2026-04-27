@@ -14,4 +14,7 @@ public interface UserService {
 
 	@NonNull
 	Optional<User> findByEmail(@NonNull String email);
+
+	@NonNull
+	User existingById(@NonNull Long id);
 }

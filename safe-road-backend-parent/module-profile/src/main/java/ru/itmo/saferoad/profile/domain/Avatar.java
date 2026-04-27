@@ -26,6 +26,10 @@ public class Avatar {
 	private Integer id;
 
 	@NonNull
+	@Column(nullable = false)
+	private String name;
+
+	@NonNull
 	@Column(nullable = false, unique = true)
 	private String url;
 }

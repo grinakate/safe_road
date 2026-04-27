@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import ru.itmo.saferoad.core.dto.LoginRequest;
-import ru.itmo.saferoad.core.dto.TokenResponse;
-import ru.itmo.saferoad.core.dto.UserRegisterRequest;
-import ru.itmo.saferoad.core.dto.UserResponse;
+import ru.itmo.saferoad.core.dto.profile.user.LoginRequest;
+import ru.itmo.saferoad.core.dto.profile.user.TokenResponse;
+import ru.itmo.saferoad.core.dto.profile.user.UserRegisterRequest;
+import ru.itmo.saferoad.core.dto.profile.user.UserRegisterResponse;
 import ru.itmo.saferoad.profile.domain.User;
 import ru.itmo.saferoad.profile.mapper.UserMapper;
 import ru.itmo.saferoad.profile.security.JwtUtils;
@@ -32,16 +32,16 @@ public class AuthController {
 	private final PasswordEncoder passwordEncoder;
 
 	@PostMapping("/register")
-	public UserResponse register(@Valid @RequestBody UserRegisterRequest request) {
+	public UserRegisterResponse register(@Valid @RequestBody UserRegisterRequest request) {
 		if (userService.existsByEmail(request.getEmail())) {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "Этот Email уже занят");
 		}
 
-		User user = userMapper.mapForCreateUser(request);
+		User user = userMapper.mapToEntity(request);
 		User savedUser = userService.save(user);
 
 		String token = jwtUtils.generateToken(user);
-		return userMapper.mapToResponse(savedUser, token);
+		return userMapper.mapToRegisterResponse(savedUser, token);
 	}
 
 	@PostMapping("/login")
