@@ -11,9 +11,11 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "safe-road.new.user")
 public class NewUserProperties {
 
-	private Integer startLevelNumber = 0;
+	private Integer startLevelNumber = 1;
 
 	private Integer startXp = 0;
 
 	private Integer startStreak = 1;
+
+	private Integer minAgeForLeaderboard = 12;
 }

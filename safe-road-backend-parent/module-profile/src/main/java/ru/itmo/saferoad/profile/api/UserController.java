@@ -1,7 +1,7 @@
 package ru.itmo.saferoad.profile.api;
 
-import com.example.profile.dto.ChangeAvatarRequest;
-import com.example.profile.dto.ProfileAvatarResponse;
+import ru.itmo.saferoad.profile.dto.ChangeAvatarRequest;
+import ru.itmo.saferoad.profile.dto.ProfileAvatarResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

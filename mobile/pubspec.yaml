@@ -38,6 +38,10 @@ dependencies:
   http: ^1.6.0
   provider: ^6.1.5
   shared_preferences: ^2.5.5
+  intl: ^0.18.1         # Для форматирования дат и текстов
+  google_fonts: ^6.1.0  # Чтобы диплом выглядел красиво
+  flutter_secure_storage: ^10.0.0 # Для безопасного хранения токенов
+  get_it: ^9.2.1 # Для управления зависимостями и сервисами
 
 dev_dependencies:
   flutter_test:

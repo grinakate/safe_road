@@ -37,7 +37,7 @@ public class SecurityConfig {
 				.csrf(AbstractHttpConfigurer::disable)
 				.sessionManagement(sh -> sh.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/api/auth/**").permitAll() // Регистрация и логин открыты
+						.requestMatchers("/api/auth/**").permitAll()
 
 						// Разрешения для swagger-а:
 						.requestMatchers("/v3/api-docs/**").permitAll()

@@ -11,10 +11,12 @@ import ru.itmo.saferoad.core.dto.profile.user.UserRegisterResponse;
 import ru.itmo.saferoad.core.dto.profile.user.UserResponse;
 import ru.itmo.saferoad.profile.config.NewUserProperties;
 import ru.itmo.saferoad.profile.domain.User;
+import ru.itmo.saferoad.profile.domain.UserRole;
 import ru.itmo.saferoad.profile.service.AvatarService;
 import ru.itmo.saferoad.profile.service.LevelService;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 /**
@@ -42,19 +44,25 @@ public abstract class UserMapper {
 	public abstract UserResponse mapToResponse(User user);
 
 	public User mapToEntity(@NonNull UserRegisterRequest source) {
+		LocalDateTime now = LocalDateTime.now();
+
 		User user = new User();
 		user.setEmail(source.getEmail());
 		user.setName(source.getName());
 		user.setBirthDate(source.getBirthDate().atStartOfDay());
-		user.setRole(ru.itmo.saferoad.profile.domain.UserRole.USER);
+		user.setRole(UserRole.USER);
 		user.setPasswordHash(Objects.requireNonNull(passwordEncoder.encode(source.getPassword())));
 		user.setAvatar(avatarService.existingById(source.getAvatarId()));
-		user.setCreatedAt(LocalDateTime.now());
-		user.setUpdatedAt(LocalDateTime.now());
-		user.setLastLoginDate(LocalDateTime.now());
+		user.setCreatedAt(now);
+		user.setUpdatedAt(now);
+		user.setLastLoginDate(now);
 		user.setCurrentXp(newUserProperties.getStartXp());
 		user.setCurrentStreak(newUserProperties.getStartStreak());
 		user.setLevel(levelService.existingByNumber(newUserProperties.getStartLevelNumber()));
+
+		boolean isLeaderboardVisible =
+				ChronoUnit.YEARS.between(now, source.getBirthDate().atStartOfDay()) >= newUserProperties.getMinAgeForLeaderboard();
+		user.setIsLeaderboardVisible(isLeaderboardVisible);
 
 		return user;
 	}

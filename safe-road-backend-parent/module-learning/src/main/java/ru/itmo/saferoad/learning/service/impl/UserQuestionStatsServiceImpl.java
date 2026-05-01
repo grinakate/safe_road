@@ -1,6 +1,6 @@
 package ru.itmo.saferoad.learning.service.impl;
 
-import com.example.learning.dto.SubmitAnswerResponse;
+import ru.itmo.saferoad.learning.dto.SubmitAnswerResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

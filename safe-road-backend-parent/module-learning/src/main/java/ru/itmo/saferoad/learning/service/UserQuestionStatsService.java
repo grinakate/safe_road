@@ -1,6 +1,6 @@
 package ru.itmo.saferoad.learning.service;
 
-import com.example.learning.dto.SubmitAnswerResponse;
+import ru.itmo.saferoad.learning.dto.SubmitAnswerResponse;
 import lombok.NonNull;
 
 public interface UserQuestionStatsService {

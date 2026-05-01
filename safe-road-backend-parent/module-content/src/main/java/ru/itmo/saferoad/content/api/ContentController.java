@@ -1,12 +1,12 @@
 package ru.itmo.saferoad.content.api;
 
-import com.example.content.dto.AnswerDto;
-import com.example.content.dto.CreateQuestionRequest;
-import com.example.content.dto.CreateSectionRequest;
-import com.example.content.dto.CreateTopicRequest;
-import com.example.content.dto.QuestionWithAnswersDto;
-import com.example.content.dto.SectionTreeDto;
-import com.example.content.dto.TopicBriefDto;
+import ru.itmo.saferoad.content.dto.AnswerDto;
+import ru.itmo.saferoad.content.dto.CreateQuestionRequest;
+import ru.itmo.saferoad.content.dto.CreateSectionRequest;
+import ru.itmo.saferoad.content.dto.CreateTopicRequest;
+import ru.itmo.saferoad.content.dto.QuestionWithAnswersDto;
+import ru.itmo.saferoad.content.dto.SectionTreeDto;
+import ru.itmo.saferoad.content.dto.TopicBriefDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
