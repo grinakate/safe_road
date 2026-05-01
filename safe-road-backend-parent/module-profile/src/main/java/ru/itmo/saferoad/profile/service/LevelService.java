@@ -12,4 +12,7 @@ public interface LevelService {
 
 	@NonNull
 	List<Level> getAll();
+
+	@NonNull
+	Level findByXp(@NonNull Integer xp);
 }

@@ -26,4 +26,10 @@ public class LevelServiceImpl implements LevelService {
 	public @NonNull List<Level> getAll() {
 		return repository.findAll();
 	}
+
+	@Override
+	public @NonNull Level findByXp(@NonNull Integer xp) {
+		return repository.findTopByXpThresholdLessThanEqualOrderByXpThresholdDesc(xp)
+				.orElseThrow(() -> new IllegalArgumentException("No level found for xp " + xp));
+	}
 }

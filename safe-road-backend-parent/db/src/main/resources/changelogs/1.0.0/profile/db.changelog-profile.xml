@@ -13,7 +13,7 @@
 				WHERE typname = 'user_role'
 			</sqlCheck>
 		</preConditions>
-		<sqlFile path="sql/001_create_profile_enums.sql" relativeToChangelogFile="true"/>
+		<sqlFile path="sql/001_create_user_role_enum.sql" relativeToChangelogFile="true"/>
 	</changeSet>
 
 	<changeSet id="profile-002-levels" author="safe-road">

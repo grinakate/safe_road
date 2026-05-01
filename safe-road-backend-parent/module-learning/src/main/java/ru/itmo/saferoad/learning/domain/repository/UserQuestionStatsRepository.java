@@ -8,4 +8,6 @@ import ru.itmo.saferoad.learning.domain.UserQuestionStatsId;
 public interface UserQuestionStatsRepository
     extends JpaRepository<UserQuestionStats, UserQuestionStatsId> {
   List<UserQuestionStats> findByUserId(Long userId);
+
+	List<UserQuestionStats> findByUserIdAndTopicId(Long userId, Integer topicId);
 }

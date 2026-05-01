@@ -7,6 +7,7 @@ import lombok.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.itmo.saferoad.core.security.AppUserDetails;
+import ru.itmo.saferoad.core.security.AppUserDetails;
 
 import java.util.Collection;
 

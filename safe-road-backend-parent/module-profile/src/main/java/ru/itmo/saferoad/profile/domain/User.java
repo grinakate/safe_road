@@ -85,4 +85,8 @@ public class User {
 	@NonNull
 	@Column(name = "current_streak", nullable = false)
 	private Integer currentStreak;
+
+	@NonNull
+	@Column(name = "is_leaderboard_visible", nullable = false)
+	private Boolean isLeaderboardVisible;
 }

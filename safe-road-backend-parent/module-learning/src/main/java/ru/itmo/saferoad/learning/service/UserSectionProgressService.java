@@ -1,3 +1,18 @@
 package ru.itmo.saferoad.learning.service;
 
-public interface UserSectionProgressService {}
+import lombok.NonNull;
+import ru.itmo.saferoad.learning.domain.ProgressStatus;
+import ru.itmo.saferoad.learning.domain.UserSectionProgress;
+
+import java.util.List;
+
+public interface UserSectionProgressService {
+
+	@NonNull
+	List<UserSectionProgress> getByUserId(@NonNull Long userId);
+
+	@NonNull
+	UserSectionProgress upsertStatus(@NonNull Long userId,
+	                                 @NonNull Integer sectionId,
+	                                 @NonNull ProgressStatus status);
+}

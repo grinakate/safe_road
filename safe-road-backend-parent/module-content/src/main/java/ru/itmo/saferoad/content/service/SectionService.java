@@ -1,3 +1,18 @@
 package ru.itmo.saferoad.content.service;
 
-public interface SectionService {}
+import lombok.NonNull;
+import ru.itmo.saferoad.content.domain.Section;
+
+import java.util.List;
+
+public interface SectionService {
+
+	@NonNull
+	List<Section> getAllOrdered();
+
+	@NonNull
+	Section create(@NonNull String name, @NonNull Integer orderIndex);
+
+	@NonNull
+	Section existingById(@NonNull Integer id);
+}

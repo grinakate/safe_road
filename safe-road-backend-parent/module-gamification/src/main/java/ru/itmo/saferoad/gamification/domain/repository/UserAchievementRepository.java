@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface UserAchievementRepository extends JpaRepository<UserAchievement, UserAchievementId> {
 	List<UserAchievement> findByUserId(Long userId);
+
+	boolean existsByUserIdAndAchievementId(Long userId, Integer achievementId);
 }

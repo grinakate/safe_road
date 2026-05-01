@@ -1,15 +1,15 @@
 package ru.itmo.saferoad.profile.api;
 
+import com.example.profile.dto.ChangeAvatarRequest;
+import com.example.profile.dto.ProfileAvatarResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,5 +60,21 @@ public class UserController {
 
 		var response = userMapper.mapToResponse(user);
 		return ResponseEntity.ok().body(response);
+	}
+
+	@PutMapping("users/me/avatar")
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<ProfileAvatarResponse> changeMyAvatar(
+			@Valid @RequestBody ChangeAvatarRequest request,
+			@AuthenticationPrincipal AppUserDetails currentUser
+	) {
+		var updatedUser = userService.changeAvatar(currentUser.getId(), request.avatarId());
+		var response = new ProfileAvatarResponse(
+				updatedUser.getId(),
+				updatedUser.getAvatar().getId(),
+				updatedUser.getAvatar().getName(),
+				updatedUser.getAvatar().getUrl()
+		);
+		return ResponseEntity.ok(response);
 	}
 }
