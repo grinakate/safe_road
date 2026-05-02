@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import tools.jackson.databind.JsonNode;
 
 @Data
 @NoArgsConstructor
@@ -14,5 +15,5 @@ public class AchievementRequirements {
 	private ActionType actionType;
 
 	@NonNull
-	private Integer value;
+	private Object value;
 }

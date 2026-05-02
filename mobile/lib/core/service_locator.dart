@@ -4,6 +4,7 @@ import '../services/api_client.dart';
 import '../services/auth_service.dart';
 import '../services/map_service.dart';
 import '../services/token_storage_service.dart';
+import '../services/user_service.dart';
 
 final getIt = GetIt.instance;
 
@@ -19,4 +20,6 @@ void setupLocator() {
   );
 
   getIt.registerLazySingleton<MapService>(() => MapService(getIt<ApiClient>()));
+
+  getIt.registerLazySingleton(() => UserService(getIt<ApiClient>()));
 }

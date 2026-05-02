@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:safe_road/screens/profile_screen.dart';
+
 import 'map_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -13,7 +15,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     MapScreen(),
     const Center(child: Text("Лидерборды")),
-    const Center(child: Text("Профиль")),
+    ProfileScreen(),
   ];
 
   @override
@@ -26,7 +28,10 @@ class _MainScreenState extends State<MainScreen> {
         selectedItemColor: Colors.green[700],
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Путь'),
-          BottomNavigationBarItem(icon: Icon(Icons.leaderboard), label: 'Лидерборды'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.leaderboard),
+            label: 'Лидерборды',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Профиль'),
         ],
       ),

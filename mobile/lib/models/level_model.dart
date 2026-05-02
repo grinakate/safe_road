@@ -12,7 +12,7 @@ class LevelModel {
   factory LevelModel.fromJson(Map<String, dynamic> json) {
     return LevelModel(
       number: json['number'],
-      title: json['title'],
+      title: json['name'],
       xpThreshold: json['xpThreshold'],
     );
   }

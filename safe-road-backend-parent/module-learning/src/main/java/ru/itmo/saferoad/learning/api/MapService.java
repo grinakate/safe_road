@@ -2,12 +2,12 @@ package ru.itmo.saferoad.learning.api;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.itmo.saferoad.content.api.ContentService;
 import ru.itmo.saferoad.content.dto.SectionTreeDto;
 import ru.itmo.saferoad.learning.domain.ProgressStatus;
 import ru.itmo.saferoad.learning.domain.UserTopicProgress;
-import ru.itmo.saferoad.learning.domain.repository.UserTopicProgressRepository;
 import ru.itmo.saferoad.learning.dto.SectionUserMapResponse;
 import ru.itmo.saferoad.learning.dto.TopicUserMapResponse;
 import ru.itmo.saferoad.learning.service.UserTopicProgressService;
@@ -16,15 +16,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class MapService {
 
-	private final ContentService contentService; // Сервис из другого модуля
+	private final ContentService contentService;
 	private final UserTopicProgressService userTopicProgressService;
 
 	@NonNull
 	public List<SectionUserMapResponse> getMapForUser(@NonNull Long userId) {
+		log.info(userId.toString());
 		List<SectionTreeDto> structure = contentService.getSectionTree();
 
 		Map<Integer, ProgressStatus> progress = userTopicProgressService.getByUserId(userId)

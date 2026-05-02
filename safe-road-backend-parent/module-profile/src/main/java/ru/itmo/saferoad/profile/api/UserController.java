@@ -41,10 +41,11 @@ public class UserController {
 	@GetMapping("/me")
 	public ResponseEntity<UserProfileResponse> getUserProfile(@AuthenticationPrincipal AppUserDetails currentUser) {
 		// Здесь будет вызов UserService, который посчитает XP и соберет статистику
-		return ResponseEntity.ok(userProfileOrchestrator.getFullProfile(currentUser.getId()));
+		var result = userProfileOrchestrator.getFullProfile(currentUser.getId());
+		return ResponseEntity.ok(result);
 	}
 
-	@PutMapping("users/me")
+	@PutMapping("/users/me")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<UserResponse> updateCurrentUser(@AuthenticationPrincipal AppUserDetails currentUser,
 														  @RequestBody UserUpdateRequest request) {

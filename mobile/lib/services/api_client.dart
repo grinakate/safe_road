@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
+
 import '../core/constants.dart';
 import 'token_storage_service.dart';
 
@@ -22,14 +24,25 @@ class ApiClient {
     return headers;
   }
 
+  Future<Map<String, String>> getAuthHeaders() async {
+    return await _getHeaders(requireAuth: true);
+  }
+
   Future<http.Response> get(String endpoint, {bool requireAuth = true}) async {
     final url = Uri.parse('${AppConstants.baseUrl}$endpoint');
-    final response = await http.get(url, headers: await _getHeaders(requireAuth: requireAuth));
+    final response = await http.get(
+      url,
+      headers: await _getHeaders(requireAuth: requireAuth),
+    );
     _handleResponseErrors(response);
     return response;
   }
 
-  Future<http.Response> post(String endpoint, dynamic body, {bool requireAuth = true}) async {
+  Future<http.Response> post(
+    String endpoint,
+    dynamic body, {
+    bool requireAuth = true,
+  }) async {
     final url = Uri.parse('${AppConstants.baseUrl}$endpoint');
     final response = await http.post(
       url,
