@@ -4,6 +4,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itmo.saferoad.gamification.domain.Achievement;
+import ru.itmo.saferoad.gamification.domain.UserAchievement;
 import ru.itmo.saferoad.gamification.domain.repository.AchievementRepository;
 import ru.itmo.saferoad.gamification.domain.repository.UserAchievementRepository;
 import ru.itmo.saferoad.gamification.service.UserAchievementService;
@@ -20,7 +21,7 @@ public class UserAchievementServiceImpl implements UserAchievementService {
 	@Override
 	public @NonNull List<Achievement> getAchievementsByUserId(@NonNull Long userId) {
 		List<Integer> achievementIds = userAchievementRepository.findByUserId(userId).stream()
-				.map(ua -> ua.getAchievementId())
+				.map(UserAchievement::getAchievementId)
 				.toList();
 		if (achievementIds.isEmpty()) {
 			return List.of();

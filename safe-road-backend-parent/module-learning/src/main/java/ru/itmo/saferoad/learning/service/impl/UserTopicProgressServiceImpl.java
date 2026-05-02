@@ -33,4 +33,9 @@ public class UserTopicProgressServiceImpl implements UserTopicProgressService {
 		progress.setStatus(status);
 		return repository.save(progress);
 	}
+
+	@Override
+	public long countCompletedTopicsInSection(@NonNull Long userId, @NonNull Integer sectionId) {
+		return repository.countCompletedTopicsInSection(userId, sectionId);
+	}
 }

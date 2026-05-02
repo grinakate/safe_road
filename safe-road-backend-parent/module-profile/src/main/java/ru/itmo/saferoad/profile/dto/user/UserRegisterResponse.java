@@ -1,8 +1,8 @@
-package ru.itmo.saferoad.core.dto.profile.user;
+package ru.itmo.saferoad.profile.dto.user;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import ru.itmo.saferoad.core.dto.profile.level.LevelResponse;
+import ru.itmo.saferoad.profile.dto.level.LevelResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * ДТО с информацией о пользователе.
  */
 @Data
-public class UserResponse {
+public class UserRegisterResponse {
 
 	@NotNull
 	private Long id;
@@ -39,4 +39,7 @@ public class UserResponse {
 
 	@NotNull
 	private String avatarUrl;
+
+	@NotNull
+	private String token;
 }

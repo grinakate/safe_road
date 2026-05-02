@@ -1,7 +1,7 @@
 package ru.itmo.saferoad.profile.mapper;
 
 import org.mapstruct.Mapper;
-import ru.itmo.saferoad.core.dto.profile.level.LevelResponse;
+import ru.itmo.saferoad.profile.dto.level.LevelResponse;
 import ru.itmo.saferoad.profile.domain.Level;
 
 import java.util.List;

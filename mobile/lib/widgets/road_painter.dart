@@ -3,110 +3,47 @@ import 'package:flutter/material.dart';
 class RoadPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    // Стиль для основной дороги
     final paint = Paint()
-      ..color =
-          Colors.grey[400]! // Цвет дороги
+      ..color = Colors.grey[400]!
       ..style = PaintingStyle.stroke
-      ..strokeWidth =
-          40.0 // Толщина дороги
-      ..strokeCap = StrokeCap
-          .round // Закругленные концы линий
-      ..strokeJoin = StrokeJoin.round; // Плавные соединения сегментов
+      ..strokeWidth = 40
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
 
-    // Стиль для пунктирной линии
-    final dashPaint = Paint()
-      ..color = Colors
-          .white // Цвет пунктира
+    final inner = Paint()
+      ..color = Colors.white
       ..style = PaintingStyle.stroke
-      ..strokeWidth =
-          2.0 // Толщина пунктира
+      ..strokeWidth = 3
       ..strokeCap = StrokeCap.round;
 
     final path = Path();
+    double cx = size.width * 0.5;
+    double cy = 20;
+    path.moveTo(cx, cy);
 
-    // Переменные для отслеживания текущей точки пути
-    double currentPathX = size.width * 0.5; // Начинаем от центра по X
-    double currentPathY = 0; // Начинаем от самого верха
+    final seg = 160.0;
+    final bend = size.width * 0.28;
+    int count = (size.height / seg).ceil();
 
-    path.moveTo(
-      currentPathX,
-      currentPathY,
-    ); // Устанавливаем начальную точку пути
+    for (int i = 0; i < count; i++) {
+      final endY = ((i + 1) * seg).clamp(0.0, size.height);
+      final bool toRight = i % 2 == 0;
+      final tx = toRight ? cx + bend : cx - bend;
+      final c1x = cx + (toRight ? bend * 0.7 : -bend * 0.7);
+      final c1y = cy + seg * 0.35;
+      final c2x = tx + (toRight ? -bend * 0.4 : bend * 0.4);
+      final c2y = cy + seg * 0.75;
 
-    // Параметры для формирования изгибов дороги
-    double segmentHeight = 150.0; // Высота одного "изгиба" дороги в пикселях
-    double horizontalBend =
-        size.width *
-        0.3; // Насколько сильно дорога будет отклоняться вбок (0.3 от ширины экрана)
-
-    // Сколько сегментов (изгибов) поместится на заданной высоте холста
-    int numSegments = (size.height / segmentHeight).ceil();
-
-    for (int i = 0; i < numSegments; i++) {
-      double endY =
-          (i + 1) *
-          segmentHeight; // Конечная Y-координата для текущего сегмента
-      if (endY > size.height) {
-        endY = size.height; // Не выходим за пределы холста
-      }
-
-      double targetX; // X-координата конечной точки сегмента
-      double control1X,
-          control1Y,
-          control2X,
-          control2Y; // Контрольные точки для Cubic Bezier
-
-      if (i % 2 == 0) {
-        // Сегмент изгибается вправо
-        targetX = size.width * 0.5 + horizontalBend;
-
-        // Первая контрольная точка: тянем вправо и чуть вниз от текущей
-        control1X = currentPathX + horizontalBend * 0.8;
-        control1Y = currentPathY + segmentHeight * 0.3;
-
-        // Вторая контрольная точка: тянем к конечной точке, но чуть правее центра Y-сегмента
-        control2X = targetX - horizontalBend * 0.4;
-        control2Y = currentPathY + segmentHeight * 0.7;
-      } else {
-        // Сегмент изгибается влево
-        targetX = size.width * 0.5 - horizontalBend;
-
-        // Первая контрольная точка: тянем влево и чуть вниз от текущей
-        control1X = currentPathX - horizontalBend * 0.8;
-        control1Y = currentPathY + segmentHeight * 0.3;
-
-        // Вторая контрольная точка: тянем к конечной точке, но чуть левее центра Y-сегмента
-        control2X = targetX + horizontalBend * 0.4;
-        control2Y = currentPathY + segmentHeight * 0.7;
-      }
-
-      // Ограничиваем X-координаты, чтобы они не выходили за пределы экрана
-      control1X = control1X.clamp(0.0, size.width);
-      control2X = control2X.clamp(0.0, size.width);
-      targetX = targetX.clamp(0.0, size.width);
-
-      // Добавляем сегмент Cubic Bezier кривой к пути
-      path.cubicTo(control1X, control1Y, control2X, control2Y, targetX, endY);
-
-      // Обновляем текущую позицию для следующего сегмента
-      currentPathX = targetX;
-      currentPathY = endY;
-
-      if (currentPathY >= size.height)
-        break; // Останавливаем, если достигли конца холста
+      path.cubicTo(c1x, c1y, c2x, c2y, tx, endY);
+      cx = tx;
+      cy = endY;
+      if (cy >= size.height) break;
     }
 
-    // Если последняя точка пути не находится точно по центру и не достигла конца холста,
-    // добавляем прямую линию до центра нижней части холста для завершения.
-    if (currentPathX != size.width * 0.5 && currentPathY < size.height) {
-      path.lineTo(size.width * 0.5, size.height);
-    }
-
-    canvas.drawPath(path, paint); // Рисуем основную дорогу
-    canvas.drawPath(path, dashPaint); // Рисуем пунктирную линию
+    canvas.drawPath(path, paint);
+    canvas.drawPath(path, inner);
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false; // false, так как дорога статична
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

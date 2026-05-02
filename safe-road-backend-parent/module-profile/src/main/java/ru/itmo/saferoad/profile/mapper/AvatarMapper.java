@@ -2,8 +2,8 @@ package ru.itmo.saferoad.profile.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.itmo.saferoad.core.dto.profile.avatar.AvatarCreateRequest;
-import ru.itmo.saferoad.core.dto.profile.avatar.AvatarResponse;
+import ru.itmo.saferoad.profile.dto.avatar.AvatarCreateRequest;
+import ru.itmo.saferoad.profile.dto.avatar.AvatarResponse;
 import ru.itmo.saferoad.profile.domain.Avatar;
 
 import java.util.List;

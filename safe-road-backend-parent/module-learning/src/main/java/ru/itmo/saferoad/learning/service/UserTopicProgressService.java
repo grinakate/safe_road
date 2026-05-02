@@ -13,4 +13,6 @@ public interface UserTopicProgressService {
 
 	@NonNull
 	UserTopicProgress upsertStatus(@NonNull Long userId, @NonNull Integer topicId, @NonNull ProgressStatus status);
+
+	long countCompletedTopicsInSection(@NonNull Long userId, @NonNull Integer id);
 }

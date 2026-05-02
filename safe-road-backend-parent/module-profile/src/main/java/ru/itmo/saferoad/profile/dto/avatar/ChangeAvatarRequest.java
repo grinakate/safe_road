@@ -1,4 +1,4 @@
-package ru.itmo.saferoad.profile.dto;
+package ru.itmo.saferoad.profile.dto.avatar;
 
 import jakarta.validation.constraints.NotNull;
 

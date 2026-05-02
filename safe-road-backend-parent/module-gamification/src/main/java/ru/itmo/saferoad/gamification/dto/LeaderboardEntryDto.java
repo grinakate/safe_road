@@ -1,4 +1,4 @@
-package com.example.gamification.dto;
+package ru.itmo.saferoad.gamification.dto;
 
 public record LeaderboardEntryDto(
 		Long userId,

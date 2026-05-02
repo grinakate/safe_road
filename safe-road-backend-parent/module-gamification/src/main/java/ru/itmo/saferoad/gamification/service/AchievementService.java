@@ -10,5 +10,6 @@ public interface AchievementService {
 	@NonNull
 	List<Achievement> getActiveAchievements();
 
-	void evaluateAndGrantLevelAchievements(@NonNull Long userId, @NonNull Integer levelNumber);
+	@NonNull
+	List<Achievement> getAll();
 }

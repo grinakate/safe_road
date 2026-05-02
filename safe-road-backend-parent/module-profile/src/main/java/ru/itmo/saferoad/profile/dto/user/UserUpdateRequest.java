@@ -1,4 +1,4 @@
-package ru.itmo.saferoad.core.dto.profile.user;
+package ru.itmo.saferoad.profile.dto.user;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

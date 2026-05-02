@@ -1,4 +1,4 @@
-package com.example.gamification.dto;
+package ru.itmo.saferoad.gamification.dto;
 
 import java.util.List;
 

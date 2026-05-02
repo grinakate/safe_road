@@ -8,17 +8,13 @@ import 'services/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   setupLocator();
-
   final bool isAuth = await getIt<AuthService>().isAuthenticated();
-
   runApp(PddApp(initialRoute: isAuth ? '/map' : '/login'));
 }
 
 class PddApp extends StatelessWidget {
   final String initialRoute;
-
   const PddApp({super.key, required this.initialRoute});
 
   @override
@@ -29,9 +25,9 @@ class PddApp extends StatelessWidget {
       theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.green),
       initialRoute: initialRoute,
       routes: {
+        '/register': (context) => RegisterScreen(),
         '/login': (context) => LoginScreen(),
         '/map': (context) => MainScreen(),
-        '/register': (context) => RegisterScreen(),
       },
     );
   }

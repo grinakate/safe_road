@@ -1,4 +1,4 @@
-package ru.itmo.saferoad.profile.dto;
+package ru.itmo.saferoad.profile.dto.avatar;
 
 public record ProfileAvatarResponse(
 		Long userId,

@@ -1,7 +1,7 @@
 package ru.itmo.saferoad.profile.api;
 
-import ru.itmo.saferoad.profile.dto.ChangeAvatarRequest;
-import ru.itmo.saferoad.profile.dto.ProfileAvatarResponse;
+import ru.itmo.saferoad.profile.dto.avatar.ChangeAvatarRequest;
+import ru.itmo.saferoad.profile.dto.avatar.ProfileAvatarResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.itmo.saferoad.core.dto.profile.user.UserResponse;
-import ru.itmo.saferoad.core.dto.profile.user.UserUpdateRequest;
+import ru.itmo.saferoad.profile.dto.user.UserProfileResponse;
+import ru.itmo.saferoad.profile.dto.user.UserResponse;
+import ru.itmo.saferoad.profile.dto.user.UserUpdateRequest;
 import ru.itmo.saferoad.core.security.AppUserDetails;
 import ru.itmo.saferoad.profile.domain.Avatar;
 import ru.itmo.saferoad.profile.domain.User;
@@ -35,13 +36,12 @@ public class UserController {
 	private final UserService userService;
 	private final AvatarService avatarService;
 	private final PasswordEncoder passwordEncoder;
+	private final UserProfileOrchestrator userProfileOrchestrator;
 
-	@GetMapping("users/me")
-	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<UserResponse> getCurrentUser(@AuthenticationPrincipal AppUserDetails currentUser) {
-		User user = userService.existingById(currentUser.getId());
-		var response = userMapper.mapToResponse(user);
-		return ResponseEntity.ok().body(response);
+	@GetMapping("/me")
+	public ResponseEntity<UserProfileResponse> getUserProfile(@AuthenticationPrincipal AppUserDetails currentUser) {
+		// Здесь будет вызов UserService, который посчитает XP и соберет статистику
+		return ResponseEntity.ok(userProfileOrchestrator.getFullProfile(currentUser.getId()));
 	}
 
 	@PutMapping("users/me")

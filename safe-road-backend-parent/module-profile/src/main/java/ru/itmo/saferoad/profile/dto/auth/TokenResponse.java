@@ -1,4 +1,4 @@
-package ru.itmo.saferoad.core.dto.profile.user;
+package ru.itmo.saferoad.profile.dto.auth;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

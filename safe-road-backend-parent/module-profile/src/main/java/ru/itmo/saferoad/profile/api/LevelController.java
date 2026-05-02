@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.itmo.saferoad.core.dto.profile.level.LevelResponse;
+import ru.itmo.saferoad.profile.dto.level.LevelResponse;
 import ru.itmo.saferoad.profile.mapper.LevelMapper;
 import ru.itmo.saferoad.profile.service.LevelService;
 

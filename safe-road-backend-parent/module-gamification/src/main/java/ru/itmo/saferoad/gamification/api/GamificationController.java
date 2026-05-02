@@ -1,8 +1,8 @@
-package ru.itmo.saferoad.gamification.controller;
+package ru.itmo.saferoad.gamification.api;
 
-import com.example.gamification.dto.AchievementDto;
-import com.example.gamification.dto.LeaderboardEntryDto;
-import com.example.gamification.dto.MyGamificationStatsDto;
+import ru.itmo.saferoad.gamification.dto.AchievementDto;
+import ru.itmo.saferoad.gamification.dto.LeaderboardEntryDto;
+import ru.itmo.saferoad.gamification.dto.MyGamificationStatsDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

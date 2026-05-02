@@ -1,10 +1,13 @@
-package ru.itmo.saferoad.core.dto.profile.avatar;
+package ru.itmo.saferoad.profile.dto.avatar;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class AvatarCreateRequest {
+public class AvatarResponse {
+
+	@NotNull
+	private Integer id;
 
 	@NotNull
 	private String name;
