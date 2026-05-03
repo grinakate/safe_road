@@ -86,7 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 4),
             Text(
-              'Уровень ${user.level}',
+              'Уровень ${user.level.number} ${user.level.title}',
               style: TextStyle(color: Colors.grey[600], fontSize: 16),
             ),
             const SizedBox(height: 12),

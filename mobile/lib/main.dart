@@ -10,17 +10,17 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupLocator();
   final bool isAuth = await getIt<AuthService>().isAuthenticated();
-  runApp(PddApp(initialRoute: isAuth ? '/map' : '/login'));
+  runApp(SafeRoadApp(initialRoute: isAuth ? '/map' : '/login'));
 }
 
-class PddApp extends StatelessWidget {
+class SafeRoadApp extends StatelessWidget {
   final String initialRoute;
-  const PddApp({super.key, required this.initialRoute});
+  const SafeRoadApp({super.key, required this.initialRoute});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'ПДД Обучение',
+      title: 'Безопасная дорога',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.green),
       initialRoute: initialRoute,

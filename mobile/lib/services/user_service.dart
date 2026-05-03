@@ -7,7 +7,7 @@ class UserService {
   UserService(this._apiClient);
 
   Future<UserProfile> getProfile() async {
-    final response = await _apiClient.get('/profile/me');
+    final response = await _apiClient.get('/api/profile/me');
     if (response.statusCode == 200) {
       return UserProfile.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
     }

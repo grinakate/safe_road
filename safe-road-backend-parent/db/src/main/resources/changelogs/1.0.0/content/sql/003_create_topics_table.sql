@@ -4,7 +4,8 @@ CREATE TABLE topics
     section_id  INTEGER NOT NULL,
     name        TEXT    NOT NULL,
     description TEXT,
-    order_index INTEGER NOT NULL UNIQUE,
+    order_index INTEGER NOT NULL,
     xp_reward   INTEGER NOT NULL,
-    CONSTRAINT fk_topics_section FOREIGN KEY (section_id) REFERENCES sections (id)
+    CONSTRAINT fk_topics_section FOREIGN KEY (section_id) REFERENCES sections (id),
+    UNIQUE (section_id, order_index)
 );

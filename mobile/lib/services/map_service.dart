@@ -8,7 +8,7 @@ class MapService {
   MapService(this._apiClient);
 
   Future<List<Section>> getMapForUser() async {
-    final response = await _apiClient.get('/learning/map');
+    final response = await _apiClient.get('/api/learning/map');
 
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
