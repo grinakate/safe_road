@@ -1,8 +1,5 @@
 package ru.itmo.saferoad.profile.api;
 
-import ru.itmo.saferoad.profile.dto.avatar.ChangeAvatarRequest;
-import ru.itmo.saferoad.profile.dto.avatar.ProfileAvatarResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,16 +7,20 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.itmo.saferoad.profile.dto.user.UserProfileResponse;
-import ru.itmo.saferoad.profile.dto.user.UserResponse;
-import ru.itmo.saferoad.profile.dto.user.UserUpdateRequest;
 import ru.itmo.saferoad.core.security.AppUserDetails;
 import ru.itmo.saferoad.profile.domain.Avatar;
 import ru.itmo.saferoad.profile.domain.User;
+import ru.itmo.saferoad.profile.dto.avatar.AvatarResponse;
+import ru.itmo.saferoad.profile.dto.avatar.ChangeAvatarRequest;
+import ru.itmo.saferoad.profile.dto.user.UserProfileResponse;
+import ru.itmo.saferoad.profile.dto.user.UserResponse;
+import ru.itmo.saferoad.profile.dto.user.UserUpdateRequest;
+import ru.itmo.saferoad.profile.mapper.AvatarMapper;
 import ru.itmo.saferoad.profile.mapper.UserMapper;
 import ru.itmo.saferoad.profile.service.AvatarService;
 import ru.itmo.saferoad.profile.service.UserService;
@@ -33,6 +34,7 @@ import java.util.Objects;
 public class UserController {
 
 	private final UserMapper userMapper;
+	private final AvatarMapper avatarMapper;
 	private final UserService userService;
 	private final AvatarService avatarService;
 	private final PasswordEncoder passwordEncoder;
@@ -63,19 +65,14 @@ public class UserController {
 		return ResponseEntity.ok().body(response);
 	}
 
-	@PutMapping("users/me/avatar")
-	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<ProfileAvatarResponse> changeMyAvatar(
-			@Valid @RequestBody ChangeAvatarRequest request,
-			@AuthenticationPrincipal AppUserDetails currentUser
+	@PostMapping("me/avatar")
+	public ResponseEntity<AvatarResponse> changeMyAvatar(
+			@AuthenticationPrincipal AppUserDetails currentUser,
+			@RequestBody ChangeAvatarRequest request
 	) {
-		var updatedUser = userService.changeAvatar(currentUser.getId(), request.avatarId());
-		var response = new ProfileAvatarResponse(
-				updatedUser.getId(),
-				updatedUser.getAvatar().getId(),
-				updatedUser.getAvatar().getName(),
-				updatedUser.getAvatar().getUrl()
-		);
+		Avatar newAvatar = avatarService.existingById(request.getAvatarId());
+		userService.changeAvatar(currentUser.getId(), newAvatar);
+		var response = avatarMapper.mapToResponse(newAvatar);
 		return ResponseEntity.ok(response);
 	}
 }

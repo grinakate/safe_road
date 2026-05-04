@@ -16,7 +16,7 @@ void setupLocator() {
   );
 
   getIt.registerLazySingleton<AuthService>(
-    () => AuthService(getIt<TokenStorageService>()),
+    () => AuthService(getIt<TokenStorageService>(), ApiClient(getIt<TokenStorageService>())),
   );
 
   getIt.registerLazySingleton<MapService>(() => MapService(getIt<ApiClient>()));

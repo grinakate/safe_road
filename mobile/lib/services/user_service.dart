@@ -1,9 +1,13 @@
 import 'dart:convert';
-import 'api_client.dart';
+
+import 'package:safe_road/models/avatar_models.dart';
+
 import '../models/user_profile.dart';
+import 'api_client.dart';
 
 class UserService {
   final ApiClient _apiClient;
+
   UserService(this._apiClient);
 
   Future<UserProfile> getProfile() async {
@@ -12,5 +16,27 @@ class UserService {
       return UserProfile.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
     }
     throw Exception('Failed to load profile');
+  }
+
+  Future<AvatarModel> updateAvatar(int newAvatarId) async {
+    final request = ChangeAvatarRequest(avatarId: newAvatarId);
+    final response = await _apiClient.post(
+      '/api/profile/me/avatar',
+      request.toJson(),
+    );
+    if (response.statusCode == 200) {
+      return AvatarModel.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+    }
+    throw Exception('Failed to change avatar');
+  }
+
+  Future<List<AvatarModel>> getAvailableAvatars() async {
+    final response = await _apiClient.get('/api/profile/avatars');
+    if (response.statusCode == 200) {
+      return (jsonDecode(utf8.decode(response.bodyBytes)) as List)
+          .map((a) => AvatarModel.fromJson(a))
+          .toList();
+    }
+    throw Exception('Failed to load avatars');
   }
 }

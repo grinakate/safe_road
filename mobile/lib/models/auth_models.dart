@@ -6,14 +6,12 @@ class LoginRequest {
 
   LoginRequest({required this.email, required this.password});
 
-  Map<String, dynamic> toJson() => {
-    'email': email,
-    'password': password,
-  };
+  Map<String, dynamic> toJson() => {'email': email, 'password': password};
 }
 
 class TokenResponse {
   final String token;
+
   TokenResponse({required this.token});
 
   factory TokenResponse.fromJson(Map<String, dynamic> json) {
@@ -39,7 +37,8 @@ class UserRegisterRequest {
   Map<String, dynamic> toJson() => {
     'name': name,
     'email': email,
-    'birthDate': "${birthDate.year.toString().padLeft(4, '0')}-${birthDate.month.toString().padLeft(2, '0')}-${birthDate.day.toString().padLeft(2, '0')}",
+    'birthDate':
+        "${birthDate.year.toString().padLeft(4, '0')}-${birthDate.month.toString().padLeft(2, '0')}-${birthDate.day.toString().padLeft(2, '0')}",
     'password': password,
     'avatarId': avatarId,
   };

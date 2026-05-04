@@ -1,6 +1,7 @@
 package ru.itmo.saferoad.profile.dto.avatar;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Data
@@ -11,4 +12,8 @@ public class AvatarCreateRequest {
 
 	@NotNull
 	private String url;
+
+	@NotNull
+	@Positive
+	private Integer minLevel;
 }

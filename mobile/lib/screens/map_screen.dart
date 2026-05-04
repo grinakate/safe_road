@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:safe_road/core/constants.dart';
+
 import '../core/service_locator.dart';
 import '../models/section.dart';
 import '../models/user_profile.dart';
@@ -8,7 +8,6 @@ import '../services/user_service.dart';
 import '../widgets/road_header.dart';
 import '../widgets/section_header.dart';
 import '../widgets/topic_item.dart';
-import '../widgets/road_painter.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -89,8 +88,8 @@ class _MapScreenState extends State<MapScreen> {
 
             return Column(
               children: [
-                // Верхняя панель с прогрессом (котик)
                 //AppBar(title: Text("Безопасная дорога")),
+                // Верхняя панель с прогрессом (котик)
                 RoadHeader(profile: profile),
                 Expanded(
                   child: SingleChildScrollView(
@@ -104,7 +103,6 @@ class _MapScreenState extends State<MapScreen> {
                           ),
                           painter: RoadPainter(),
                         ),*/
-
                         Image.asset("assets/images/plant3.png"),
 
                         // Слой с контентом (Секции и Топики)

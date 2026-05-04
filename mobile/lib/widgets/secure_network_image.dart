@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../core/constants.dart';
 import '../services/api_client.dart';
 
 class SecureNetworkImage extends StatelessWidget {
@@ -49,7 +50,7 @@ class SecureNetworkImage extends StatelessWidget {
 
         // Если заголовки успешно получены, используем CachedNetworkImage
         return CachedNetworkImage(
-          imageUrl: imageUrl,
+          imageUrl: '${AppConstants.baseUrl}$imageUrl',
           httpHeaders: snapshot.data,
           // Передаем заголовки
           width: width,

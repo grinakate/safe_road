@@ -33,7 +33,8 @@ public class GamificationService {
 						a.getName(),
 						a.getDescription(),
 						a.getIconUrl(),
-						userAchievementIds.contains(a.getId())
+						userAchievementIds.contains(a.getId()),
+						a.getRewardXp()
 				))
 				.sorted(Comparator.comparing(UserAchievementsResponse::isUnlocked).reversed())
 				.toList();

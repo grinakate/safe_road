@@ -11,7 +11,7 @@ class TopicItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Смещение: центр/право/центр/лево по индексу — реализуем через orderIndex (mod 4)
+    // Смещение: центр/право/центр/лево по индексу — реализуем через orderIndex (mod 5)
     final idx = topic.orderIndex % 5;
     final alignments = [
       Alignment(-0.5, 0.0),

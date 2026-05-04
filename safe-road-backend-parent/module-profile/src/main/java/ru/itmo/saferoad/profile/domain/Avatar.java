@@ -32,4 +32,8 @@ public class Avatar {
 	@NonNull
 	@Column(nullable = false, unique = true)
 	private String url;
+
+	@NonNull
+	@Column(name = "min_level", nullable = false)
+	private Integer minLevel;
 }

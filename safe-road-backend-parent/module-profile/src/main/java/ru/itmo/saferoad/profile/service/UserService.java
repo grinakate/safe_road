@@ -1,6 +1,7 @@
 package ru.itmo.saferoad.profile.service;
 
 import lombok.NonNull;
+import ru.itmo.saferoad.profile.domain.Avatar;
 import ru.itmo.saferoad.profile.domain.User;
 
 import java.util.Optional;
@@ -22,6 +23,5 @@ public interface UserService {
 	@NonNull
 	List<User> getTopUsersByXp();
 
-	@NonNull
-	User changeAvatar(@NonNull Long userId, @NonNull Integer avatarId);
+	@NonNull User changeAvatar(@NonNull Long userId, @NonNull Avatar avatar);
 }

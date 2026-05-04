@@ -1,9 +1,14 @@
 package ru.itmo.saferoad.profile.dto.avatar;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import org.springframework.validation.annotation.Validated;
 
-public record ChangeAvatarRequest(
-		@NotNull Integer avatarId
-) {
+@Data
+@Validated
+public class ChangeAvatarRequest {
+
+	@NotNull
+	private Integer avatarId;
 }
 

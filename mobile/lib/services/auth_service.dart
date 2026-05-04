@@ -1,21 +1,20 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
-
-import '../core/constants.dart';
 import '../models/auth_models.dart';
+import 'api_client.dart';
 import 'token_storage_service.dart';
 
 class AuthService {
   final TokenStorageService _tokenStorageService;
+  final ApiClient _apiClient;
 
-  AuthService(this._tokenStorageService);
+  AuthService(this._tokenStorageService, this._apiClient);
 
   Future<String?> login(String email, String password) async {
-    final response = await http.post(
-      Uri.parse('${AppConstants.baseUrl}/api/auth/login'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(LoginRequest(email: email, password: password).toJson()),
+    final response = await _apiClient.post(
+      '/api/auth/login',
+      LoginRequest(email: email, password: password).toJson(),
+      requireAuth: false,
     );
 
     if (response.statusCode == 200) {
@@ -27,10 +26,10 @@ class AuthService {
   }
 
   Future<String?> register(UserRegisterRequest request) async {
-    final response = await http.post(
-      Uri.parse('${AppConstants.baseUrl}/api/auth/register'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(request.toJson()),
+    final response = await _apiClient.post(
+      '/api/auth/register',
+      request.toJson(),
+      requireAuth: false,
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {

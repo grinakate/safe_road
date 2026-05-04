@@ -3,9 +3,9 @@ package ru.itmo.saferoad.profile.service.impl;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
+import ru.itmo.saferoad.profile.domain.Avatar;
 import ru.itmo.saferoad.profile.domain.User;
 import ru.itmo.saferoad.profile.domain.repository.UserRepository;
-import ru.itmo.saferoad.profile.service.AvatarService;
 import ru.itmo.saferoad.profile.service.UserService;
 
 import java.util.List;
@@ -16,7 +16,6 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
 	private final UserRepository repository;
-	private final AvatarService avatarService;
 
 	@NonNull
 	@Override
@@ -47,9 +46,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public @NonNull User changeAvatar(@NonNull Long userId, @NonNull Integer avatarId) {
+	public @NonNull User changeAvatar(@NonNull Long userId, @NonNull Avatar avatar) {
 		User user = existingById(userId);
-		user.setAvatar(avatarService.existingById(avatarId));
+		if (user.getLevel().getNumber() < avatar.getMinLevel()) {
+			throw new IllegalArgumentException("У пользователя недостаточный уровень");
+		}
+
+		user.setAvatar(avatar);
 		return repository.save(user);
 	}
 }

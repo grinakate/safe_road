@@ -9,10 +9,12 @@ import java.util.List;
 public record UserProfileResponse(
 		String name,
 		int avatarId,
+		String avatarUrl,
 		LevelResponse level,
 		int currentXp,
 		int completedLessons,
 		int totalLessons,
 		List<SectionStatResponse> sectionStats,
 		List<UserAchievementsResponse> achievements
-) {}
+) {
+}

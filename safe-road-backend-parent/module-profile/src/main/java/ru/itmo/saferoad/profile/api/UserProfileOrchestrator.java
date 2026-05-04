@@ -35,6 +35,7 @@ public class UserProfileOrchestrator {
 		return new UserProfileResponse(
 				user.getName(),
 				user.getAvatar().getId(),
+				user.getAvatar().getUrl(),
 				levelMapper.mapToResponse(user.getLevel()),
 				user.getCurrentXp(),
 				18,

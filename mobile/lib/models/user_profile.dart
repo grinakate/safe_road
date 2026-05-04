@@ -9,6 +9,7 @@ class UserProfile {
   final int completedLessons;
   final int totalLessons;
   final List<Achievement> achievements;
+  final int avatarId;
 
   UserProfile({
     required this.name,
@@ -17,9 +18,11 @@ class UserProfile {
     required this.completedLessons,
     required this.totalLessons,
     required this.achievements,
+    required this.avatarId,
   });
 
   int get xpToNextLevel => level.xpThreshold - currentXp;
+
   double get xpProgress => currentXp / xpToNextLevel;
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
@@ -31,5 +34,26 @@ class UserProfile {
     achievements: (json['achievements'] as List)
         .map((a) => Achievement.fromJson(a))
         .toList(),
+    avatarId: json['avatarId'],
   );
+
+  UserProfile copyWith({
+    String? name,
+    LevelModel? level,
+    int? currentXp,
+    int? completedLessons,
+    int? totalLessons,
+    List<Achievement>? achievements,
+    int? avatarId,
+  }) {
+    return UserProfile(
+      name: name ?? this.name,
+      level: level ?? this.level,
+      currentXp: currentXp ?? this.currentXp,
+      completedLessons: completedLessons ?? this.completedLessons,
+      totalLessons: totalLessons ?? this.totalLessons,
+      achievements: achievements ?? this.achievements,
+      avatarId: avatarId ?? this.avatarId,
+    );
+  }
 }

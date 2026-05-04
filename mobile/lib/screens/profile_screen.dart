@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:safe_road/widgets/achievement_tile.dart';
+import 'package:safe_road/core/constants.dart';
 
+import '../core/avatar_manager.dart';
 import '../core/service_locator.dart';
+import '../models/achievement.dart';
 import '../models/user_profile.dart';
 import '../services/user_service.dart';
+import '../widgets/achievement_info_dialog.dart';
+import '../widgets/avatar_selection_dialog.dart';
+import '../widgets/secure_network_image.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -14,173 +19,264 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late Future<UserProfile> _profileFuture;
+  late Future<void> _avatarsInitFuture;
+  UserProfile? _currentUserProfile;
 
   @override
   void initState() {
     super.initState();
-    _profileFuture = getIt<UserService>().getProfile();
+    _avatarsInitFuture = getIt<UserService>().getAvailableAvatars().then((
+      avatarInfoList,
+    ) {
+      AvatarManager.initialize(avatarInfoList);
+    });
+
+    _profileFuture = getIt<UserService>().getProfile().then((profile) {
+      _currentUserProfile = profile;
+      return profile;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(
-        title: const Text('Профиль'),
+      backgroundColor: Colors.white,
+      /*      appBar: AppBar(
+        title: const Text('Профиль', style: TextStyle(fontFamily: 'Nunito')),
         centerTitle: true,
         actions: [
           IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
         ],
-      ),
-      body: FutureBuilder<UserProfile>(
-        future: _profileFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text("Ошибка: ${snapshot.error}"));
-          }
+      ),*/
+      body: SafeArea(
+        child: FutureBuilder<void>(
+          future: Future.wait([_avatarsInitFuture, _profileFuture]),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text("Ошибка: ${snapshot.error}"));
+            }
 
-          final user = snapshot.data!;
-
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
+            final user = _currentUserProfile!;
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                // 1. Блок основной информации
-                _buildMainInfo(user),
-                const SizedBox(height: 24),
-
-                // 2. Блок статистики (Стрик, Уроки)
-                _buildStatsRow(user),
-                const SizedBox(height: 24),
-
-                // 3. Блок достижений
-                _buildAchievementsGrid(user),
+                const SizedBox(height: 30),
+                _buildHeader(user),
+                const SizedBox(height: 10),
+                _buildTabs(),
+                const SizedBox(height: 10),
+                Expanded(child: _buildAchievementsGrid(user.achievements)),
               ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  // Верхняя часть: Уровень, Аватар, Очки
+  Widget _buildHeader(UserProfile user) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: _buildStatItem("Уровень", user.level.number.toString()),
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                _showAvatarSelectionDialog(user.avatarId, user.level.number);
+              },
+              child: CircleAvatar(
+                radius: 60,
+                backgroundColor: Colors.blue.withOpacity(0.1),
+                child: SecureNetworkImage(
+                  imageUrl: AvatarManager.getAvatarItem(user.avatarId).url,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
+          ),
+          Expanded(child: _buildStatItem("Очки", user.currentXp.toString())),
+        ],
+      ),
+    );
+  }
+
+  // Новый метод для показа диалога выбора аватара
+  void _showAvatarSelectionDialog(int currentAvatarId, int currentUserLevel) {
+    showDialog(
+      context: context,
+      builder: (context) => AvatarSelectionDialog(
+        currentAvatarId: currentAvatarId,
+        currentUserLevel: currentUserLevel,
+        onAvatarSelected: (newAvatarId) async {
+          if (_currentUserProfile!.avatarId == newAvatarId) {
+            return;
+          }
+          // 1. Отправляем на бэкенд
+          var newAvatar = await getIt<UserService>().updateAvatar(newAvatarId);
+          // 2. Обновляем UI
+          setState(() {
+            _currentUserProfile = _currentUserProfile!.copyWith(
+              avatarId: newAvatar.id,
+            );
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Аватар успешно обновлен!')),
           );
         },
       ),
     );
   }
 
-  Widget _buildMainInfo(UserProfile user) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.green[100],
-              child: const Icon(Icons.person, size: 60, color: Colors.green),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              user.name,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Уровень ${user.level.number} ${user.level.title}',
-              style: TextStyle(color: Colors.grey[600], fontSize: 16),
-            ),
-            const SizedBox(height: 12),
-            LinearProgressIndicator(
-              value: user.currentXp / user.xpToNextLevel,
-              backgroundColor: Colors.grey[200],
-              color: Colors.green,
-              minHeight: 8,
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatsRow(UserProfile user) {
-    return Row(
-      children: [
-        _buildStatCard(
-          'Уроки',
-          '${user.completedLessons}/${user.totalLessons}',
-          Icons.book,
-          Colors.blue,
-        ),
-        const SizedBox(width: 12),
-        _buildStatCard(
-          'Стрик',
-          '5 дней',
-          Icons.local_fire_department,
-          Colors.orange,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatCard(
-    String title,
-    String value,
-    IconData icon,
-    Color color,
-  ) {
-    return Expanded(
-      child: Card(
-        elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Icon(icon, color: color, size: 30),
-              const SizedBox(height: 8),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                title,
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAchievementsGrid(UserProfile user) {
+  Widget _buildStatItem(String label, String value) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Достижения',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 12),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 0.8,
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 18,
+            fontFamily: 'Nunito',
+            color: Colors.black87,
           ),
-          itemCount: user.achievements.length,
-          itemBuilder: (context, index) {
-            return AchievementTile(achievement: user.achievements[index]);
-          },
+        ),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 28,
+            fontFamily: 'Nunito',
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );
+  }
+
+  // Переключатель вкладок
+  Widget _buildTabs() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _tabButton("Значки", isActive: true),
+        _tabButton("Статистика"),
+        _tabButton("Рейтинг"),
+      ],
+    );
+  }
+
+  Widget _tabButton(String text, {bool isActive = false}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        color: isActive ? Colors.teal.withOpacity(0.2) : Colors.transparent,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 18,
+          fontFamily: 'Nunito',
+          color: isActive ? Colors.teal[800] : Colors.black54,
+          fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+    );
+  }
+
+  // Сетка достижений
+  Widget _buildAchievementsGrid(List<Achievement> achievements) {
+    final rows = chunkAchievements(achievements);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double listPadding = 20.0;
+        double itemMargin = 4.0;
+        double availableWidth = constraints.maxWidth - listPadding;
+        double itemWidth = availableWidth / 3.3;
+
+        double fontSize = itemWidth * 0.12;
+        double textHeight = fontSize * 1.2 * 2.5;
+
+        return ListView.builder(
+          itemCount: rows.length,
+          itemBuilder: (context, rowIndex) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: rows[rowIndex].map((item) {
+                return GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AchievementInfoDialog(
+                        achievement: item,
+                        imageSize: itemWidth * 1.5,
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: itemWidth,
+                    //color: Colors.red.withOpacity(0.1), // для отладки границ
+                    margin: EdgeInsets.symmetric(horizontal: itemMargin),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Opacity(
+                          opacity: item.isUnlocked ? 1.0 : 0.4,
+                          child: SecureNetworkImage(imageUrl: item.iconUrl),
+                        ),
+                        const SizedBox(height: 8),
+                        // --- ТЕКСТ ---
+                        SizedBox(
+                          height: textHeight,
+                          child: Text(
+                            item.title,
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: 'Nunito',
+                              fontSize: fontSize,
+                              fontWeight: FontWeight.w600,
+                              height: 1.0,
+                              color: item.isUnlocked
+                                  ? AppConstants.borderColor
+                                  : Colors.brown,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  List<List<Achievement>> chunkAchievements(List<Achievement> data) {
+    List<List<Achievement>> rows = [];
+    int i = 0;
+    bool isThree = true; // Флаг: сейчас ряд из 3-х или из 2-х элементов
+
+    while (i < data.length) {
+      int count = isThree ? 3 : 2;
+      // Берем подсписок, но не больше, чем осталось элементов
+      rows.add(
+        data.sublist(i, (i + count > data.length) ? data.length : i + count),
+      );
+      i += count;
+      isThree = !isThree; // Меняем флаг для следующего ряда
+    }
+    return rows;
   }
 }

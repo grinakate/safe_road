@@ -5,6 +5,7 @@ public record UserAchievementsResponse(
 		String title,
 		String description,
 		String iconUrl,
-		boolean isUnlocked
+		boolean isUnlocked,
+		int rewardXp
 ) {
 }

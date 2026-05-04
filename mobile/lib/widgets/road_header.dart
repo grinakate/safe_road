@@ -19,9 +19,9 @@ class RoadHeader extends StatelessWidget {
             children: [
               // TODO: добавить логику avatarId
               CircleAvatar(
-                radius: 26,
-                backgroundColor: AppConstants.bgPrimaryColor,
-                child: Image.asset("assets/images/cat.png"),
+                radius: 30,
+                backgroundColor: AppConstants.skyColor,
+                child: Image.asset("assets/images/samokat.png"),
               ),
               const SizedBox(width: 12),
               Expanded(

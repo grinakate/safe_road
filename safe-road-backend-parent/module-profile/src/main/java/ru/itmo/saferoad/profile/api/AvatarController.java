@@ -22,7 +22,7 @@ import java.util.List;
 @Transactional
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/profile/avatar")
+@RequestMapping("/api/profile/avatars")
 public class AvatarController {
 
 	private final AvatarMapper avatarMapper;

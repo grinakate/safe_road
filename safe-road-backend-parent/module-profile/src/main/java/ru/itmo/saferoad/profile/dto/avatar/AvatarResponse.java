@@ -14,4 +14,7 @@ public class AvatarResponse {
 
 	@NotNull
 	private String url;
+
+	@NotNull
+	private Integer minLevel;
 }
