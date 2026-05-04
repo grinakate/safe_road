@@ -6,22 +6,32 @@ import '../models/topic_status.dart';
 
 class TopicItem extends StatelessWidget {
   final Topic topic;
+  final int sectionId;
+  final int index;
+  final bool rightDirection;
 
-  const TopicItem({super.key, required this.topic});
+  static final alignmentsToRight = [
+    Alignment(-0.5, 0.0),
+    Alignment.center,
+    Alignment(0.5, 0.0),
+  ];
+
+  static final alignmentsToLeft = [Alignment.centerLeft, Alignment.centerRight];
+
+  const TopicItem({
+    super.key,
+    required this.topic,
+    required this.sectionId,
+    required this.index,
+    required this.rightDirection,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Смещение: центр/право/центр/лево по индексу — реализуем через orderIndex (mod 5)
-    final idx = topic.orderIndex % 5;
-    final alignments = [
-      Alignment(-0.5, 0.0),
-      Alignment.centerLeft,
-      Alignment.center,
-      Alignment.centerRight,
-      Alignment(0.5, 0.0),
-    ];
-    final align = alignments[idx];
-
+    // Смещение: центр/право/центр/лево по индексу
+    final align = rightDirection
+        ? alignmentsToRight[index]
+        : alignmentsToLeft[index];
     final status = topic.status;
     final color = status == TopicStatus.LOCKED
         ? Colors.grey.shade400

@@ -11,7 +11,7 @@ class SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 60),
+      margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 60),
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       decoration: BoxDecoration(
         color: AppConstants.greenTestColor,
