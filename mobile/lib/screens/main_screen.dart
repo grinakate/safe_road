@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:safe_road/core/constants.dart';
 import 'package:safe_road/screens/profile_screen.dart';
 
 import 'map_screen.dart';
@@ -23,16 +24,24 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.grey.shade200,
         currentIndex: _selectedIndex,
         onTap: (index) => setState(() => _selectedIndex = index),
-        selectedItemColor: Colors.green[700],
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Путь'),
+        selectedItemColor: Colors.brown[700],
+        unselectedItemColor: Colors.brown,
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
-            label: 'Лидерборды',
+            icon: Image.asset("assets/icons/road.png", height: 24,),
+            label: 'Дорога',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Профиль'),
+          BottomNavigationBarItem(
+            icon: Image.asset("assets/icons/leader_board.png", height: 24,),
+            label: 'Рейтинг',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset("assets/icons/profile.png", height: 24,),
+            label: 'Профиль',
+          ),
         ],
       ),
     );

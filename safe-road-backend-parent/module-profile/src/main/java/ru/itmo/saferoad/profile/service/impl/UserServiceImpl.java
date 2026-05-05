@@ -41,6 +41,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public @NonNull User existingByIdAndLock(@NonNull Long id) {
+		return repository.findByIdAndLock(id).orElseThrow(
+				() -> new IllegalArgumentException("User with id " + id + " does not exist")
+		);
+	}
+
+	@Override
 	public @NonNull List<User> getTopUsersByXp() {
 		return repository.findTop10ByOrderByCurrentXpDesc();
 	}

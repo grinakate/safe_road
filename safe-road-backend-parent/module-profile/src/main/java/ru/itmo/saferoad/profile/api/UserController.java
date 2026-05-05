@@ -1,5 +1,6 @@
 package ru.itmo.saferoad.profile.api;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,7 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itmo.saferoad.core.security.AppUserDetails;
+import ru.itmo.saferoad.learning.api.LearningService;
+import ru.itmo.saferoad.learning.dto.QuizResultResponse;
+import ru.itmo.saferoad.learning.dto.QuizSubmissionRequest;
 import ru.itmo.saferoad.profile.domain.Avatar;
+import ru.itmo.saferoad.profile.domain.Level;
 import ru.itmo.saferoad.profile.domain.User;
 import ru.itmo.saferoad.profile.dto.avatar.AvatarResponse;
 import ru.itmo.saferoad.profile.dto.avatar.ChangeAvatarRequest;
@@ -23,6 +28,7 @@ import ru.itmo.saferoad.profile.dto.user.UserUpdateRequest;
 import ru.itmo.saferoad.profile.mapper.AvatarMapper;
 import ru.itmo.saferoad.profile.mapper.UserMapper;
 import ru.itmo.saferoad.profile.service.AvatarService;
+import ru.itmo.saferoad.profile.service.LevelService;
 import ru.itmo.saferoad.profile.service.UserService;
 
 import java.util.Objects;
@@ -34,10 +40,12 @@ import java.util.Objects;
 public class UserController {
 
 	private final UserMapper userMapper;
-	private final AvatarMapper avatarMapper;
 	private final UserService userService;
+	private final LevelService levelService;
+	private final AvatarMapper avatarMapper;
 	private final AvatarService avatarService;
 	private final PasswordEncoder passwordEncoder;
+	private final LearningService learningService;
 	private final UserProfileOrchestrator userProfileOrchestrator;
 
 	@GetMapping("/me")
@@ -74,5 +82,24 @@ public class UserController {
 		userService.changeAvatar(currentUser.getId(), newAvatar);
 		var response = avatarMapper.mapToResponse(newAvatar);
 		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/quiz/submit")
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<QuizResultResponse> submit(@Valid @RequestBody QuizSubmissionRequest request,
+													 @AuthenticationPrincipal AppUserDetails currentUser) {
+		var result = learningService.getQuizResult(request.getAnswers());
+		User user = userService.existingByIdAndLock(currentUser.getId());
+		user.setCurrentXp(user.getCurrentXp() + result.getAwardedExperience());
+
+		Level currentUserLevel = user.getLevel();
+		if (currentUserLevel.getXpThreshold() <= user.getCurrentXp()) {
+			user.setLevel(levelService.existingByNumber(currentUserLevel.getNumber() + 1));
+			result.setNewLevel(true);
+		}
+
+		userService.save(user);
+
+		return ResponseEntity.ok(result);
 	}
 }

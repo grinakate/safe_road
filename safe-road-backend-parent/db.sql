@@ -29,6 +29,7 @@ CREATE TABLE "Users" (
 	"avatar_id" INTEGER NOT NULL,
 	"last_login_date" TIMESTAMP NOT NULL,
 	"current_streak" INTEGER NOT NULL,
+    is_leaderboard_visible BOOLEAN   NOT NULL,
 	PRIMARY KEY("id")
 );
 

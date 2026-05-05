@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:safe_road/services/quiz_service.dart';
 
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
@@ -22,4 +23,5 @@ void setupLocator() {
   getIt.registerLazySingleton<MapService>(() => MapService(getIt<ApiClient>()));
 
   getIt.registerLazySingleton(() => UserService(getIt<ApiClient>()));
+  getIt.registerLazySingleton(() => QuizService(getIt<ApiClient>()));
 }

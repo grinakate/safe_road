@@ -9,6 +9,7 @@ import ru.itmo.saferoad.content.domain.repository.AnswerRepository;
 import ru.itmo.saferoad.content.service.AnswerService;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -23,9 +24,9 @@ public class AnswerServiceImpl implements AnswerService {
 
 	@Override
 	public @NonNull Answer create(@NonNull Question question,
-	                              @NonNull String text,
-	                              @NonNull Boolean isCorrect,
-	                              @NonNull String feedback) {
+								  @NonNull String text,
+								  @NonNull Boolean isCorrect,
+								  @NonNull String feedback) {
 		Answer answer = new Answer();
 		answer.setQuestion(question);
 		answer.setText(text);
@@ -38,5 +39,14 @@ public class AnswerServiceImpl implements AnswerService {
 	public @NonNull Answer existingById(@NonNull Integer id) {
 		return answerRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("Answer with id " + id + " does not exist"));
+	}
+
+	@Override
+	public @NonNull List<Answer> existingByIds(@NonNull Set<Integer> ids) {
+		var result = answerRepository.findAllById(ids);
+		if (ids.size() != result.size()) {
+			throw new IllegalArgumentException("Answer with id " + ids + " does not exist");
+		}
+		return result;
 	}
 }

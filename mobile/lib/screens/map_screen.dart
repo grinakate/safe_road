@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:safe_road/models/topic.dart';
+import 'package:safe_road/screens/quiz_screen.dart';
 import 'package:safe_road/widgets/road_header.dart';
 
 import '../core/constants.dart';
 import '../core/service_locator.dart';
+import '../models/question.dart';
 import '../models/section.dart';
 import '../models/topic_status.dart';
 import '../models/user_profile.dart';
 import '../services/map_service.dart';
+import '../services/quiz_service.dart';
 import '../services/user_service.dart';
 import '../widgets/section_header.dart';
 
@@ -25,6 +29,7 @@ class _MapScreenState extends State<MapScreen> {
   List<Section>? _sections;
 
   bool _hasError = false;
+  bool _isQuizLoading = false;
 
   @override
   void initState() {
@@ -69,6 +74,47 @@ class _MapScreenState extends State<MapScreen> {
         _hasError = true; // Устанавливаем флаг ошибки
       });
       rethrow;
+    }
+  }
+
+  final QuizService _quizService = GetIt.instance<QuizService>();
+
+  Future<void> _fetchAndStartQuizForTheme(int themeId) async {
+    if (_isQuizLoading) return;
+
+    setState(() {
+      _isQuizLoading = true;
+    });
+
+    try {
+      final List<Question> quizData = await _quizService.fetchQuizData(themeId);
+
+      if (mounted) {
+        if (quizData.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Для этой темы пока нет вопросов.')),
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => QuizScreen(quizData: quizData),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ошибка загрузки вопросов: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isQuizLoading = false;
+        });
+      }
     }
   }
 
@@ -209,7 +255,6 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Widget _buildTopicWidget(Topic topic, int sectionId) {
-    // TODO: Стиль кружка с названием топика
     final status = topic.status;
     final color = status == TopicStatus.LOCKED
         ? Colors.grey.shade400
@@ -229,11 +274,7 @@ class _MapScreenState extends State<MapScreen> {
             GestureDetector(
               onTap: status == TopicStatus.LOCKED
                   ? null
-                  : () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Открываем: ${topic.name}')),
-                      );
-                    },
+                  : () => _fetchAndStartQuizForTheme(topic.id),
               child: Stack(
                 alignment: Alignment.center, // Центрируем элементы по умолчанию
                 children: [

@@ -21,6 +21,9 @@ public interface UserService {
 	User existingById(@NonNull Long id);
 
 	@NonNull
+	User existingByIdAndLock(@NonNull Long id);
+
+	@NonNull
 	List<User> getTopUsersByXp();
 
 	@NonNull User changeAvatar(@NonNull Long userId, @NonNull Avatar avatar);

@@ -12,7 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.itmo.saferoad.content.domain.Answer;
+import ru.itmo.saferoad.content.service.QuestionService;
 import ru.itmo.saferoad.core.security.AppUserDetails;
+import ru.itmo.saferoad.learning.dto.AnswerResponse;
+import ru.itmo.saferoad.learning.dto.QuestionResponse;
 import ru.itmo.saferoad.learning.dto.SectionUserMapResponse;
 import ru.itmo.saferoad.learning.dto.SubmitAnswerRequest;
 import ru.itmo.saferoad.learning.dto.SubmitAnswerResponse;
@@ -27,6 +31,7 @@ import java.util.List;
 public class LearningController {
 
 	private final MapService mapService;
+	private final QuestionService questionService;
 	private final UserQuestionStatsService userQuestionStatsService;
 
 	@GetMapping("/map")
@@ -49,6 +54,29 @@ public class LearningController {
 				request.answerId()
 		);
 		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/topics/{topicId}/quiz")
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<List<QuestionResponse>> getQuiz(@PathVariable Integer topicId,
+														  @AuthenticationPrincipal AppUserDetails currentUser) {
+		var questions = questionService.getByTopicId(topicId).stream()
+				.map(question -> new QuestionResponse(
+						question.getId(),
+						question.getContent().getQuestionText(),
+						question.getAnswers().stream()
+								.map(answer -> new AnswerResponse(
+										answer.getId(),
+										answer.getText(),
+										answer.getFeedback(),
+										answer.getIsCorrect()))
+								.toList(),
+						question.getAnswers().stream()
+								.filter(Answer::getIsCorrect)
+								.findFirst().orElseThrow().getId()
+				))
+				.toList();
+		return ResponseEntity.ok(questions);
 	}
 }
 

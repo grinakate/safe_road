@@ -26,14 +26,14 @@ public class QuestionServiceImpl implements QuestionService {
 
 	@Override
 	public @NonNull Question create(@NonNull Integer topicId,
-	                                @NonNull QuestionType type,
-	                                @NonNull Integer difficultyLevel,
-	                                @NonNull Map<String, Object> content) {
+									@NonNull QuestionType type,
+									@NonNull Integer difficultyLevel,
+									@NonNull Map<String, Object> content) {
 		Question question = new Question();
 		question.setTopic(topicService.existingById(topicId));
 		question.setType(type);
 		question.setDifficultyLevel(difficultyLevel);
-		question.setContent(content);
+		//question.setContent(content);
 		return questionRepository.save(question);
 	}
 

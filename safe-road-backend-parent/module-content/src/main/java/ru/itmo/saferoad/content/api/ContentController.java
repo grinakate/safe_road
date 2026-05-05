@@ -62,7 +62,7 @@ public class ContentController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/topics/{topicId}/questions")
+/*	@GetMapping("/topics/{topicId}/questions")
 	@PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
 	public ResponseEntity<List<QuestionWithAnswersDto>> getQuestionsByTopic(
 			@PathVariable Integer topicId,
@@ -80,7 +80,7 @@ public class ContentController {
 				))
 				.toList();
 		return ResponseEntity.ok(response);
-	}
+	}*/
 
 	@PostMapping("/sections")
 	@PreAuthorize("hasRole('ADMIN')")
@@ -116,7 +116,7 @@ public class ContentController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	@PostMapping("/questions")
+/*	@PostMapping("/questions")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<QuestionWithAnswersDto> createQuestion(
 			@Valid @RequestBody CreateQuestionRequest request,
@@ -149,7 +149,7 @@ public class ContentController {
 						.collect(Collectors.toList())
 		);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
-	}
+	}*/
 }
 
 

@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -19,6 +20,7 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -51,5 +53,8 @@ public class Question {
 	@NonNull
 	@JdbcTypeCode(SqlTypes.JSON)
 	@Column(name = "content", nullable = false, columnDefinition = "jsonb")
-	private Map<String, Object> content;
+	private QuestionContent content;
+
+	@OneToMany(mappedBy = "question", fetch = FetchType.LAZY)
+	private List<Answer> answers;
 }

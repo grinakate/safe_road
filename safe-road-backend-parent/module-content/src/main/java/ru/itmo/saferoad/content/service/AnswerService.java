@@ -5,6 +5,7 @@ import ru.itmo.saferoad.content.domain.Answer;
 import ru.itmo.saferoad.content.domain.Question;
 
 import java.util.List;
+import java.util.Set;
 
 public interface AnswerService {
 
@@ -19,4 +20,7 @@ public interface AnswerService {
 
 	@NonNull
 	Answer existingById(@NonNull Integer id);
+
+	@NonNull
+	List<Answer> existingByIds(@NonNull Set<Integer> ids);
 }
