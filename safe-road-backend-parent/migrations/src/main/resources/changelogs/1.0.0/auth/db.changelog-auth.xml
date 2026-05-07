@@ -40,7 +40,7 @@
 				<tableExists tableName="users"/>
 			</not>
 		</preConditions>
-		<sqlFile path="sql/004_create_users_table.sql" relativeToChangelogFile="true"/>
+		<sqlFile path="sql/002_create_users_table.sql" relativeToChangelogFile="true"/>
 	</changeSet>
 
 </databaseChangeLog>
