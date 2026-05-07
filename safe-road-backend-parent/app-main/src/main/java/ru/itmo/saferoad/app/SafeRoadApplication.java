@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 		"ru.itmo.saferoad.app",
 		"ru.itmo.saferoad.content",
 		"ru.itmo.saferoad.learning",
-		"ru.itmo.saferoad.profile",
+		"ru.itmo.saferoad.auth",
 		"ru.itmo.saferoad.gamification"
 })
 public class SafeRoadApplication {

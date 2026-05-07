@@ -22,7 +22,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>ru.itmo</groupId>
-			<artifactId>module-profile</artifactId>
+			<artifactId>module-auth</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

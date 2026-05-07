@@ -13,7 +13,7 @@
 		<module>module-learning</module>
 		<module>module-content</module>
 		<module>module-gamification</module>
-		<module>module-profile</module>
+		<module>module-auth</module>
 		<module>core</module>
 		<module>migrations</module>
 	</modules>

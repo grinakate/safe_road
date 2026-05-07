@@ -1,0 +1,20 @@
+package ru.itmo.saferoad.auth.dto.user;
+
+import ru.itmo.saferoad.gamification.dto.UserAchievementsResponse;
+import ru.itmo.saferoad.learning.dto.SectionStatResponse;
+import ru.itmo.saferoad.auth.dto.level.LevelResponse;
+
+import java.util.List;
+
+public record UserProfileResponse(
+		String name,
+		int avatarId,
+		String avatarUrl,
+		LevelResponse level,
+		int currentXp,
+		int completedLessons,
+		int totalLessons,
+		List<SectionStatResponse> sectionStats,
+		List<UserAchievementsResponse> achievements
+) {
+}

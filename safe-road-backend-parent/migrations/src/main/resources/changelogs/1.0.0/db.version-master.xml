@@ -9,6 +9,6 @@
 	<include file="../1.0.0/content/db.changelog-content.xml" relativeToChangelogFile="true"/>
 	<include file="../1.0.0/gamification/db.changelog-gamification.xml" relativeToChangelogFile="true"/>
 	<include file="../1.0.0/learning/db.changelog-learning.xml" relativeToChangelogFile="true"/>
-	<include file="../1.0.0/profile/db.changelog-profile.xml" relativeToChangelogFile="true"/>
+	<include file="auth/db.changelog-profile.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
