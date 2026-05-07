@@ -10,7 +10,7 @@
 		<version>1.0.0</version>
 	</parent>
 
-	<artifactId>db</artifactId>
+	<artifactId>migrations</artifactId>
 	<packaging>jar</packaging>
 
 	<dependencies>

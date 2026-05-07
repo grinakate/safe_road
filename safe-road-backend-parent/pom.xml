@@ -15,7 +15,7 @@
 		<module>module-gamification</module>
 		<module>module-profile</module>
 		<module>core</module>
-		<module>db</module>
+		<module>migrations</module>
 	</modules>
 	<dependencies>
 		<dependency>
