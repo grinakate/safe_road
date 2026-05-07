@@ -143,12 +143,11 @@ class _MapScreenState extends State<MapScreen> {
                       backgroundColor: Colors.white,
                       title: Text(
                         "Безопасная дорога",
-                        style: const TextStyle(
-                          color: Colors.brown,
-                          fontSize: 22,
-                          fontFamily: 'Nunito',
-                          fontWeight: FontWeight.bold,
-                        ),
+                          style: const TextStyle(
+                            color: Colors.brown,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
                       ),
                     ),
                     RoadHeader(profile: _currentUserProfile!),
@@ -288,8 +287,8 @@ class _MapScreenState extends State<MapScreen> {
                       boxShadow: [
                         BoxShadow(
                           color: icon == Icons.lock
-                              ? Colors.black.withOpacity(0.25)
-                              : Colors.white.withOpacity(0.5),
+                              ? Colors.black.withAlpha(64)
+                              : Colors.white.withAlpha(128),
                           blurRadius: 9,
                           offset: const Offset(0, 0),
                         ),
@@ -312,7 +311,6 @@ class _MapScreenState extends State<MapScreen> {
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 22,
-                      fontFamily: 'Nunito',
                     ),
                   ),
                 ],
@@ -328,7 +326,6 @@ class _MapScreenState extends State<MapScreen> {
                 style: const TextStyle(
                   color: AppConstants.borderColor,
                   fontSize: 14,
-                  fontFamily: 'Nunito',
                 ),
               ),
             ),

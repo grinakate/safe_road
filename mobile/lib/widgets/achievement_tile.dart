@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:safe_road/widgets/secure_network_image.dart';
 
-import '../core/constants.dart';
+// ...existing code...
 import '../models/achievement.dart';
+import '../theme.dart';
+import '../theme.dart';
 
 class AchievementTile extends StatelessWidget {
   final Achievement achievement;
@@ -18,7 +20,7 @@ class AchievementTile extends StatelessWidget {
           height: 50,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.red.withOpacity(0.1),
+            color: Colors.red.withAlpha(26),
             boxShadow: [
               if (achievement.isUnlocked)
                 BoxShadow(
@@ -45,11 +47,8 @@ class AchievementTile extends StatelessWidget {
         Text(
           achievement.title,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: achievement.isUnlocked
-                ? FontWeight.bold
-                : FontWeight.normal,
+          style: AppTheme.bodySmall.copyWith(
+            fontWeight: achievement.isUnlocked ? FontWeight.bold : FontWeight.normal,
           ),
         ),
       ],

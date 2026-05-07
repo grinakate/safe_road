@@ -3,8 +3,10 @@ import 'package:get_it/get_it.dart';
 import 'package:safe_road/core/constants.dart';
 import 'package:safe_road/screens/result_screen.dart';
 import 'package:safe_road/services/quiz_service.dart';
+import '../theme.dart';
 
 import '../models/question.dart';
+import '../theme.dart';
 
 class QuizScreen extends StatefulWidget {
   final List<Question> quizData;
@@ -124,10 +126,7 @@ class _QuizScreenState extends State<QuizScreen> {
       appBar: AppBar(
         title: Text(
           'Вопрос ${_currentQuestionIndex + 1} из $_totalQuestions',
-          style: TextStyle(
-            fontFamily: 'Nunito',
-            color: AppConstants.borderColor,
-          ),
+          style: AppTheme.appBarTitle.copyWith(color: AppConstants.borderColor),
         ),
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(4.0),
@@ -150,12 +149,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   Expanded(
                     child: Text(
                       _currentQuestion.text,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Nunito',
-                        color: AppConstants.borderColor,
-                      ),
+                      style: AppTheme.headerTextStyle.copyWith(fontSize: 20, fontWeight: FontWeight.bold, color: AppConstants.borderColor),
                     ),
                   ),
                 ],
@@ -212,21 +206,21 @@ class _QuizScreenState extends State<QuizScreen> {
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isCorrect
-            ? Colors.brown.withOpacity(0.2)
-            : Colors.red.withOpacity(0.2),
+            ? Colors.brown.withAlpha(51)
+            : Colors.red.withAlpha(51),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            resultText,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: isCorrect ? Colors.green : Colors.red,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              resultText,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: isCorrect ? Colors.green : Colors.red,
+              ),
             ),
-          ),
           // Можно добавить пояснение, если оно приходит с бэка
           SizedBox(height: 16),
         ],
@@ -257,28 +251,28 @@ class AnswerOptionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color backgroundColor = Colors.white;
-    Color borderColor = Colors.brown.shade200!;
+    Color borderColor = Colors.brown.shade200;
     Color textColor = AppConstants.borderColor;
 
-    if (isSelected) {
-      backgroundColor = Colors.blue.withOpacity(0.3);
-      borderColor = Colors.blue;
-      textColor = Colors.blue;
-    }
+      if (isSelected) {
+        backgroundColor = Colors.blue.withAlpha(77);
+        borderColor = Colors.blue;
+        textColor = Colors.blue;
+      }
 
-    if (isCorrect && isUserAnswer) {
-      backgroundColor = Colors.green.withOpacity(0.1);
-      borderColor = Colors.green.withOpacity(0.5);
-      textColor = Colors.green;
-    } else if (isUserAnswer && !isCorrect) {
-      backgroundColor = Colors.red.withOpacity(0.1);
-      borderColor = Colors.red;
-      textColor = Colors.red;
-    } else if (isCorrect && !isUserAnswer && !isSelected) {
-      backgroundColor = Colors.green.withOpacity(0.1);
-      borderColor = Colors.green.withOpacity(0.5);
-      textColor = Colors.green;
-    }
+      if (isCorrect && isUserAnswer) {
+        backgroundColor = Colors.green.withAlpha(26);
+        borderColor = Colors.green.withAlpha(128);
+        textColor = Colors.green;
+      } else if (isUserAnswer && !isCorrect) {
+        backgroundColor = Colors.red.withAlpha(26);
+        borderColor = Colors.red;
+        textColor = Colors.red;
+      } else if (isCorrect && !isUserAnswer && !isSelected) {
+        backgroundColor = Colors.green.withAlpha(26);
+        borderColor = Colors.green.withAlpha(128);
+        textColor = Colors.green;
+      }
 
     return GestureDetector(
       onTap: isEnabled ? onTap : null,
@@ -295,11 +289,7 @@ class AnswerOptionWidget extends StatelessWidget {
             Expanded(
               child: Text(
                 option.text,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: textColor,
-                  fontFamily: 'Nunito',
-                ),
+                style: AppTheme.body14.copyWith(fontSize: 16, color: textColor),
               ),
             ),
             if (isCorrect && !isSelected && isUserAnswer)

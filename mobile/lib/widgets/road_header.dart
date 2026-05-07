@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:safe_road/core/constants.dart';
 
 import '../models/user_profile.dart';
+import '../theme.dart';
 
 class RoadHeader extends StatelessWidget {
   final UserProfile profile; // Принимаем профиль
@@ -32,7 +33,6 @@ class RoadHeader extends StatelessWidget {
                       '${profile.xpToNextLevel} очков до следующего уровня',
                       style: const TextStyle(
                         fontSize: 13,
-                        fontFamily: 'Nunito',
                         color: Colors.brown,
                       ),
                     ),*/
@@ -57,21 +57,11 @@ class RoadHeader extends StatelessWidget {
             children: [
               Text(
                 'Уровень ${profile.level.number}: ${profile.currentXp} очков',
-                style: const TextStyle(
-                  // color: AppConstants.borderColor,
-                  color: Colors.brown,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  fontFamily: 'Nunito',
-                ),
+                style: AppTheme.body14.copyWith(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.brown),
               ),
               Text(
                 '${profile.completedLessons}/${profile.totalLessons} Уроков пройдено',
-                style: const TextStyle(
-                  color: Colors.brown,
-                  fontSize: 13,
-                  fontFamily: 'Nunito',
-                ),
+                style: AppTheme.body14.copyWith(fontSize: 13, color: Colors.brown),
               ),
             ],
           ),

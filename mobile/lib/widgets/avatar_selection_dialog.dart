@@ -4,6 +4,7 @@ import 'package:safe_road/models/avatar_models.dart';
 import 'package:safe_road/widgets/secure_network_image.dart';
 
 import '../core/constants.dart';
+import '../theme.dart';
 
 class AvatarSelectionDialog extends StatefulWidget {
   final int currentAvatarId; // Текущая аватарка пользователя
@@ -40,10 +41,10 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: const Text(
+      title: Text(
         'Выбрать аватар',
         textAlign: TextAlign.center,
-        style: TextStyle(fontFamily: 'Nunito', color: AppConstants.borderColor),
+        style: AppTheme.appBarTitle.copyWith(color: AppConstants.borderColor, fontSize: 18),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -96,7 +97,7 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
                         Icon(
                           Icons.lock,
                           size: 40,
-                          color: Colors.brown.withOpacity(1),
+                          color: Colors.brown,
                         ),
                     ],
                   ),
@@ -113,7 +114,7 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
                 // Просто закрываем
                 child: const Text(
                   'Отмена',
-                  style: TextStyle(fontFamily: 'Nunito', color: Colors.brown),
+                  style: TextStyle(color: Colors.brown),
                 ),
               ),
               const SizedBox(width: 10),
@@ -134,11 +135,7 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
                   _selectedAvailable!
                       ? 'Выбрать'
                       : '${AvatarManager.getAvailableAvatarMap()[_selectedAvatarId!]?.minLevel.toString()} Уровень',
-                  style: const TextStyle(
-                    fontFamily: 'Nunito',
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: AppTheme.buttonWhiteBold,
                 ),
               ),
             ],

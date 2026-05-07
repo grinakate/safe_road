@@ -3,6 +3,7 @@ import 'package:safe_road/core/constants.dart';
 
 import '../models/topic.dart';
 import '../models/topic_status.dart';
+import '../theme.dart';
 
 class TopicItem extends StatelessWidget {
   final Topic topic;
@@ -68,8 +69,8 @@ class TopicItem extends StatelessWidget {
                       boxShadow: [
                         BoxShadow(
                           color: icon == Icons.lock
-                              ? Colors.black.withOpacity(0.25)
-                              : Colors.white.withOpacity(0.5),
+                              ? Colors.black.withAlpha(64)
+                              : Colors.white.withAlpha(128),
                           blurRadius: 9,
                           offset: const Offset(0, 0),
                         ),
@@ -89,11 +90,7 @@ class TopicItem extends StatelessWidget {
                     textAlign: TextAlign.center,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontFamily: 'Nunito',
-                    ),
+                    style: AppTheme.topicNumber,
                   ),
                 ],
               ),
@@ -106,11 +103,7 @@ class TopicItem extends StatelessWidget {
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: AppConstants.borderColor,
-                  fontSize: 14,
-                  fontFamily: 'Nunito',
-                ),
+                style: AppTheme.topicName,
               ),
             ),
           ],

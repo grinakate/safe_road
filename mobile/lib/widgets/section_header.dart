@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:safe_road/core/constants.dart';
 import '../models/section.dart';
+import '../theme.dart';
 
 class SectionHeader extends StatelessWidget {
   final Section section;
@@ -30,12 +31,7 @@ class SectionHeader extends StatelessWidget {
             child: Text(
               '${section.name} - ${section.progressPercent}%',
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                fontFamily: 'Nunito'
-              ),
+              style: AppTheme.sectionHeaderText,
             ),
           )
         ],

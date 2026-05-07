@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:safe_road/core/constants.dart';
 import 'package:safe_road/models/achievement.dart';
 import 'package:safe_road/widgets/secure_network_image.dart';
+import '../theme.dart';
 
 class AchievementInfoDialog extends StatelessWidget {
   final Achievement achievement;
@@ -48,12 +49,7 @@ class AchievementInfoDialog extends StatelessWidget {
             Text(
               achievement.title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontFamily: 'Nunito',
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+              style: AppTheme.achievementTitle,
             ),
             const SizedBox(height: 10),
 
@@ -63,12 +59,8 @@ class AchievementInfoDialog extends StatelessWidget {
               children: [
                 Text(
                   '+${achievement.rewardXp} опыта',
-                  style: TextStyle(
-                    fontFamily: 'Nunito',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.amber[700],
-                  ),
+                  style: AppTheme.achievementXp.copyWith(
+                      color: Colors.amber[700]),
                 ),
               ],
             ),
@@ -77,11 +69,7 @@ class AchievementInfoDialog extends StatelessWidget {
             Text(
               achievement.description,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Nunito',
-                fontSize: 16,
-                color: Colors.grey[800],
-              ),
+              style: AppTheme.achievementDesc.copyWith(color: Colors.grey[800]),
             ),
             const SizedBox(height: 20),
 
@@ -98,13 +86,9 @@ class AchievementInfoDialog extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 'Закрыть',
-                style: TextStyle(
-                  fontFamily: 'Nunito',
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
+                style: AppTheme.buttonWhiteBold,
               ),
             ),
           ],

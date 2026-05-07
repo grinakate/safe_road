@@ -5,6 +5,7 @@ import '../core/service_locator.dart';
 import '../models/auth_models.dart';
 import '../services/auth_service.dart';
 import 'package:intl/intl.dart';
+import '../theme.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -91,17 +92,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       children: const [
         Text(
           'Регистрация',
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: AppConstants.borderColor,
-          ),
+          style: AppTheme.headerTextStyle,
         ),
         SizedBox(height: 8),
         Center(
           child: Text(
             'Заполните данные, чтобы продолжить',
-            style: TextStyle(fontSize: 16, color: Colors.brown),
+            style: AppTheme.subHeaderTextStyle,
             textAlign: TextAlign.center,
           ),
         ),
@@ -117,28 +114,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           TextFormField(
             controller: _nameController,
             keyboardType: TextInputType.name,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
+            decoration: AppTheme.inputDecoration.copyWith(
               labelText: 'Имя',
-              labelStyle: TextStyle(color: Colors.brown),
               hintText: 'Введите имя',
-              hintStyle: TextStyle(color: Colors.brown),
               prefixIcon: const Icon(Icons.email_outlined),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.brown, width: 1),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: AppConstants.borderColor,
-                  width: 2,
-                ),
-              ),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -151,35 +130,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
+            decoration: AppTheme.inputDecoration.copyWith(
               labelText: 'Email',
-              labelStyle: TextStyle(color: Colors.brown),
               hintText: 'Введите email',
-              hintStyle: TextStyle(color: Colors.brown),
               prefixIcon: const Icon(Icons.email_outlined),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.brown, width: 1),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: AppConstants.borderColor,
-                  width: 2,
-                ),
-              ),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Введите email';
               }
               if (!RegExp(
-                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}',
               ).hasMatch(value)) {
                 return 'Введите корректный email';
               }
@@ -190,28 +151,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           TextFormField(
             controller: _birthDateController,
             readOnly: true,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
+            decoration: AppTheme.inputDecoration.copyWith(
               labelText: 'Дата рождения',
-              labelStyle: TextStyle(color: Colors.brown),
               hintText: 'Введите дату рождения',
-              hintStyle: TextStyle(color: Colors.brown),
               prefixIcon: const Icon(Icons.calendar_month),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.brown, width: 1),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: AppConstants.borderColor,
-                  width: 2,
-                ),
-              ),
             ),
             onTap: () async {
               DateTime? picked = await showDatePicker(
@@ -234,13 +177,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           TextFormField(
             controller: _passwordController,
             obscureText: !_isPasswordVisible,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
+            decoration: AppTheme.inputDecoration.copyWith(
               labelText: 'Пароль',
-              labelStyle: TextStyle(color: Colors.brown),
               hintText: 'Введите пароль',
-              hintStyle: TextStyle(color: Colors.brown),
               prefixIcon: const Icon(Icons.lock_outline),
               suffixIcon: IconButton(
                 icon: Icon(
@@ -251,20 +190,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     _isPasswordVisible = !_isPasswordVisible;
                   });
                 },
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.brown, width: 1),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: AppConstants.borderColor,
-                  width: 2,
-                ),
               ),
             ),
             validator: (value) {
@@ -281,13 +206,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           TextFormField(
             controller: _confirmPasswordController,
             obscureText: !_isSecondPasswordVisible,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
+            decoration: AppTheme.inputDecoration.copyWith(
               labelText: 'Повторите пароль',
-              labelStyle: TextStyle(color: Colors.brown),
               hintText: 'Повторите пароль',
-              hintStyle: TextStyle(color: Colors.brown),
               prefixIcon: const Icon(Icons.lock_outline),
               suffixIcon: IconButton(
                 icon: Icon(
@@ -300,20 +221,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     _isSecondPasswordVisible = !_isSecondPasswordVisible;
                   });
                 },
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.brown, width: 1),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: AppConstants.borderColor,
-                  width: 2,
-                ),
               ),
             ),
             validator: (value) {

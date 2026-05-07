@@ -9,6 +9,7 @@ import '../services/user_service.dart';
 import '../widgets/achievement_info_dialog.dart';
 import '../widgets/avatar_selection_dialog.dart';
 import '../widgets/secure_network_image.dart';
+import '../theme.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -42,7 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       /*      appBar: AppBar(
-        title: const Text('Профиль', style: TextStyle(fontFamily: 'Nunito')),
+        title: const Text('Профиль', style: TextStyle()),
         centerTitle: true,
         actions: [
           IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
@@ -94,7 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
               child: CircleAvatar(
                 radius: 60,
-                backgroundColor: Colors.blue.withOpacity(0.1),
+                backgroundColor: Colors.blue.withAlpha(26), // Replaced withOpacity with withAlpha
                 child: SecureNetworkImage(
                   imageUrl: AvatarManager.getAvatarItem(user.avatarId).url,
                   fit: BoxFit.cover,
@@ -140,19 +141,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 18,
-            fontFamily: 'Nunito',
-            color: Colors.black87,
-          ),
+          style: AppTheme.subHeaderTextStyle.copyWith(fontSize: 24),
         ),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 28,
-            fontFamily: 'Nunito',
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppTheme.headerTextStyle.copyWith(fontSize: 24),
         ),
       ],
     );
@@ -174,14 +167,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
-        color: isActive ? Colors.teal.withOpacity(0.2) : Colors.transparent,
+        color: isActive ? Colors.teal.withAlpha(51) : Colors.transparent, // Replaced withOpacity with withAlpha
         borderRadius: BorderRadius.circular(15),
       ),
       child: Text(
         text,
-        style: TextStyle(
+        style: AppTheme.body14.copyWith(
           fontSize: 18,
-          fontFamily: 'Nunito',
           color: isActive ? Colors.teal[800] : Colors.black54,
           fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
         ),
@@ -240,8 +232,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             textAlign: TextAlign.center,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontFamily: 'Nunito',
+                            style: AppTheme.topicName.copyWith(
                               fontSize: fontSize,
                               fontWeight: FontWeight.w600,
                               height: 1.0,
