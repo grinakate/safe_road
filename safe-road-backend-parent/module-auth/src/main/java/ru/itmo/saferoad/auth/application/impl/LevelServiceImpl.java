@@ -1,0 +1,35 @@
+package ru.itmo.saferoad.auth.application.impl;
+
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import org.springframework.stereotype.Service;
+import ru.itmo.saferoad.auth.domain.Level;
+import ru.itmo.saferoad.auth.domain.repository.LevelRepository;
+import ru.itmo.saferoad.auth.application.LevelService;
+
+import java.util.List;
+
+@Service
+@AllArgsConstructor
+public class LevelServiceImpl implements LevelService {
+
+	private final LevelRepository repository;
+
+	@NonNull
+	@Override
+	public Level existingByNumber(@NonNull Integer number) {
+		return repository.findById(number)
+				.orElseThrow(() -> new IllegalArgumentException("Level with number " + number + " does not exist"));
+	}
+
+	@Override
+	public @NonNull List<Level> getAll() {
+		return repository.findAll();
+	}
+
+	@Override
+	public @NonNull Level findByXp(@NonNull Integer xp) {
+		return repository.findTopByXpThresholdLessThanEqualOrderByXpThresholdDesc(xp)
+				.orElseThrow(() -> new IllegalArgumentException("No level found for xp " + xp));
+	}
+}
