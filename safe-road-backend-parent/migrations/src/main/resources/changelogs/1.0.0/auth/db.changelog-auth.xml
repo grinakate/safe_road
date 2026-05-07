@@ -16,25 +16,7 @@
 		<sqlFile path="sql/001_create_user_role_enum.sql" relativeToChangelogFile="true"/>
 	</changeSet>
 
-	<changeSet id="profile-002-levels" author="safe-road">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="levels"/>
-			</not>
-		</preConditions>
-		<sqlFile path="sql/002_create_levels_table.sql" relativeToChangelogFile="true"/>
-	</changeSet>
-
-	<changeSet id="profile-003-avatars" author="safe-road">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="avatars"/>
-			</not>
-		</preConditions>
-		<sqlFile path="sql/003_create_avatars_table.sql" relativeToChangelogFile="true"/>
-	</changeSet>
-
-	<changeSet id="profile-004-users" author="safe-road">
+	<changeSet id="auth-002-create_users_table" author="safe-road">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="users"/>
