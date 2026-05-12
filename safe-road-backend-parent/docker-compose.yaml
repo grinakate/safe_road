@@ -10,11 +10,13 @@ services:
       - '5432:5432'
     volumes:
       - ./config/docker-compose-init.sql:/docker-entrypoint-initdb.d/docker-compose-init.sql
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U safe_road -d safe_road"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
+      start_period: 10s
 
   app:
     container_name: safe-road-app
@@ -25,9 +27,16 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/safe_road?currentSchema=safe_road
       SPRING_DATASOURCE_USERNAME: safe_road
       SPRING_DATASOURCE_PASSWORD: safe_road
+      # !!! ВАЖНО: JWT_SECRET_KEY не должен быть хардкодом в compose-файле для продакшена.
+      # Для диплома это приемлемо, но в реальном проекте используй Docker Secrets или переменные окружения из .env файла.
+      # Рекомендация: использовать внешние переменные окружения, например, SECRET_KEY=${JWT_SECRET_KEY_ENV}
+      # В .env файл (рядом с docker-compose.yml) положить: JWT_SECRET_KEY_ENV=твоя_очень_длинная_и_случайная_строка
+      # Для диплома можно оставить как есть, но с комментарием о лучшей практике.
       JWT_SECRET_KEY: 'very-secure-secret-key-32-characters-long'
       JWT_EXPIRATION_MS: 86400000
     depends_on:
       postgres:
         condition: service_healthy
 
+volumes:
+  pgdata:
