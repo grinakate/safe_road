@@ -4,7 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.itmo.saferoad.auth.domain.Account;
+import ru.itmo.saferoad.auth.domain.Users;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -20,7 +20,7 @@ public class JwtUtils {
 		return Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
 	}
 
-	public String generateToken(Account user) {
+	public String generateToken(Users user) {
 		return Jwts.builder()
 				.subject(user.getEmail())
 				.claim("email", user.getEmail())

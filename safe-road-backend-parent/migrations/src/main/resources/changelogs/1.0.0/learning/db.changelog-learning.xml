@@ -52,5 +52,14 @@
 		<sqlFile path="sql/005_create_review_intervals_table.sql" relativeToChangelogFile="true"/>
 	</changeSet>
 
+	<changeSet id="learning-006-test-sessions" author="safe-road">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="test_sessions"/>
+			</not>
+		</preConditions>
+		<sqlFile path="sql/006_create_test_sessions_table.sql" relativeToChangelogFile="true"/>
+	</changeSet>
+
 </databaseChangeLog>
 

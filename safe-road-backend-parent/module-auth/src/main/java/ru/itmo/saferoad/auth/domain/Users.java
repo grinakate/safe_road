@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Table(name = "users")
 @EqualsAndHashCode(of = "id")
-public class Account {
+public class Users {
 
 	@Id
 	@NonNull
@@ -40,8 +40,8 @@ public class Account {
 	private String passwordHash;
 
 	@NonNull
-	@Column(nullable = false)
-	private String name;
+	@Column(name = "nickname", nullable = false)
+	private String nickname;
 
 	@NonNull
 	@Column(name = "birth_date", nullable = false)

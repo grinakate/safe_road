@@ -24,10 +24,12 @@ public class UserMetric {
 
 	@Id
 	@NonNull
+	@Column(name = "user_id", nullable = false)
 	private Long userId;
 
 	@Id
 	@NonNull
+	@Column(name = "metric_code", nullable = false)
 	private String metricCode;
 
 	@NonNull

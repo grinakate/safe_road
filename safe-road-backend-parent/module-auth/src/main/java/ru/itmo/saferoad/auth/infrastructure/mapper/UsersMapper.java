@@ -4,7 +4,7 @@ package ru.itmo.saferoad.auth.infrastructure.mapper;
  * Маппер для данных пользователя.
  */
 //@Mapper(componentModel = "spring", uses = {LevelMapper.class})
-public abstract class AccountMapper {
+public abstract class UsersMapper {
 /*
 	@Setter(onMethod_ = {@Autowired})
 	protected PasswordEncoder passwordEncoder;
