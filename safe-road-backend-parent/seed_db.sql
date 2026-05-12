@@ -183,7 +183,7 @@ CREATE TABLE IF NOT EXISTS "GameProfiles" (
                                               "current_xp" INTEGER NOT NULL,
                                               "current_streak" INTEGER NOT NULL,
                                               "last_activity_date" TIMESTAMP,
-                                              "total_actie_days" INTEGER NOT NULL,
+                                              "total_active_days" INTEGER NOT NULL,
                                               "is_leaderboard_participant" BOOLEAN NOT NULL,
                                               PRIMARY KEY("user_id")
 );
@@ -212,7 +212,7 @@ CREATE TABLE IF NOT EXISTS "TestSessions" (
                                               "mode" TEST_MODE NOT NULL,
                                               "status" PROGRESS_STATUS NOT NULL,
                                               "questions_data" JSONB NOT NULL,
-                                              "total_quaestions" INTEGER NOT NULL,
+                                              "total_questions" INTEGER NOT NULL,
                                               "correct_count" INTEGER NOT NULL,
                                               "created_at" TIMESTAMP NOT NULL,
                                               "finished_at" TIMESTAMP,

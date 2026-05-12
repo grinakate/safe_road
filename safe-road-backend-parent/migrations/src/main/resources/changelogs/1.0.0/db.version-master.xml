@@ -10,5 +10,6 @@
 	<include file="../1.0.0/gamification/db.changelog-gamification.xml" relativeToChangelogFile="true"/>
 	<include file="../1.0.0/learning/db.changelog-learning.xml" relativeToChangelogFile="true"/>
 	<include file="../1.0.0/auth/db.changelog-auth.xml" relativeToChangelogFile="true"/>
+	<include file="../1.0.0/notifications/db.changelog-notifications.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

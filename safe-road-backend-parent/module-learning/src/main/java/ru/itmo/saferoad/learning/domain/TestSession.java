@@ -67,7 +67,7 @@ public class TestSession {
 	private Map<String, Object> questionsData;
 
 	@NonNull
-	@Column(name = "total_quaestions", nullable = false)
+	@Column(name = "total_questions", nullable = false)
 	private Integer totalQuestions;
 
 	@NonNull

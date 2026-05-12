@@ -50,7 +50,7 @@ public class GameProfile {
 	private LocalDateTime lastActivityDate;
 
 	@NonNull
-	@Column(name = "total_actie_days", nullable = false)
+	@Column(name = "total_active_days", nullable = false)
 	private Integer totalActiveDays;
 
 	@NonNull

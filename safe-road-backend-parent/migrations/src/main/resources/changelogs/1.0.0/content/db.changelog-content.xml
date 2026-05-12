@@ -1,82 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
-    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
-    <changeSet id="content-002-sections" author="safe-road">
-        <createTable tableName="sections">
-            <column autoIncrement="true" name="id" type="INTEGER">
-                <constraints primaryKey="true" primaryKeyName="sections_pkey"/>
-            </column>
-            <column name="name" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="order_index" type="INTEGER">
-                <constraints nullable="false" unique="true"/>
-            </column>
-        </createTable>
-    </changeSet>
-    <changeSet id="content-003-topics" author="safe-road">
-        <createTable tableName="topics">
-            <column autoIncrement="true" name="id" type="INTEGER">
-                <constraints primaryKey="true" primaryKeyName="topics_pkey"/>
-            </column>
-            <column name="section_id" type="INTEGER">
-                <constraints nullable="false"/>
-            </column>
-            <column name="name" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="description" type="TEXT"/>
-            <column name="order_index" type="INTEGER">
-                <constraints nullable="false"/>
-            </column>
-            <column name="xp_reward" type="INTEGER">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-        <addForeignKeyConstraint baseColumnNames="section_id" baseTableName="topics" constraintName="fk_topics_section" referencedColumnNames="id" referencedTableName="sections"/>
-        <addUniqueConstraint columnNames="section_id, order_index" constraintName="uk_topics_section_order" tableName="topics"/>
-    </changeSet>
-    <changeSet id="content-004-questions" author="safe-road">
-        <createTable tableName="questions">
-            <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true" primaryKeyName="questions_pkey"/>
-            </column>
-            <column name="topic_id" type="INTEGER">
-                <constraints nullable="false"/>
-            </column>
-            <column name="type" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="difficulty_level" type="INTEGER">
-                <constraints nullable="false"/>
-            </column>
-            <column name="content" type="JSONB">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-        <addForeignKeyConstraint baseColumnNames="topic_id" baseTableName="questions" constraintName="fk_questions_topic" referencedColumnNames="id" referencedTableName="topics"/>
-    </changeSet>
-    <changeSet id="content-005-answers" author="safe-road">
-        <createTable tableName="answers">
-            <column autoIncrement="true" name="id" type="INTEGER">
-                <constraints primaryKey="true" primaryKeyName="answers_pkey"/>
-            </column>
-            <column name="question_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="text" type="TEXT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="is_correct" type="BOOLEAN">
-                <constraints nullable="false"/>
-            </column>
-            <column name="feedback" type="TEXT">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-        <addForeignKeyConstraint baseColumnNames="question_id" baseTableName="answers" constraintName="fk_answers_question" referencedColumnNames="id" referencedTableName="questions"/>
-    </changeSet>
+	<changeSet id="content-002-sections" author="safe-road">
+		<createTable tableName="sections">
+			<column autoIncrement="true" name="id" type="INTEGER">
+				<constraints primaryKey="true" primaryKeyName="sections_pkey"/>
+			</column>
+			<column name="name" type="VARCHAR(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="order_index" type="INTEGER">
+				<constraints nullable="false" unique="true"/>
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet id="content-003-topics" author="safe-road">
+		<createTable tableName="topics">
+			<column autoIncrement="true" name="id" type="INTEGER">
+				<constraints primaryKey="true" primaryKeyName="topics_pkey"/>
+			</column>
+			<column name="section_id" type="INTEGER">
+				<constraints nullable="false"/>
+			</column>
+			<column name="name" type="VARCHAR(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="TEXT"/>
+			<column name="order_index" type="INTEGER">
+				<constraints nullable="false"/>
+			</column>
+			<column name="xp_reward" type="INTEGER">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint baseColumnNames="section_id" baseTableName="topics" constraintName="fk_topics_section"
+								 referencedColumnNames="id" referencedTableName="sections"/>
+		<addUniqueConstraint columnNames="section_id, order_index" constraintName="uk_topics_section_order"
+							 tableName="topics"/>
+	</changeSet>
+	<changeSet id="content-004-questions" author="safe-road">
+		<createTable tableName="questions">
+			<column autoIncrement="true" name="id" type="BIGINT">
+				<constraints primaryKey="true" primaryKeyName="questions_pkey"/>
+			</column>
+			<column name="topic_id" type="INTEGER">
+				<constraints nullable="false"/>
+			</column>
+			<column name="type" type="VARCHAR(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="difficulty_level" type="INTEGER">
+				<constraints nullable="false"/>
+			</column>
+			<column name="content" type="JSONB">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint baseColumnNames="topic_id" baseTableName="questions"
+								 constraintName="fk_questions_topic" referencedColumnNames="id"
+								 referencedTableName="topics"/>
+	</changeSet>
+	<changeSet id="content-005-answers" author="safe-road">
+		<createTable tableName="answers">
+			<column autoIncrement="true" name="id" type="INTEGER">
+				<constraints primaryKey="true" primaryKeyName="answers_pkey"/>
+			</column>
+			<column name="question_id" type="BIGINT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="text" type="TEXT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="is_correct" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="feedback" type="TEXT">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint baseColumnNames="question_id" baseTableName="answers"
+								 constraintName="fk_answers_question" referencedColumnNames="id"
+								 referencedTableName="questions"/>
+	</changeSet>
 </databaseChangeLog>
