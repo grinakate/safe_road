@@ -1,4 +1,4 @@
-package ru.itmo.saferoad.learning.domain;
+package ru.itmo.saferoad.core.types;
 
 public enum ProgressStatus {
 

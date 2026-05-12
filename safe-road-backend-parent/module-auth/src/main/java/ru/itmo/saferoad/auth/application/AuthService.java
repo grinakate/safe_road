@@ -21,7 +21,4 @@ public interface AuthService {
 
 	@NonNull
 	Users existingByIdAndLock(@NonNull Long id);
-
-	@NonNull
-	List<Users> getTopUsersByXp();
 }

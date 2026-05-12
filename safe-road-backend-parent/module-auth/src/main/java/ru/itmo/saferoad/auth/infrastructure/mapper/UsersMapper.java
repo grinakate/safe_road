@@ -1,9 +1,11 @@
 package ru.itmo.saferoad.auth.infrastructure.mapper;
 
+import org.mapstruct.Mapper;
+
 /**
  * Маппер для данных пользователя.
  */
-//@Mapper(componentModel = "spring", uses = {LevelMapper.class})
+@Mapper(componentModel = "spring")
 public abstract class UsersMapper {
 /*
 	@Setter(onMethod_ = {@Autowired})

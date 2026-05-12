@@ -3,8 +3,6 @@ package ru.itmo.saferoad.notifications.service.impl;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.itmo.saferoad.auth.domain.Account;
-import ru.itmo.saferoad.auth.domain.repository.AccountRepository;
 import ru.itmo.saferoad.notifications.domain.Notification;
 import ru.itmo.saferoad.notifications.domain.repository.NotificationRepository;
 import ru.itmo.saferoad.notifications.service.NotificationService;
@@ -18,7 +16,6 @@ import java.util.Map;
 public class NotificationServiceImpl implements NotificationService {
 
 	private final NotificationRepository notificationRepository;
-	private final AccountRepository accountRepository;
 
 	@Override
 	public @NonNull List<Notification> getByUserId(@NonNull Long userId) {
@@ -32,16 +29,14 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Override
 	public @NonNull Notification create(@NonNull Long userId, @NonNull String title, @NonNull Map<String, Object> content) {
-		Account user = accountRepository.findById(userId)
-				.orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " does not exist"));
-		
+
 		Notification notification = new Notification();
-		notification.setUser(user);
+		notification.setUserId(userId);
 		notification.setTitle(title);
 		notification.setContent(content);
 		notification.setCreatedAt(LocalDateTime.now());
 		notification.setIsRead(false);
-		
+
 		return notificationRepository.save(notification);
 	}
 

@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <databaseChangeLog
 		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
-
+                http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+	<include file="../1.0.0/core/db.changelog-core.xml" relativeToChangelogFile="true"/>
+	<include file="../1.0.0/auth/db.changelog-auth.xml" relativeToChangelogFile="true"/>
 	<include file="../1.0.0/content/db.changelog-content.xml" relativeToChangelogFile="true"/>
 	<include file="../1.0.0/gamification/db.changelog-gamification.xml" relativeToChangelogFile="true"/>
 	<include file="../1.0.0/learning/db.changelog-learning.xml" relativeToChangelogFile="true"/>
-	<include file="../1.0.0/auth/db.changelog-auth.xml" relativeToChangelogFile="true"/>
 	<include file="../1.0.0/notifications/db.changelog-notifications.xml" relativeToChangelogFile="true"/>
-
 </databaseChangeLog>

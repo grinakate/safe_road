@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import ru.itmo.saferoad.auth.domain.Users;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface UsersRepository extends JpaRepository<Users, Long> {
@@ -16,9 +15,6 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 	Optional<Users> findByEmail(@NonNull String email);
 
 	boolean existsByEmail(@NonNull String email);
-
-	@NonNull
-	List<Users> findTop10ByOrderByCurrentXpDesc();
 
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	@Query(value = "select u from Users u where u.id = :id")

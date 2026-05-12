@@ -62,18 +62,6 @@ public class Users {
 	private LocalDateTime updatedAt;
 
 	@NonNull
-	@Column(name = "current_xp", nullable = false)
-	private Integer currentXp;
-
-	@NonNull
 	@Column(name = "last_login_date", nullable = false)
 	private LocalDateTime lastLoginDate;
-
-	@NonNull
-	@Column(name = "current_streak", nullable = false)
-	private Integer currentStreak;
-
-	@NonNull
-	@Column(name = "is_leaderboard_visible", nullable = false)
-	private Boolean isLeaderboardVisible;
 }

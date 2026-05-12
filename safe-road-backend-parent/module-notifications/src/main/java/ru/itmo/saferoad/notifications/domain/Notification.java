@@ -2,12 +2,9 @@ package ru.itmo.saferoad.notifications.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,7 +13,6 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import ru.itmo.saferoad.auth.domain.Account;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -35,9 +31,8 @@ public class Notification {
 	private Long id;
 
 	@NonNull
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "user_id", nullable = false)
-	private Account user;
+	@Column(name = "user_id", nullable = false)
+	private Long userId;
 
 	@NonNull
 	@Column(name = "title", nullable = false)

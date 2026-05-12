@@ -20,29 +20,14 @@
 			</column>
 		</createTable>
 		<insert tableName="levels">
-			<column name="name" value="�������"/>
+			<column name="name" value="Новичок"/>
 			<column name="number" valueNumeric="1"/>
 			<column name="xp_threshold" valueNumeric="0"/>
 		</insert>
 		<insert tableName="levels">
-			<column name="name" value="������"/>
+			<column name="name" value="Бывалый"/>
 			<column name="number" valueNumeric="2"/>
 			<column name="xp_threshold" valueNumeric="100"/>
-		</insert>
-		<insert tableName="levels">
-			<column name="name" value="�������"/>
-			<column name="number" valueNumeric="3"/>
-			<column name="xp_threshold" valueNumeric="250"/>
-		</insert>
-		<insert tableName="levels">
-			<column name="name" value="������"/>
-			<column name="number" valueNumeric="4"/>
-			<column name="xp_threshold" valueNumeric="500"/>
-		</insert>
-		<insert tableName="levels">
-			<column name="name" value="�����"/>
-			<column name="number" valueNumeric="5"/>
-			<column name="xp_threshold" valueNumeric="1000"/>
 		</insert>
 	</changeSet>
 	<changeSet id="gamification-000-avatars" author="safe-road">
@@ -55,6 +40,9 @@
 			</column>
 			<column name="url" type="VARCHAR(255)">
 				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="min_level" type="INT">
+				<constraints nullable="false"/>
 			</column>
 		</createTable>
 	</changeSet>
@@ -83,7 +71,7 @@
 			</column>
 		</createTable>
 	</changeSet>
-	<changeSet id="gamification-002-user-achievements" author="safe-road">
+	<changeSet id="gamification-create_table_user-achievements" author="safe-road">
 		<createTable tableName="user_achievements">
 			<column name="user_id" type="BIGINT">
 				<constraints nullable="false"/>
@@ -101,6 +89,7 @@
 								 constraintName="fk_user_achievements_achievement" referencedColumnNames="id"
 								 referencedTableName="achievements"/>
 	</changeSet>
+
 	<changeSet id="gamification-003-user-metrics" author="safe-road">
 		<createTable tableName="user_metrics">
 			<column name="user_id" type="BIGINT">

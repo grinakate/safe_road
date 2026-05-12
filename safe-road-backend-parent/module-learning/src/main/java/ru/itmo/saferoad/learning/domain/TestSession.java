@@ -18,9 +18,9 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import ru.itmo.saferoad.auth.domain.Account;
 import ru.itmo.saferoad.content.domain.Section;
 import ru.itmo.saferoad.content.domain.Topic;
+import ru.itmo.saferoad.core.types.ProgressStatus;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -39,12 +39,11 @@ public class TestSession {
 	private Integer id;
 
 	@NonNull
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "user_id", nullable = false)
-	private Account user;
+	@Column(name = "user_id", nullable = false)
+	private Long user_id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "topic_id", nullable = true)
+	@JoinColumn(name = "topic_id")
 	private Topic topic;
 
 	@ManyToOne(fetch = FetchType.LAZY)

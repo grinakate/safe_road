@@ -45,9 +45,4 @@ public class UserServiceImpl implements AuthService {
 				() -> new IllegalArgumentException("User with id " + id + " does not exist")
 		);
 	}
-
-	@Override
-	public @NonNull List<Users> getTopUsersByXp() {
-		return repository.findTop10ByOrderByCurrentXpDesc();
-	}
 }

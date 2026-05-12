@@ -15,7 +15,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import ru.itmo.saferoad.learning.domain.ProgressStatus;
+import ru.itmo.saferoad.core.types.ProgressStatus;
 
 import java.util.Map;
 

@@ -35,7 +35,4 @@
 			</column>
 		</createTable>
 	</changeSet>
-	<changeSet id="auth-003-fk-game-profiles-users" author="safe-road">
-		<addForeignKeyConstraint baseColumnNames="user_id" baseTableName="game_profiles" constraintName="fk_gameprofiles_user" referencedColumnNames="id" referencedTableName="users"/>
-	</changeSet>
 </databaseChangeLog>

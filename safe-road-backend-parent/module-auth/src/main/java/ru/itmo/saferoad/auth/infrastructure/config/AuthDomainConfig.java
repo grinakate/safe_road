@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-@EntityScan(basePackages = "ru.itmo.saferoad.profile.domain")
+@EntityScan(basePackages = "ru.itmo.saferoad.auth.domain")
 @EnableJpaRepositories(basePackages = "ru.itmo.saferoad.auth.domain.repository")
 public class AuthDomainConfig {
 }

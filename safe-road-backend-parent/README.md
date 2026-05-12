@@ -7,7 +7,7 @@ docker-compose up -d
 **Запуск миграций на локальной БД:**
 
 ```shell
-cd ./db 
+cd ./migrations 
 mvn process-resources liquibase:update@migrate-backend "-Ddb.url=jdbc:postgresql://localhost:5432/safe_road?currentSchema=safe_road" "-Ddb.username=safe_road" "-Ddb.password=safe_road" "-DskipTests=true"
 ```
 

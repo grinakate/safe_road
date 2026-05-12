@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import ru.itmo.saferoad.core.types.ProgressStatus;
 
 @Getter
 @Setter

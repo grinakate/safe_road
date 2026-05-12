@@ -30,7 +30,7 @@ public class NotificationController {
 	public ResponseEntity<List<NotificationDto>> getNotifications(
 			@AuthenticationPrincipal AppUserDetails currentUser
 	) {
-		List<NotificationDto> notifications = notificationService.getByUserId(currentUser.id())
+		List<NotificationDto> notifications = notificationService.getByUserId(currentUser.getId())
 				.stream()
 				.map(n -> new NotificationDto(
 						n.getId(),
@@ -48,7 +48,7 @@ public class NotificationController {
 	public ResponseEntity<List<NotificationDto>> getUnreadNotifications(
 			@AuthenticationPrincipal AppUserDetails currentUser
 	) {
-		List<NotificationDto> notifications = notificationService.getUnreadByUserId(currentUser.id())
+		List<NotificationDto> notifications = notificationService.getUnreadByUserId(currentUser.getId())
 				.stream()
 				.map(n -> new NotificationDto(
 						n.getId(),
@@ -66,7 +66,7 @@ public class NotificationController {
 	public ResponseEntity<Long> getUnreadCount(
 			@AuthenticationPrincipal AppUserDetails currentUser
 	) {
-		long count = notificationService.getUnreadCount(currentUser.id());
+		long count = notificationService.getUnreadCount(currentUser.getId());
 		return ResponseEntity.ok(count);
 	}
 
@@ -85,7 +85,7 @@ public class NotificationController {
 	public ResponseEntity<Void> markAllAsRead(
 			@AuthenticationPrincipal AppUserDetails currentUser
 	) {
-		notificationService.markAllAsRead(currentUser.id());
+		notificationService.markAllAsRead(currentUser.getId());
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }

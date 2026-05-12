@@ -38,6 +38,14 @@ public class SecurityConfig {
 						.requestMatchers("/static/**").permitAll()
 						.requestMatchers("/api/auth/**").permitAll()
 						.requestMatchers("/api/content/**").hasRole(UserRole.ADMIN.name())
+
+						// Разрешения для swagger-а:
+						.requestMatchers("/v3/api-docs/**").permitAll()
+						.requestMatchers("/swagger-ui/**").permitAll()
+						.requestMatchers("/swagger-ui.html").permitAll()
+						.requestMatchers("/swagger-resources/**").permitAll()
+						.requestMatchers("/webjars/**").permitAll()
+
 						.anyRequest().authenticated()
 				)
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

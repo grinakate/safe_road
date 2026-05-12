@@ -1,6 +1,6 @@
 package ru.itmo.saferoad.learning.dto;
 
-import ru.itmo.saferoad.learning.domain.ProgressStatus;
+import ru.itmo.saferoad.core.types.ProgressStatus;
 
 public record TopicUserMapResponse(
 		Integer id,

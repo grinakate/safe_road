@@ -1,12 +1,5 @@
 package ru.itmo.saferoad.content.api;
 
-import ru.itmo.saferoad.content.dto.AnswerDto;
-import ru.itmo.saferoad.content.dto.CreateQuestionRequest;
-import ru.itmo.saferoad.content.dto.CreateSectionRequest;
-import ru.itmo.saferoad.content.dto.CreateTopicRequest;
-import ru.itmo.saferoad.content.dto.QuestionWithAnswersDto;
-import ru.itmo.saferoad.content.dto.SectionTreeDto;
-import ru.itmo.saferoad.content.dto.TopicBriefDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,13 +8,17 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.itmo.saferoad.content.domain.Question;
-import ru.itmo.saferoad.content.domain.QuestionType;
+import ru.itmo.saferoad.content.dto.CreateSectionRequest;
+import ru.itmo.saferoad.content.dto.CreateTopicRequest;
+import ru.itmo.saferoad.content.dto.SectionTreeDto;
+import ru.itmo.saferoad.content.dto.TopicBriefDto;
 import ru.itmo.saferoad.content.service.AnswerService;
 import ru.itmo.saferoad.content.service.QuestionService;
 import ru.itmo.saferoad.content.service.SectionService;
@@ -29,13 +26,60 @@ import ru.itmo.saferoad.content.service.TopicService;
 import ru.itmo.saferoad.core.security.AppUserDetails;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Transactional
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/content")
+@RequestMapping("/api/v1/content")
 public class ContentController {
+
+	@GetMapping("/sections/{id}/topics")
+	public ResponseEntity<?> getTopicsForSection(@PathVariable Integer id) {
+		// TODO: Implement
+		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping("/topics/{id}")
+	public ResponseEntity<?> getTopic(@PathVariable Integer id) {
+		// TODO: Implement
+		return ResponseEntity.ok().build();
+	}
+
+	@PutMapping("/admin/sections/{id}")
+	public ResponseEntity<?> updateSection(@PathVariable Integer id) {
+		// TODO: Implement
+		return ResponseEntity.ok().build();
+	}
+
+	@PatchMapping("/admin/sections/{id}/archive")
+	public ResponseEntity<?> archiveSection(@PathVariable Integer id) {
+		// TODO: Implement
+		return ResponseEntity.ok().build();
+	}
+
+	@PutMapping("/admin/topics/{id}")
+	public ResponseEntity<?> updateTopic(@PathVariable Integer id) {
+		// TODO: Implement
+		return ResponseEntity.ok().build();
+	}
+
+	@PatchMapping("/admin/topics/{id}/archive")
+	public ResponseEntity<?> archiveTopic(@PathVariable Integer id) {
+		// TODO: Implement
+		return ResponseEntity.ok().build();
+	}
+
+	@PutMapping("/admin/questions/{id}")
+	public ResponseEntity<?> updateQuestion(@PathVariable Long id) {
+		// TODO: Implement
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/admin/media/upload")
+	public ResponseEntity<?> uploadMedia() {
+		// TODO: Implement
+		return ResponseEntity.ok().build();
+	}
 
 	private final SectionService sectionService;
 	private final TopicService topicService;
@@ -82,7 +126,7 @@ public class ContentController {
 		return ResponseEntity.ok(response);
 	}*/
 
-	@PostMapping("/sections")
+	@PostMapping("/admin/sections")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<SectionTreeDto> createSection(
 			@Valid @RequestBody CreateSectionRequest request,
@@ -93,7 +137,7 @@ public class ContentController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	@PostMapping("/topics")
+	@PostMapping("/admin/topics")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<TopicBriefDto> createTopic(
 			@Valid @RequestBody CreateTopicRequest request,
@@ -116,7 +160,7 @@ public class ContentController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-/*	@PostMapping("/questions")
+/*	@PostMapping("/admin/questions")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<QuestionWithAnswersDto> createQuestion(
 			@Valid @RequestBody CreateQuestionRequest request,
