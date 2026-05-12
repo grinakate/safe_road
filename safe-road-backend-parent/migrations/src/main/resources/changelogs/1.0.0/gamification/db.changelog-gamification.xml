@@ -1,36 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
-		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
-
-	<changeSet id="gamification-001-achievements" author="safe-road">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="achievements"/>
-			</not>
-		</preConditions>
-		<sqlFile path="sql/001_create_achievements_table.sql" relativeToChangelogFile="true"/>
-	</changeSet>
-
-	<changeSet id="gamification-002-user-achievements" author="safe-road">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="user_achievements"/>
-			</not>
-		</preConditions>
-		<sqlFile path="sql/002_create_user_achievements_table.sql" relativeToChangelogFile="true"/>
-	</changeSet>
-
-	<changeSet id="gamification-003-user-metrics" author="safe-road">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="user_metrics"/>
-			</not>
-		</preConditions>
-		<sqlFile path="sql/003_create_user_metrics_table.sql" relativeToChangelogFile="true"/>
-	</changeSet>
-
+    <changeSet id="gamification-000-levels" author="safe-road">
+        <createTable tableName="levels">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="levels_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="number" type="INTEGER">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="xp_threshold" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <insert tableName="levels"><column name="name" value="Новичок"/><column name="number" valueNumeric="1"/><column name="xp_threshold" valueNumeric="0"/></insert>
+        <insert tableName="levels"><column name="name" value="Ученик"/><column name="number" valueNumeric="2"/><column name="xp_threshold" valueNumeric="100"/></insert>
+        <insert tableName="levels"><column name="name" value="Опытный"/><column name="number" valueNumeric="3"/><column name="xp_threshold" valueNumeric="250"/></insert>
+        <insert tableName="levels"><column name="name" value="Знаток"/><column name="number" valueNumeric="4"/><column name="xp_threshold" valueNumeric="500"/></insert>
+        <insert tableName="levels"><column name="name" value="Профи"/><column name="number" valueNumeric="5"/><column name="xp_threshold" valueNumeric="1000"/></insert>
+    </changeSet>
+    <changeSet id="gamification-000-avatars" author="safe-road">
+        <createTable tableName="avatars">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="avatars_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="url" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="gamification-001-achievements" author="safe-road">
+        <createTable tableName="achievements">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="achievements_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="icon_url" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="requirements" type="JSONB">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reward_xp" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_active" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="gamification-002-user-achievements" author="safe-road">
+        <createTable tableName="user_achievements">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="achievement_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="earned_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="user_id, achievement_id" constraintName="user_achievements_pkey" tableName="user_achievements"/>
+        <addForeignKeyConstraint baseColumnNames="achievement_id" baseTableName="user_achievements" constraintName="fk_user_achievements_achievement" referencedColumnNames="id" referencedTableName="achievements"/>
+    </changeSet>
+    <changeSet id="gamification-003-user-metrics" author="safe-road">
+        <createTable tableName="user_metrics">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="metric_code" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="user_id, metric_code" constraintName="user_metrics_pkey" tableName="user_metrics"/>
+    </changeSet>
 </databaseChangeLog>
-

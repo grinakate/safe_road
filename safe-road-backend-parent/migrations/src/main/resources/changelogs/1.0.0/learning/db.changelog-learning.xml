@@ -1,65 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
-		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
-
-	<changeSet id="learning-001-enums" author="safe-road">
-		<preConditions onFail="MARK_RAN">
-			<sqlCheck expectedResult="0">
-				SELECT COUNT(*)
-				FROM pg_type
-				WHERE typname = 'progress_status'
-			</sqlCheck>
-		</preConditions>
-		<sqlFile path="sql/001_create_learning_enums.sql" relativeToChangelogFile="true"/>
-	</changeSet>
-
-	<changeSet id="learning-002-user-topic-progress" author="safe-road">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="user_topic_progress"/>
-			</not>
-		</preConditions>
-		<sqlFile path="sql/002_create_user_topic_progress_table.sql" relativeToChangelogFile="true"/>
-	</changeSet>
-
-	<changeSet id="learning-003-user-section-progress" author="safe-road">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="user_section_progress"/>
-			</not>
-		</preConditions>
-		<sqlFile path="sql/003_create_user_section_progress_table.sql" relativeToChangelogFile="true"/>
-	</changeSet>
-
-	<changeSet id="learning-004-user-question-stats" author="safe-road">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="user_question_stats"/>
-			</not>
-		</preConditions>
-		<sqlFile path="sql/004_create_user_question_stats_table.sql" relativeToChangelogFile="true"/>
-	</changeSet>
-
-	<changeSet id="learning-005-review-intervals" author="safe-road">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="review_intervals"/>
-			</not>
-		</preConditions>
-		<sqlFile path="sql/005_create_review_intervals_table.sql" relativeToChangelogFile="true"/>
-	</changeSet>
-
-	<changeSet id="learning-006-test-sessions" author="safe-road">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="test_sessions"/>
-			</not>
-		</preConditions>
-		<sqlFile path="sql/006_create_test_sessions_table.sql" relativeToChangelogFile="true"/>
-	</changeSet>
-
+    <changeSet id="learning-002-user-topic-progress" author="safe-road">
+        <createTable tableName="user_topic_progress">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="topic_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="user_id, topic_id" constraintName="user_topic_progress_pkey" tableName="user_topic_progress"/>
+    </changeSet>
+    <changeSet id="learning-003-user-section-progress" author="safe-road">
+        <createTable tableName="user_section_progress">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="section_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="user_id, section_id" constraintName="user_section_progress_pkey" tableName="user_section_progress"/>
+    </changeSet>
+    <changeSet id="learning-004-user-question-stats" author="safe-road">
+        <createTable tableName="user_question_stats">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="question_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="topic_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="success_streak" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_result_correct" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="next_review_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="user_id, question_id" constraintName="user_question_stats_pkey" tableName="user_question_stats"/>
+    </changeSet>
+    <changeSet id="learning-005-review-intervals" author="safe-road">
+        <createTable tableName="review_intervals">
+            <column name="streak_level" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="review_intervals_pkey"/>
+            </column>
+            <column name="interval_hours" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <insert tableName="review_intervals"><column name="streak_level" valueNumeric="1"/><column name="interval_hours" valueNumeric="24"/></insert>
+        <insert tableName="review_intervals"><column name="streak_level" valueNumeric="2"/><column name="interval_hours" valueNumeric="72"/></insert>
+        <insert tableName="review_intervals"><column name="streak_level" valueNumeric="3"/><column name="interval_hours" valueNumeric="168"/></insert>
+        <insert tableName="review_intervals"><column name="streak_level" valueNumeric="4"/><column name="interval_hours" valueNumeric="336"/></insert>
+        <insert tableName="review_intervals"><column name="streak_level" valueNumeric="5"/><column name="interval_hours" valueNumeric="720"/></insert>
+    </changeSet>
+    <changeSet id="learning-006-test-sessions" author="safe-road">
+        <createTable tableName="test_sessions">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="test_sessions_pkey"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="topic_id" type="INTEGER"/>
+            <column name="section_id" type="INTEGER"/>
+            <column name="mode" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="questions_data" type="JSONB">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_quaestions" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="correct_count" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="finished_at" type="TIMESTAMP"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="test_sessions" constraintName="fk_test_sessions_user" referencedColumnNames="id" referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="topic_id" baseTableName="test_sessions" constraintName="fk_test_sessions_topic" referencedColumnNames="id" referencedTableName="topics"/>
+        <addForeignKeyConstraint baseColumnNames="section_id" baseTableName="test_sessions" constraintName="fk_test_sessions_section" referencedColumnNames="id" referencedTableName="sections"/>
+    </changeSet>
 </databaseChangeLog>
-
