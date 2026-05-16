@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "avatars")
+@Table(name = "\"Avatars\"")
 @EqualsAndHashCode(of = "id")
 public class Avatar {
 

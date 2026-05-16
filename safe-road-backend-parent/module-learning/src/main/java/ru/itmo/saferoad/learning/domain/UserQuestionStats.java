@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @IdClass(UserQuestionStatsId.class)
-@Table(name = "user_question_stats")
+@Table(name = "\"UserQuestionStats\"")
 @EqualsAndHashCode(of = {"userId", "questionId"})
 public class UserQuestionStats {
 

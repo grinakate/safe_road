@@ -36,8 +36,9 @@ public class SecurityConfig {
 				.sessionManagement(sh -> sh.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/static/**").permitAll()
-						.requestMatchers("/api/auth/**").permitAll()
-						.requestMatchers("/api/content/**").hasRole(UserRole.ADMIN.name())
+						.requestMatchers("/api/v1/auth/register").permitAll()
+						.requestMatchers("/api/v1/auth/login").permitAll()
+						.requestMatchers("/api/v1/content/**").hasRole(UserRole.ADMIN.name())
 
 						// Разрешения для swagger-а:
 						.requestMatchers("/v3/api-docs/**").permitAll()

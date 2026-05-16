@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "users")
+@Table(name = "\"Users\"")
 @EqualsAndHashCode(of = "id")
 public class Users {
 

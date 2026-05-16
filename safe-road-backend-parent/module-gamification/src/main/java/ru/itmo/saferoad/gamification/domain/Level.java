@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "levels")
+@Table(name = "\"Levels\"")
 @EqualsAndHashCode(of = "id")
 public class Level {
 

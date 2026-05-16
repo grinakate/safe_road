@@ -1,5 +1,6 @@
-package ru.itmo.saferoad.gamification.domain;
+package ru.itmo.saferoad.core.domain;
 
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,9 +14,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-import ru.itmo.saferoad.core.types.ProgressStatus;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.Type;
+import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
+import ru.itmo.saferoad.core.domain.enums.EventType;
+import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 
 import java.util.Map;
 
@@ -25,7 +28,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Table(name = "\"PendingEvents\"")
 @EqualsAndHashCode(of = "id")
-public class PendingEvent {
+public class PendingEvents {
 
 	@Id
 	@NonNull
@@ -34,17 +37,17 @@ public class PendingEvent {
 
 	@NonNull
 	@Enumerated(EnumType.STRING)
-	@Column(name = "type", nullable = false)
+	@JdbcType(PostgreSQLEnumJdbcType.class)
+	@Column(nullable = false)
 	private EventType type;
 
 	@NonNull
 	@Enumerated(EnumType.STRING)
-	@Column(name = "status", nullable = false, columnDefinition = "progress_status")
+	@JdbcType(PostgreSQLEnumJdbcType.class)
+	@Column(nullable = false)
 	private ProgressStatus status;
 
-	@NonNull
-	@JdbcTypeCode(SqlTypes.JSON)
-	@Column(name = "content", nullable = false, columnDefinition = "jsonb")
+	@Type(JsonType.class)
+	@Column(columnDefinition = "jsonb", nullable = false)
 	private Map<String, Object> content;
 }
-

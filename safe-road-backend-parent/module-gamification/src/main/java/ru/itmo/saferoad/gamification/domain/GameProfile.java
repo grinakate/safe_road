@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "game_profiles")
+@Table(name = "\"GameProfiles\"")
 @EqualsAndHashCode(of = "userId")
 public class GameProfile {
 

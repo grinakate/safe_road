@@ -21,7 +21,7 @@ import java.util.Map;
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "notifications")
+@Table(name = "\"Notifications\"")
 @EqualsAndHashCode(of = "id")
 public class Notification {
 

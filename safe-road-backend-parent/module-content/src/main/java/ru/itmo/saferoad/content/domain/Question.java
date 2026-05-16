@@ -27,7 +27,7 @@ import java.util.Map;
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "questions")
+@Table(name = "\"Questions\"")
 @EqualsAndHashCode(of = "id")
 public class Question {
 

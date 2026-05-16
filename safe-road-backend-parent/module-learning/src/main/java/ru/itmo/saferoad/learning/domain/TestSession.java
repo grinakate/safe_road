@@ -29,7 +29,7 @@ import java.util.Map;
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "test_sessions")
+@Table(name = "\"TestSessions\"")
 @EqualsAndHashCode(of = "id")
 public class TestSession {
 

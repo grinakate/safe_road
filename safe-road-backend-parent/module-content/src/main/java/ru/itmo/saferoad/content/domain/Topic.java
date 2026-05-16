@@ -20,7 +20,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "topics")
+@Table(name = "\"Topics\"")
 @EqualsAndHashCode(of = "id")
 public class Topic {
 

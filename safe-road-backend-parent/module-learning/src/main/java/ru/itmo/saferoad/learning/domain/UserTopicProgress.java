@@ -19,7 +19,7 @@ import ru.itmo.saferoad.core.types.ProgressStatus;
 @Entity
 @NoArgsConstructor
 @IdClass(UserTopicProgressId.class)
-@Table(name = "user_topic_progress")
+@Table(name = "\"UserTopicProgress\"")
 @EqualsAndHashCode(of = {"userId", "topicId"})
 public class UserTopicProgress {
 
