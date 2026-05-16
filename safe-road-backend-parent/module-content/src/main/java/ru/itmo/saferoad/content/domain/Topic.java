@@ -9,12 +9,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter
@@ -35,18 +36,19 @@ public class Topic {
 	private Section section;
 
 	@NonNull
-	@Column(name = "name", nullable = false)
-	private String name;
+	@Column(name = "title", nullable = false)
+	private String title;
 
 	@NonNull
-	@Column(name = "description")
-	private String description;
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "content", nullable = false, columnDefinition = "jsonb")
+	private String content;
 
 	@NonNull
 	@Column(name = "order_index", nullable = false, unique = true)
 	private Integer orderIndex;
 
 	@NonNull
-	@Column(name = "xp_reward", nullable = false)
-	private Integer xpReward;
+	@Column(name = "is_active", nullable = false)
+	private Boolean isActive;
 }

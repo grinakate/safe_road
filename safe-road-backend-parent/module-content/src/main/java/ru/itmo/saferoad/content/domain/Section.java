@@ -31,12 +31,16 @@ public class Section {
 	private Integer id;
 
 	@NonNull
-	@Column(name = "name", nullable = false)
-	private String name;
+	@Column(name = "title", nullable = false)
+	private String title;
 
 	@NonNull
 	@Column(name = "order_index", nullable = false, unique = true)
 	private Integer orderIndex;
+
+	@NonNull
+	@Column(name = "is_active", nullable = false)
+	private Boolean isActive;
 
 	@OneToMany(mappedBy = "section", fetch = FetchType.LAZY)
 	@OrderBy("orderIndex ASC")
