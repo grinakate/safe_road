@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:safe_road/core/constants.dart';
 
 import '../core/service_locator.dart';
 import '../services/auth_service.dart';
+import '../theme.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -48,7 +48,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -75,17 +74,13 @@ class _LoginScreenState extends State<LoginScreen> {
       children: const [
         Text(
           'Добро пожаловать!',
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: AppConstants.borderColor,
-          ),
+          style: AppTheme.headerTextStyle,
         ),
         SizedBox(height: 8),
         Center(
           child: Text(
             'Войдите в свой аккаунт, чтобы продолжить',
-            style: TextStyle(fontSize: 16, color: Colors.brown),
+            style: AppTheme.subHeaderTextStyle,
             textAlign: TextAlign.center,
           ),
         ),
@@ -101,35 +96,17 @@ class _LoginScreenState extends State<LoginScreen> {
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
+            decoration: AppTheme.inputDecoration.copyWith(
               labelText: 'Email',
-              labelStyle: TextStyle(color: Colors.brown),
               hintText: 'Введите email',
-              hintStyle: TextStyle(color: Colors.brown),
               prefixIcon: const Icon(Icons.email_outlined),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.brown, width: 1),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: AppConstants.borderColor,
-                  width: 2,
-                ),
-              ),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Введите email';
               }
               if (!RegExp(
-                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$',
               ).hasMatch(value)) {
                 return 'Введите корректный email';
               }
@@ -140,13 +117,9 @@ class _LoginScreenState extends State<LoginScreen> {
           TextFormField(
             controller: _passwordController,
             obscureText: !_isPasswordVisible,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
+            decoration: AppTheme.inputDecoration.copyWith(
               labelText: 'Пароль',
-              labelStyle: TextStyle(color: Colors.brown),
               hintText: 'Введите пароль',
-              hintStyle: TextStyle(color: Colors.brown),
               prefixIcon: const Icon(Icons.lock_outline),
               suffixIcon: IconButton(
                 icon: Icon(
@@ -157,20 +130,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     _isPasswordVisible = !_isPasswordVisible;
                   });
                 },
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.brown, width: 1),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: AppConstants.borderColor,
-                  width: 2,
-                ),
               ),
             ),
             validator: (value) {
@@ -193,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               child: const Text(
                 'Забыли пароль?',
-                style: TextStyle(color: AppConstants.borderColor),
+                style: AppTextStyles.bodyMedium,
               ),
             ),
           ),
@@ -205,27 +164,18 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildLoginButton() {
     return ElevatedButton(
       onPressed: _isLoading ? null : _login,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppConstants.mainGreenColor,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
       child: _isLoading
           ? const SizedBox(
               height: 20,
               width: 20,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
               ),
             )
           : const Text(
               'Войти',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+              style: AppTextStyles.buttonText,
             ),
     );
   }
@@ -234,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("Еще нет аккаунта?"),
+        const Text("Еще нет аккаунта?", style: AppTextStyles.bodyMedium),
         TextButton(
           onPressed: () => Navigator.pushNamed(context, '/register'),
           child: const Text(
@@ -242,7 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: AppConstants.darkGreenColor,
+              color: AppColors.primaryGreen,
             ),
           ),
         ),

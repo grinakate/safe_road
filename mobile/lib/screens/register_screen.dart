@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../core/constants.dart';
 import '../core/service_locator.dart';
 import '../models/auth_models.dart';
 import '../services/auth_service.dart';
@@ -242,28 +241,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _buildRegisterButton() {
     return ElevatedButton(
       onPressed: _isLoading ? null : _register,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppConstants.mainGreenColor,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
       child: _isLoading
           ? const SizedBox(
-        height: 20,
-        width: 20,
-        child: CircularProgressIndicator(
-          strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-        ),
-      )
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+              ),
+            )
           : const Text(
-        'Зарегистрироваться',
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
+              'Зарегистрироваться',
+              style: AppTextStyles.buttonText,
+            ),
     );
   }
 }

@@ -3,7 +3,6 @@ import 'package:safe_road/core/avatar_manager.dart';
 import 'package:safe_road/models/avatar_models.dart';
 import 'package:safe_road/widgets/secure_network_image.dart';
 
-import '../core/constants.dart';
 import '../theme.dart';
 
 class AvatarSelectionDialog extends StatefulWidget {
@@ -38,13 +37,13 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: Colors.white,
-      surfaceTintColor: Colors.white,
+      backgroundColor: AppColors.white,
+      surfaceTintColor: AppColors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Text(
         'Выбрать аватар',
         textAlign: TextAlign.center,
-        style: AppTheme.appBarTitle.copyWith(color: AppConstants.borderColor, fontSize: 18),
+        style: AppTextStyles.titleLarge.copyWith(fontSize: 18),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -78,14 +77,14 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: isSelected
-                                  ? Colors.blue
-                                  : Colors.transparent,
+                                  ? AppColors.primaryGreen
+                                  : AppColors.white.withAlpha(0),
                               width: 3,
                             ),
                           ),
                           child: CircleAvatar(
                             radius: 70,
-                            backgroundColor: AppConstants.skyColor,
+                            backgroundColor: AppColors.lightBlueBackground,
                             child: SecureNetworkImage(
                               imageUrl: avatar.url,
                               fit: BoxFit.cover,
@@ -97,7 +96,7 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
                         Icon(
                           Icons.lock,
                           size: 40,
-                          color: Colors.brown,
+                          color: AppColors.darkBrownText,
                         ),
                     ],
                   ),
@@ -114,7 +113,7 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
                 // Просто закрываем
                 child: const Text(
                   'Отмена',
-                  style: TextStyle(color: Colors.brown),
+                  style: AppTextStyles.bodyMedium,
                 ),
               ),
               const SizedBox(width: 10),
@@ -125,17 +124,11 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
                         Navigator.of(context).pop();
                       } // Кнопка неактивна, если ничего не выбрано или выбрана текущая
                     : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppConstants.greenTestColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
                 child: Text(
                   _selectedAvailable!
                       ? 'Выбрать'
                       : '${AvatarManager.getAvailableAvatarMap()[_selectedAvatarId!]?.minLevel.toString()} Уровень',
-                  style: AppTheme.buttonWhiteBold,
+                  style: AppTextStyles.buttonText,
                 ),
               ),
             ],

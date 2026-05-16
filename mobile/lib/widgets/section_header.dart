@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:safe_road/core/constants.dart';
 import '../models/section.dart';
 import '../theme.dart';
 
@@ -15,11 +14,11 @@ class SectionHeader extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 60),
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       decoration: BoxDecoration(
-        color: AppConstants.greenTestColor,
+        color: AppColors.lightGreenBackground,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.18),
+            color: AppColors.darkBrownText.withValues(alpha: 0.18),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),

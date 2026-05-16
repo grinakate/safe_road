@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:safe_road/core/constants.dart';
 import 'package:safe_road/screens/result_screen.dart';
 import 'package:safe_road/services/quiz_service.dart';
 import '../theme.dart';
 
 import '../models/question.dart';
-import '../theme.dart';
 
 class QuizScreen extends StatefulWidget {
   final List<Question> quizData;
@@ -124,16 +122,13 @@ class _QuizScreenState extends State<QuizScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Вопрос ${_currentQuestionIndex + 1} из $_totalQuestions',
-          style: AppTheme.appBarTitle.copyWith(color: AppConstants.borderColor),
-        ),
+        title: Text('Вопрос ${_currentQuestionIndex + 1} из $_totalQuestions'),
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(4.0),
           child: LinearProgressIndicator(
             value: (_currentQuestionIndex + 1) / _totalQuestions,
-            backgroundColor: Colors.grey[300],
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+            backgroundColor: AppColors.lightGreenBackground,
+            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primaryGreen),
           ),
         ),
       ),
@@ -149,7 +144,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   Expanded(
                     child: Text(
                       _currentQuestion.text,
-                      style: AppTheme.headerTextStyle.copyWith(fontSize: 20, fontWeight: FontWeight.bold, color: AppConstants.borderColor),
+                        style: AppTextStyles.titleLarge.copyWith(fontSize: 20),
                     ),
                   ),
                 ],
@@ -186,7 +181,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     onPressed: _isLoading ? null : _handleNextQuestion,
                     // Отключаем, если идет загрузка
                     child: _isLoading
-                        ? CircularProgressIndicator(color: Colors.white)
+                        ? const CircularProgressIndicator(color: AppColors.white)
                         : Text(
                             _currentQuestionIndex < _totalQuestions - 1
                                 ? 'Далее'
@@ -206,8 +201,8 @@ class _QuizScreenState extends State<QuizScreen> {
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isCorrect
-            ? Colors.brown.withAlpha(51)
-            : Colors.red.withAlpha(51),
+            ? AppColors.lightGreenBackground
+            : AppColors.errorRed.withAlpha(51),
         borderRadius: BorderRadius.circular(8),
       ),
         child: Column(
@@ -215,10 +210,10 @@ class _QuizScreenState extends State<QuizScreen> {
           children: [
             Text(
               resultText,
-              style: TextStyle(
+              style: AppTextStyles.bodyLarge.copyWith(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: isCorrect ? Colors.green : Colors.red,
+                color: isCorrect ? AppColors.primaryGreen : AppColors.errorRed,
               ),
             ),
           // Можно добавить пояснение, если оно приходит с бэка
@@ -250,28 +245,28 @@ class AnswerOptionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color backgroundColor = Colors.white;
-    Color borderColor = Colors.brown.shade200;
-    Color textColor = AppConstants.borderColor;
+    Color backgroundColor = AppColors.white;
+    Color borderColor = AppColors.greyBorder;
+    Color textColor = AppColors.darkBrownText;
 
       if (isSelected) {
-        backgroundColor = Colors.blue.withAlpha(77);
-        borderColor = Colors.blue;
-        textColor = Colors.blue;
+        backgroundColor = AppColors.lightBlueBackground;
+        borderColor = AppColors.primaryGreen;
+        textColor = AppColors.primaryGreen;
       }
 
       if (isCorrect && isUserAnswer) {
-        backgroundColor = Colors.green.withAlpha(26);
-        borderColor = Colors.green.withAlpha(128);
-        textColor = Colors.green;
+        backgroundColor = AppColors.lightGreenBackground;
+        borderColor = AppColors.primaryGreen;
+        textColor = AppColors.primaryGreen;
       } else if (isUserAnswer && !isCorrect) {
-        backgroundColor = Colors.red.withAlpha(26);
-        borderColor = Colors.red;
-        textColor = Colors.red;
+        backgroundColor = AppColors.errorRed.withAlpha(26);
+        borderColor = AppColors.errorRed;
+        textColor = AppColors.errorRed;
       } else if (isCorrect && !isUserAnswer && !isSelected) {
-        backgroundColor = Colors.green.withAlpha(26);
-        borderColor = Colors.green.withAlpha(128);
-        textColor = Colors.green;
+        backgroundColor = AppColors.lightGreenBackground;
+        borderColor = AppColors.primaryGreen;
+        textColor = AppColors.primaryGreen;
       }
 
     return GestureDetector(
@@ -289,13 +284,13 @@ class AnswerOptionWidget extends StatelessWidget {
             Expanded(
               child: Text(
                 option.text,
-                style: AppTheme.body14.copyWith(fontSize: 16, color: textColor),
+                style: AppTextStyles.bodyLarge.copyWith(fontSize: 16, color: textColor),
               ),
             ),
             if (isCorrect && !isSelected && isUserAnswer)
-              Icon(Icons.check_circle, color: Colors.green),
+              Icon(Icons.check_circle, color: AppColors.primaryGreen),
             if (isUserAnswer && !isCorrect)
-              Icon(Icons.cancel, color: Colors.red),
+              Icon(Icons.cancel, color: AppColors.errorRed),
           ],
         ),
       ),

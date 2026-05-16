@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:safe_road/core/constants.dart';
 import 'package:safe_road/screens/profile_screen.dart';
 
 import 'map_screen.dart';
@@ -24,11 +23,8 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.grey.shade200,
         currentIndex: _selectedIndex,
         onTap: (index) => setState(() => _selectedIndex = index),
-        selectedItemColor: Colors.brown[700],
-        unselectedItemColor: Colors.brown,
         items: [
           BottomNavigationBarItem(
             icon: Image.asset("assets/icons/road.png", height: 24,),

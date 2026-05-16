@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
+import '../theme.dart';
+
 class RoadPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.grey[400]!
+      ..color = AppColors.greyBorder
       ..style = PaintingStyle.stroke
       ..strokeWidth = 40
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
 
     final inner = Paint()
-      ..color = Colors.white
+      ..color = AppColors.white
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3
       ..strokeCap = StrokeCap.round;

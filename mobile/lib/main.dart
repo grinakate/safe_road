@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:safe_road/screens/main_screen.dart';
 import 'package:safe_road/screens/register_screen.dart';
+import 'package:safe_road/theme/app_theme.dart';
 
 import 'core/service_locator.dart';
 import 'screens/login_screen.dart';
 import 'services/auth_service.dart';
-import 'theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +23,7 @@ class SafeRoadApp extends StatelessWidget {
     return MaterialApp(
       title: 'Безопасная дорога',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.themeData,
+      theme: AppTheme.lightTheme,
       initialRoute: initialRoute,
       routes: {
         '/register': (context) => RegisterScreen(),

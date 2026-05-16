@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:safe_road/core/constants.dart';
 
 import '../core/avatar_manager.dart';
 import '../core/service_locator.dart';
@@ -41,7 +40,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       /*      appBar: AppBar(
         title: const Text('Профиль', style: TextStyle()),
         centerTitle: true,
@@ -95,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
               child: CircleAvatar(
                 radius: 60,
-                backgroundColor: Colors.blue.withAlpha(26), // Replaced withOpacity with withAlpha
+                backgroundColor: AppColors.lightBlueBackground,
                 child: SecureNetworkImage(
                   imageUrl: AvatarManager.getAvatarItem(user.avatarId).url,
                   fit: BoxFit.cover,
@@ -141,11 +139,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         Text(
           label,
-          style: AppTheme.subHeaderTextStyle.copyWith(fontSize: 24),
+          style: AppTextStyles.bodyLarge.copyWith(fontSize: 24),
         ),
         Text(
           value,
-          style: AppTheme.headerTextStyle.copyWith(fontSize: 24),
+          style: AppTextStyles.headlineLarge.copyWith(fontSize: 24),
         ),
       ],
     );
@@ -167,14 +165,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
-        color: isActive ? Colors.teal.withAlpha(51) : Colors.transparent, // Replaced withOpacity with withAlpha
+        color: isActive ? AppColors.lightGreenBackground : Colors.transparent,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Text(
         text,
-        style: AppTheme.body14.copyWith(
+        style: AppTextStyles.bodyLarge.copyWith(
           fontSize: 18,
-          color: isActive ? Colors.teal[800] : Colors.black54,
+          color: isActive ? AppColors.primaryGreen : AppColors.greyText,
           fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
         ),
       ),
@@ -237,8 +235,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               fontWeight: FontWeight.w600,
                               height: 1.0,
                               color: item.isUnlocked
-                                  ? AppConstants.borderColor
-                                  : Colors.brown,
+                                  ? AppColors.darkBrownText
+                                  : AppColors.greyText,
                             ),
                           ),
                         ),

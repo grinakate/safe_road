@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:safe_road/core/constants.dart';
 
 import '../models/user_profile.dart';
 import '../theme.dart';
@@ -12,7 +11,7 @@ class RoadHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppConstants.skyColor,
+      color: AppColors.lightBlueBackground,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       child: Column(
         children: [
@@ -21,7 +20,7 @@ class RoadHeader extends StatelessWidget {
               // TODO: добавить логику avatarId
               CircleAvatar(
                 radius: 30,
-                backgroundColor: AppConstants.skyColor,
+                backgroundColor: AppColors.lightBlueBackground,
                 child: Image.asset("assets/images/samokat.png"),
               ),
               const SizedBox(width: 12),
@@ -33,7 +32,7 @@ class RoadHeader extends StatelessWidget {
                       '${profile.xpToNextLevel} очков до следующего уровня',
                       style: const TextStyle(
                         fontSize: 13,
-                        color: Colors.brown,
+                        color: AppColors.darkBrownText,
                       ),
                     ),*/
                     //const SizedBox(height: 6),
@@ -42,8 +41,8 @@ class RoadHeader extends StatelessWidget {
                       child: LinearProgressIndicator(
                         value: profile.xpProgress,
                         minHeight: 16,
-                        color: AppConstants.greenTestColor,
-                        backgroundColor: AppConstants.lightGreenColor,
+                          color: AppColors.primaryGreen,
+                          backgroundColor: AppColors.lightGreenBackground,
                       ),
                     ),
                   ],
@@ -57,11 +56,11 @@ class RoadHeader extends StatelessWidget {
             children: [
               Text(
                 'Уровень ${profile.level.number}: ${profile.currentXp} очков',
-                style: AppTheme.body14.copyWith(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.brown),
+                style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold, fontSize: 14),
               ),
               Text(
                 '${profile.completedLessons}/${profile.totalLessons} Уроков пройдено',
-                style: AppTheme.body14.copyWith(fontSize: 13, color: Colors.brown),
+                style: AppTextStyles.bodyMedium.copyWith(fontSize: 13),
               ),
             ],
           ),

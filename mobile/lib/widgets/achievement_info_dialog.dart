@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:safe_road/core/constants.dart';
 import 'package:safe_road/models/achievement.dart';
 import 'package:safe_road/widgets/secure_network_image.dart';
 import '../theme.dart';
@@ -19,11 +18,11 @@ class AchievementInfoDialog extends StatelessWidget {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 0,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.white.withAlpha(0),
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -49,7 +48,7 @@ class AchievementInfoDialog extends StatelessWidget {
             Text(
               achievement.title,
               textAlign: TextAlign.center,
-              style: AppTheme.achievementTitle,
+                style: AppTextStyles.achievementTitle,
             ),
             const SizedBox(height: 10),
 
@@ -59,8 +58,7 @@ class AchievementInfoDialog extends StatelessWidget {
               children: [
                 Text(
                   '+${achievement.rewardXp} опыта',
-                  style: AppTheme.achievementXp.copyWith(
-                      color: Colors.amber[700]),
+                  style: AppTextStyles.achievementXp,
                 ),
               ],
             ),
@@ -69,26 +67,16 @@ class AchievementInfoDialog extends StatelessWidget {
             Text(
               achievement.description,
               textAlign: TextAlign.center,
-              style: AppTheme.achievementDesc.copyWith(color: Colors.grey[800]),
+              style: AppTextStyles.achievementDesc,
             ),
             const SizedBox(height: 20),
 
             // Кнопка закрытия
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 10,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
               child: Text(
                 'Закрыть',
-                style: AppTheme.buttonWhiteBold,
+                style: AppTextStyles.buttonText,
               ),
             ),
           ],

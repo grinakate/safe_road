@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme.dart';
+
 class ResultScreen extends StatefulWidget {
   final int correctAnswers;
   final int totalQuestions;
@@ -82,7 +84,7 @@ class _ResultScreenState extends State<ResultScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text('Результаты теста')),
+      appBar: AppBar(title: const Text('Результаты теста')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -91,26 +93,24 @@ class _ResultScreenState extends State<ResultScreen> {
             children: [
               Text(
                 'Тест завершен!',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: AppTextStyles.titleLarge,
               ),
               SizedBox(height: 20),
-              Text('Вы ответили правильно на:', style: TextStyle(fontSize: 18)),
+              Text('Вы ответили правильно на:', style: AppTextStyles.bodyLarge),
               Text(
                 '${widget.correctAnswers} из ${widget.totalQuestions}',
-                style: TextStyle(
+                style: AppTextStyles.headlineLarge.copyWith(
                   fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue,
+                  color: AppColors.primaryGreen,
                 ),
               ),
               SizedBox(height: 20),
-              Text('Общий заработанный опыт:', style: TextStyle(fontSize: 18)),
+              Text('Общий заработанный опыт:', style: AppTextStyles.bodyLarge),
               Text(
                 '${widget.totalExperience}',
-                style: TextStyle(
+                style: AppTextStyles.headlineLarge.copyWith(
                   fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.orange,
+                  color: AppColors.orangeCatAccent,
                 ),
               ),
               SizedBox(height: 40),
@@ -118,7 +118,7 @@ class _ResultScreenState extends State<ResultScreen> {
                 onPressed: () {
                   Navigator.popUntil(context, (route) => route.isFirst);
                 },
-                child: Text('Вернуться на карту'),
+                child: const Text('Вернуться на карту'),
               ),
             ],
           ),

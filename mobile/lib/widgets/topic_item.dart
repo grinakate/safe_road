@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:safe_road/core/constants.dart';
 
 import '../models/topic.dart';
 import '../models/topic_status.dart';
@@ -35,12 +34,12 @@ class TopicItem extends StatelessWidget {
         : alignmentsToLeft[index];
     final status = topic.status;
     final color = status == TopicStatus.LOCKED
-        ? Colors.grey.shade400
-        : AppConstants.greenTestColor;
+        ? AppColors.greyBorder
+        : AppColors.primaryGreen;
     final icon = status == TopicStatus.LOCKED
         ? Icons.lock
         : (status == TopicStatus.COMPLETED ? Icons.check : null);
-    final iconColor = icon == Icons.lock ? Colors.brown : Colors.white;
+    final iconColor = icon == Icons.lock ? AppColors.darkBrownText : AppColors.white;
 
     return Align(
       alignment: align,
@@ -69,8 +68,8 @@ class TopicItem extends StatelessWidget {
                       boxShadow: [
                         BoxShadow(
                           color: icon == Icons.lock
-                              ? Colors.black.withAlpha(64)
-                              : Colors.white.withAlpha(128),
+                              ? AppColors.darkBrownText.withAlpha(64)
+                              : AppColors.white.withAlpha(128),
                           blurRadius: 9,
                           offset: const Offset(0, 0),
                         ),

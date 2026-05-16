@@ -4,7 +4,6 @@ import 'package:safe_road/models/topic.dart';
 import 'package:safe_road/screens/quiz_screen.dart';
 import 'package:safe_road/widgets/road_header.dart';
 
-import '../core/constants.dart';
 import '../core/service_locator.dart';
 import '../models/question.dart';
 import '../models/section.dart';
@@ -14,6 +13,7 @@ import '../services/map_service.dart';
 import '../services/quiz_service.dart';
 import '../services/user_service.dart';
 import '../widgets/section_header.dart';
+import '../theme.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -121,7 +121,6 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: FutureBuilder(
           future: _loadingFutures,
@@ -140,14 +139,8 @@ class _MapScreenState extends State<MapScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AppBar(
-                      backgroundColor: Colors.white,
                       title: Text(
                         "Безопасная дорога",
-                          style: const TextStyle(
-                            color: Colors.brown,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
                       ),
                     ),
                     RoadHeader(profile: _currentUserProfile!),
@@ -172,9 +165,12 @@ class _MapScreenState extends State<MapScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text("Не удалось загрузить данные."),
+          Text("Не удалось загрузить данные.", style: AppTextStyles.bodyLarge),
           const SizedBox(height: 10),
-          ElevatedButton(onPressed: loadData, child: const Text("Повторить")),
+          ElevatedButton(
+            onPressed: loadData,
+            child: const Text("Повторить"),
+          ),
         ],
       ),
     );
@@ -256,12 +252,12 @@ class _MapScreenState extends State<MapScreen> {
   Widget _buildTopicWidget(Topic topic, int sectionId) {
     final status = topic.status;
     final color = status == TopicStatus.LOCKED
-        ? Colors.grey.shade400
-        : AppConstants.greenTestColor;
+        ? AppColors.greyBorder
+        : AppColors.primaryGreen;
     final icon = status == TopicStatus.LOCKED
         ? Icons.lock
         : (status == TopicStatus.COMPLETED ? Icons.check : null);
-    final iconColor = icon == Icons.lock ? Colors.brown : Colors.white;
+    final iconColor = icon == Icons.lock ? AppColors.darkBrownText : AppColors.white;
 
     return Expanded(
       child: Container(
@@ -287,8 +283,8 @@ class _MapScreenState extends State<MapScreen> {
                       boxShadow: [
                         BoxShadow(
                           color: icon == Icons.lock
-                              ? Colors.black.withAlpha(64)
-                              : Colors.white.withAlpha(128),
+                              ? AppColors.darkBrownText.withAlpha(64)
+                              : AppColors.white.withAlpha(128),
                           blurRadius: 9,
                           offset: const Offset(0, 0),
                         ),
@@ -308,10 +304,7 @@ class _MapScreenState extends State<MapScreen> {
                     textAlign: TextAlign.center,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                    ),
+                    style: AppTextStyles.topicNumber,
                   ),
                 ],
               ),
@@ -323,10 +316,7 @@ class _MapScreenState extends State<MapScreen> {
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: AppConstants.borderColor,
-                  fontSize: 14,
-                ),
+                style: AppTextStyles.topicName,
               ),
             ),
           ],
