@@ -20,26 +20,23 @@ class TokenResponse {
 }
 
 class UserRegisterRequest {
-  final String name;
+  final String nickname;
   final String email;
   final DateTime birthDate;
   final String password;
-  final int avatarId;
 
   UserRegisterRequest({
-    required this.name,
+    required this.nickname,
     required this.email,
     required this.birthDate,
     required this.password,
-    required this.avatarId,
   });
 
   Map<String, dynamic> toJson() => {
-    'name': name,
+    'nickname': nickname,
     'email': email,
     'birthDate':
         "${birthDate.year.toString().padLeft(4, '0')}-${birthDate.month.toString().padLeft(2, '0')}-${birthDate.day.toString().padLeft(2, '0')}",
     'password': password,
-    'avatarId': avatarId,
   };
 }

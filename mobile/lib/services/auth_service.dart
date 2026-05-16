@@ -12,7 +12,7 @@ class AuthService {
 
   Future<String?> login(String email, String password) async {
     final response = await _apiClient.post(
-      '/api/auth/login',
+      '/api/v1/auth/login',
       LoginRequest(email: email, password: password).toJson(),
       requireAuth: false,
     );
@@ -27,7 +27,7 @@ class AuthService {
 
   Future<String?> register(UserRegisterRequest request) async {
     final response = await _apiClient.post(
-      '/api/auth/register',
+      '/api/v1/auth/register',
       request.toJson(),
       requireAuth: false,
     );

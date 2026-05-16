@@ -9,7 +9,7 @@ class QuizService {
   QuizService(this._apiClient);
 
   Future<List<Question>> fetchQuizData(int topicId) async {
-    final response = await _apiClient.get('/api/learning/topics/${topicId}/quiz');
+    final response = await _apiClient.get('/api/v1/learning/topics/${topicId}/quiz');
 
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
@@ -22,7 +22,7 @@ class QuizService {
   }
 
   Future<FinalQuizResult> submitAllAnswers(QuizFullSubmission request) async {
-    final response = await _apiClient.post('/api/profile/quiz/submit', request);
+    final response = await _apiClient.post('/api/v1/profile/quiz/submit', request);
 
     if (response.statusCode == 200) {
       return FinalQuizResult.fromJson(jsonDecode(response.body));

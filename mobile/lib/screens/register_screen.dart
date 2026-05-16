@@ -45,11 +45,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => _isLoading = true);
 
     final request = UserRegisterRequest(
-      name: _nameController.text,
+      nickname: _nameController.text,
       email: _emailController.text,
       password: _passwordController.text,
       birthDate: _birthDate,
-      avatarId: 1,
     );
 
     final token = await _authService.register(request);
