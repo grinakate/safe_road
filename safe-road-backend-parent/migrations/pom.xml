@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>ru.itmo</groupId>
-		<artifactId>safe-road-backend-parent</artifactId>
+		<artifactId>safe-road-backend</artifactId>
 		<relativePath>../pom.xml</relativePath>
 		<version>1.0.0</version>
 	</parent>
