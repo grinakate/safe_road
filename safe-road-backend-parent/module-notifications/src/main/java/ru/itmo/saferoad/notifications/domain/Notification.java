@@ -41,7 +41,7 @@ public class Notification {
 	@NonNull
 	@JdbcTypeCode(SqlTypes.JSON)
 	@Column(name = "content", nullable = false, columnDefinition = "jsonb")
-	private Map<String, Object> content;
+	private String content;
 
 	@NonNull
 	@Column(name = "created_at", nullable = false)

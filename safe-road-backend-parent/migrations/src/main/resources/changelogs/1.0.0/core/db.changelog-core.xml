@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
-    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
-    <changeSet id="core-001-pending-events" author="safe-road">
-        <createTable tableName="pending_events">
-            <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true" primaryKeyName="pending_events_pkey"/>
-            </column>
-            <column name="type" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="status" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="content" type="JSONB">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
+	<changeSet id="core-create_pending_events" author="safe-road">
+		<createTable tableName="pending_events">
+			<column name="id" type="BIGINT" autoIncrement="true">
+				<constraints primaryKey="true"
+							 primaryKeyName="pending_events_pkey"
+							 nullable="false"/>
+			</column>
+			<column name="type" type="VARCHAR(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="status" type="VARCHAR(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="content" type="JSONB">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
 </databaseChangeLog>

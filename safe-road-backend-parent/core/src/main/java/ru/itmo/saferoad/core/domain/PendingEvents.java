@@ -1,6 +1,5 @@
 package ru.itmo.saferoad.core.domain;
 
-import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,8 +14,9 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcType;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
+import org.hibernate.type.SqlTypes;
 import ru.itmo.saferoad.core.domain.enums.EventType;
 import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 
@@ -47,7 +47,7 @@ public class PendingEvents {
 	@Column(nullable = false)
 	private ProgressStatus status;
 
-	@Type(JsonType.class)
+	@JdbcTypeCode(SqlTypes.JSON)
 	@Column(columnDefinition = "jsonb", nullable = false)
 	private Map<String, Object> content;
 }
