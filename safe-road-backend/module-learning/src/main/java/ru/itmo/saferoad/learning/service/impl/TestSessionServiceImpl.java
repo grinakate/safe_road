@@ -23,6 +23,7 @@ import ru.itmo.saferoad.learning.dto.TestErrorResponse;
 import ru.itmo.saferoad.learning.dto.TestQuestionResponse;
 import ru.itmo.saferoad.learning.dto.TestResultResponse;
 import ru.itmo.saferoad.learning.dto.TestSessionSubmitResponse;
+import ru.itmo.saferoad.learning.config.LearningProperties;
 import ru.itmo.saferoad.learning.service.TestSessionService;
 import ru.itmo.saferoad.learning.service.UserQuestionStatsService;
 
@@ -43,6 +44,7 @@ public class TestSessionServiceImpl implements TestSessionService {
 	private final CreatePendingEventsService createPendingEventsService;
 	private final QuestionRepository questionRepository;
 	private final UserQuestionStatsRepository userQuestionStatsRepository;
+	private final LearningProperties learningProperties;
 
 	@Override
 	@Transactional
@@ -137,8 +139,8 @@ public class TestSessionServiceImpl implements TestSessionService {
 		Collections.shuffle(newQuestions);
 		Collections.shuffle(knownQuestions);
 
-		int maxReview = (int) Math.floor(targetCount * 0.6);
-		int maxNew = (int) Math.floor(targetCount * 0.3);
+		int maxReview = (int) Math.floor(targetCount * learningProperties.getReviewRatio());
+		int maxNew = (int) Math.floor(targetCount * learningProperties.getNewRatio());
 		int maxKnown = targetCount - (maxReview + maxNew);
 
 		// 1) 60% Review

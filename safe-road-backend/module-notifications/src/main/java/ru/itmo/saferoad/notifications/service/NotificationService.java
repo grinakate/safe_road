@@ -1,6 +1,7 @@
 package ru.itmo.saferoad.notifications.service;
 
 import lombok.NonNull;
+import ru.itmo.saferoad.core.event.dto.notifications.NotificationType;
 import ru.itmo.saferoad.notifications.domain.Notification;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface NotificationService {
 	List<Notification> getUnreadByUserId(@NonNull Long userId);
 
 	@NonNull
-	Notification create(@NonNull Long userId, @NonNull String title, @NonNull String content);
+	Notification create(@NonNull Long userId, @NonNull NotificationType type, @NonNull String content);
 
 	void markAsRead(@NonNull Long notificationId);
 

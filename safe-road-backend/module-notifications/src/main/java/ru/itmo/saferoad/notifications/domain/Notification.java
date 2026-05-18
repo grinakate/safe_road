@@ -36,7 +36,7 @@ public class Notification {
 
 	@NonNull
 	@Column(name = "title", nullable = false)
-	private String title;
+	private String type;
 
 	@NonNull
 	@JdbcTypeCode(SqlTypes.JSON)

@@ -17,14 +17,14 @@ public class LevelServiceImpl implements LevelService {
 	@Override
 	public Double getXpProgress(@NotNull Integer currentLevelNumber, @NotNull Integer currentXp) {
 		Level currentLevel = repository.findByNumber(currentLevelNumber).orElseThrow();
-		Level nextLevel = repository.findByNumber(currentLevelNumber + 1).orElse(null);
+		Level previosLevel = repository.findByNumber(currentLevelNumber - 1).orElse(null);
 
-		if (nextLevel == null) {
+		if (previosLevel == null) {
 			return 1.0;
 		}
 
-		return (double) (currentXp - currentLevel.getXpThreshold())
-			   / (nextLevel.getXpThreshold() - currentLevel.getXpThreshold());
+		return (double) (currentLevel.getXpThreshold() - currentXp)
+			   / (double) (currentLevel.getXpThreshold() - previosLevel.getXpThreshold());
 	}
 
 	@NotNull

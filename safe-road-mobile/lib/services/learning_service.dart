@@ -21,7 +21,7 @@ class LearningService {
   }
 
   Future<List<Question>> fetchQuizData(int topicId) async {
-    final response = await _apiClient.get('/learning/test/${topicId}/quiz');
+    final response = await _apiClient.get('/learning/test/$topicId/quiz');
 
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);

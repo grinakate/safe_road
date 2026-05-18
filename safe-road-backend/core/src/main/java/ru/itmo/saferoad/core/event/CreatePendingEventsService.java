@@ -10,6 +10,7 @@ import ru.itmo.saferoad.core.domain.repository.PendingEventsRepository;
 import ru.itmo.saferoad.core.event.dto.CreateGameProfileEvent;
 import ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent;
 import ru.itmo.saferoad.core.event.dto.UnlockFirstTopicEvent;
+import ru.itmo.saferoad.core.event.dto.NotificationEvent;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDateTime;
@@ -32,6 +33,10 @@ public class CreatePendingEventsService {
 
 	public void publishUnlockFirstTopicEvent(@NonNull UnlockFirstTopicEvent content) {
 		publishEvent(EventType.OPEN_FIRST_TOPIC, content);
+	}
+
+	public void publishCreateNotificationEvent(@NonNull NotificationEvent content) {
+		publishEvent(EventType.CREATE_NOTIFICATION, content);
 	}
 
 	private void publishEvent(@NonNull EventType eventType, Object content) {

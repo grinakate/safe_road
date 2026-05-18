@@ -3,6 +3,7 @@ package ru.itmo.saferoad.notifications.service.impl;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.itmo.saferoad.core.event.dto.notifications.NotificationType;
 import ru.itmo.saferoad.notifications.domain.Notification;
 import ru.itmo.saferoad.notifications.domain.repository.NotificationRepository;
 import ru.itmo.saferoad.notifications.service.NotificationService;
@@ -28,11 +29,11 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	@Override
-	public @NonNull Notification create(@NonNull Long userId, @NonNull String title, @NonNull String content) {
+	public @NonNull Notification create(@NonNull Long userId, @NonNull NotificationType type, @NonNull String content) {
 
 		Notification notification = new Notification();
 		notification.setUserId(userId);
-		notification.setTitle(title);
+		notification.setType(type.name());
 		notification.setContent(content);
 		notification.setCreatedAt(LocalDateTime.now());
 		notification.setIsRead(false);
