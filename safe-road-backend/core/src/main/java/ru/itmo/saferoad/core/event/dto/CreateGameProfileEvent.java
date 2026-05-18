@@ -1,4 +1,4 @@
-package ru.itmo.saferoad.core.event;
+package ru.itmo.saferoad.core.event.dto;
 
 import lombok.Data;
 import lombok.NonNull;
@@ -6,7 +6,7 @@ import lombok.NonNull;
 import java.time.LocalDate;
 
 @Data
-public class UserRegisteredEvent {
+public class CreateGameProfileEvent {
 
 	@NonNull
 	private Long userId;

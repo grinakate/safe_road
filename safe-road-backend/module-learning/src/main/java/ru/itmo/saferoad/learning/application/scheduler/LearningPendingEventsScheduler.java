@@ -1,4 +1,4 @@
-package ru.itmo.saferoad.gamification.application.scheduler;
+package ru.itmo.saferoad.learning.application.scheduler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -16,20 +16,20 @@ import java.util.concurrent.Executors;
 
 @Slf4j
 @Component
-public class GamificationPendingEventsScheduler {
+public class LearningPendingEventsScheduler {
 
-	private static final List<EventType> GAMIFICATION_EVENT_TYPES = List.of(
-			EventType.CREATE_GAME_PROFILE
+	private static final List<EventType> LEARNING_EVENT_TYPES = List.of(
+			EventType.OPEN_FIRST_TOPIC
 	);
 
 	private final ExecutorService executorService;
 	private final EventExecutor eventExecutor;
-	private final GamificationPendingEventsProperties properties;
+	private final LearningPendingEventsProperties properties;
 	private final PendingEventsRepository pendingEventsRepository;
 
-	public GamificationPendingEventsScheduler(PendingEventsRepository pendingEventsRepository,
-											  EventExecutor eventExecutor,
-											  GamificationPendingEventsProperties properties) {
+	public LearningPendingEventsScheduler(PendingEventsRepository pendingEventsRepository,
+										  EventExecutor eventExecutor,
+										  LearningPendingEventsProperties properties) {
 		this.pendingEventsRepository = pendingEventsRepository;
 		this.eventExecutor = eventExecutor;
 		this.executorService = Executors.newFixedThreadPool(properties.getScheduledTreadCount());
@@ -38,18 +38,18 @@ public class GamificationPendingEventsScheduler {
 
 	@Scheduled(fixedDelay = 5000)
 	public void processPendingEvents() {
-		log.info("Running scheduled check for pending gamification events...");
+		log.info("Running scheduled check for pending learning events...");
 
 		List<PendingEvent> events = pendingEventsRepository.findByStatusAndTypeIn(
-				ProgressStatus.PENDING, GAMIFICATION_EVENT_TYPES, Pageable.ofSize(properties.getScheduledTreadCount())
+				ProgressStatus.PENDING, LEARNING_EVENT_TYPES, Pageable.ofSize(properties.getScheduledTreadCount())
 		);
 
 		if (events.isEmpty()) {
-			log.debug("No gamification pending events found");
+			log.debug("No learning pending events found");
 			return;
 		}
 
-		log.info("Found {} gamification pending events to process", events.size());
+		log.info("Found {} learning pending events to process", events.size());
 
 		for (PendingEvent event : events) {
 			executorService.submit(() -> {

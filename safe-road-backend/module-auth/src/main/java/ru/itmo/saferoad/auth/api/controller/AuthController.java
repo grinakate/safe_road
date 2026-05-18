@@ -26,7 +26,8 @@ import ru.itmo.saferoad.auth.infrastructure.mapper.UsersMapper;
 import ru.itmo.saferoad.auth.infrastructure.security.AppUserDetailsImpl;
 import ru.itmo.saferoad.auth.infrastructure.security.JwtUtils;
 import ru.itmo.saferoad.core.event.CreatePendingEventsService;
-import ru.itmo.saferoad.core.event.UserRegisteredEvent;
+import ru.itmo.saferoad.core.event.dto.CreateGameProfileEvent;
+import ru.itmo.saferoad.core.event.dto.UnlockFirstTopicEvent;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -92,8 +93,9 @@ public class AuthController {
 		Users user = usersMapper.mapToEntity(request, passwordHash);
 		Users savedUser = userService.save(user);
 
-		createPendingEventsService.publishUserRegisteredEvent(
-				new UserRegisteredEvent(savedUser.getId(), savedUser.getBirthDate().toLocalDate()));
+		createPendingEventsService.publishCreateGameProfileEvent(
+				new CreateGameProfileEvent(savedUser.getId(), savedUser.getBirthDate().toLocalDate()));
+		createPendingEventsService.publishUnlockFirstTopicEvent(new UnlockFirstTopicEvent(savedUser.getId()));
 
 		return ResponseEntity.ok(new TokenResponse(jwtUtils.generateToken(savedUser)));
 	}

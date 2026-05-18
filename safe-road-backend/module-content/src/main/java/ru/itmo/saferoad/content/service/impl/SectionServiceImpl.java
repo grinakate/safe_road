@@ -36,4 +36,11 @@ public class SectionServiceImpl implements SectionService {
 		return sectionRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("Section with id " + id + " does not exist"));
 	}
+
+	@NonNull
+	@Override
+	public Section getFirstSection() {
+		return sectionRepository.findFirstByOrderByOrderIndexAsc()
+				.orElseThrow(() -> new IllegalArgumentException("Section with id " + 1 + " does not exist"));
+	}
 }

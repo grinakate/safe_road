@@ -3,6 +3,7 @@ package ru.itmo.saferoad.learning.service.impl;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.itmo.saferoad.content.domain.Topic;
 import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 import ru.itmo.saferoad.learning.domain.UserTopicProgress;
 import ru.itmo.saferoad.learning.domain.UserTopicProgressId;
@@ -37,5 +38,14 @@ public class UserTopicProgressServiceImpl implements UserTopicProgressService {
 	@Override
 	public long countCompletedTopicsInSection(@NonNull Long userId, @NonNull Integer sectionId) {
 		return repository.countCompletedTopicsInSection(userId, sectionId);
+	}
+
+	@Override
+	public void unlockTopic(@NonNull Long userId, @NonNull Topic topic) {
+		var userTopicProgress = new UserTopicProgress();
+		userTopicProgress.setUserId(userId);
+		userTopicProgress.setTopicId(topic.getId());
+		userTopicProgress.setStatus(ProgressStatus.UNLOCKED);
+		repository.save(userTopicProgress);
 	}
 }

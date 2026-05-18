@@ -15,4 +15,7 @@ public interface SectionService {
 
 	@NonNull
 	Section existingById(@NonNull Integer id);
+
+	@NonNull
+	Section getFirstSection();
 }
