@@ -14,4 +14,7 @@ public class GamificationPendingEventsProperties {
 
 	@NotNull
 	private Integer scheduledTreadCount = 10;
+
+	@NotNull
+	private Long scheduledPollIntervalMs = 5000L;
 }

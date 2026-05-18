@@ -36,7 +36,7 @@ public class NotificationsPendingEventsScheduler {
         this.properties = properties;
     }
 
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelayString = "${notifications.scheduler-poll-interval-ms:5000}")
     public void processPendingEvents() {
         log.info("Running scheduled check for pending notification events...");
 

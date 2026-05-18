@@ -10,7 +10,7 @@ import ru.itmo.saferoad.notifications.service.NotificationService;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +25,12 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Override
 	public @NonNull List<Notification> getUnreadByUserId(@NonNull Long userId) {
-		return notificationRepository.findByUserIdAndIsReadFalse(userId);
+		return notificationRepository.findByUserIdInAndIsReadFalse(Set.of(userId));
+	}
+
+	@Override
+	public List<Long> getUnreadIdsByUserIds(@NonNull Set<Long> userIds) {
+		return notificationRepository.findIdsByUserIdInAndIsReadFalse(userIds);
 	}
 
 	@Override
@@ -51,7 +56,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Override
 	public void markAllAsRead(@NonNull Long userId) {
-		List<Notification> unreadNotifications = notificationRepository.findByUserIdAndIsReadFalse(userId);
+		List<Notification> unreadNotifications = notificationRepository.findByUserIdInAndIsReadFalse(Set.of(userId));
 		unreadNotifications.forEach(n -> n.setIsRead(true));
 		notificationRepository.saveAll(unreadNotifications);
 	}
@@ -59,6 +64,19 @@ public class NotificationServiceImpl implements NotificationService {
 	@Override
 	public long getUnreadCount(@NonNull Long userId) {
 		return notificationRepository.countByUserIdAndIsReadFalse(userId);
+	}
+
+	@Override
+	public @NonNull Notification save(@NonNull Notification notification) {
+		return notificationRepository.save(notification);
+	}
+
+	@NonNull
+	@Override
+	public Notification existingByIdAndLock(@NonNull Long notificationId) {
+		return notificationRepository.findByIdAndLock(notificationId).orElseThrow(
+				() -> new IllegalArgumentException("Notification with id " + notificationId + " does not exist")
+		);
 	}
 }
 

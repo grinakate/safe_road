@@ -36,7 +36,7 @@ public class LearningPendingEventsScheduler {
 		this.properties = properties;
 	}
 
-	@Scheduled(fixedDelay = 5000)
+	@Scheduled(fixedDelayString = "${learning.events.scheduler-poll-interval-ms:5000}")
 	public void processPendingEvents() {
 		log.info("Running scheduled check for pending learning events...");
 
