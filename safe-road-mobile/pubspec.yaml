@@ -43,6 +43,7 @@ dependencies:
   flutter_secure_storage: ^10.0.0 # Для безопасного хранения токенов
   get_it: ^9.2.1 # Для управления зависимостями и сервисами
   cached_network_image: ^3.4.1 # Для кэширования изображений и улучшения производительности
+  flutter_client_sse: ^2.0.3 # Для работы с Server-Sent Events (SSE) и получения обновлений в реальном времени
 
 dev_dependencies:
   flutter_test:
