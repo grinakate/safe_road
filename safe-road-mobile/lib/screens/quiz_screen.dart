@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:safe_road/screens/result_screen.dart';
-import 'package:safe_road/services/quiz_service.dart';
+import 'package:safe_road/services/learning_service.dart';
 import '../theme.dart';
 
 import '../models/question.dart';
@@ -73,7 +73,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
     try {
       final submission = QuizFullSubmission(answers: _userAnswers);
-      final finalResult = await GetIt.I<QuizService>().submitAllAnswers(
+      final finalResult = await GetIt.I<LearningService>().submitAllAnswers(
         submission,
       );
 

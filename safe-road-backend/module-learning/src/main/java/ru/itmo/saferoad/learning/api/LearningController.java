@@ -8,11 +8,19 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itmo.saferoad.content.service.QuestionService;
 import ru.itmo.saferoad.core.security.AppUserDetails;
+import ru.itmo.saferoad.learning.dto.StartTestRequest;
+import ru.itmo.saferoad.learning.dto.StartTestResponse;
+import ru.itmo.saferoad.learning.dto.SubmitSessionAnswerRequest;
+import ru.itmo.saferoad.learning.dto.TestQuestionResponse;
+import ru.itmo.saferoad.learning.dto.TestResultResponse;
+import ru.itmo.saferoad.learning.dto.TestSessionSubmitResponse;
 import ru.itmo.saferoad.learning.dto.UserRoadMapResponse;
+import ru.itmo.saferoad.learning.service.TestSessionService;
 import ru.itmo.saferoad.learning.service.UserQuestionStatsService;
 
 import java.util.List;
@@ -23,28 +31,37 @@ import java.util.List;
 @RequestMapping("/api/v1/learning")
 public class LearningController {
 
+	private final MapService mapService;
+	private final TestSessionService testSessionService;
+
 	@PostMapping("/test/start")
-	public ResponseEntity<?> startTest() {
-		// TODO: Implement
-		return ResponseEntity.ok().build();
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<StartTestResponse> startTest(@RequestBody StartTestRequest request,
+													   @AuthenticationPrincipal AppUserDetails user) {
+		return ResponseEntity.ok(testSessionService.startTest(request, user.getId()));
 	}
 
 	@GetMapping("/test/{sessionId}/questions")
-	public ResponseEntity<?> getTestQuestions(@PathVariable Long sessionId) {
-		// TODO: Implement
-		return ResponseEntity.ok().build();
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<List<TestQuestionResponse>> getTestQuestions(@PathVariable Integer sessionId,
+																	   @AuthenticationPrincipal AppUserDetails user) {
+		return ResponseEntity.ok(testSessionService.getTestQuestions(sessionId, user.getId()));
 	}
 
 	@PostMapping("/test/{sessionId}/submit-answer")
-	public ResponseEntity<?> submitSessionAnswer(@PathVariable Long sessionId) {
-		// TODO: Implement
-		return ResponseEntity.ok().build();
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<TestSessionSubmitResponse> submitSessionAnswer(
+			@PathVariable Integer sessionId,
+			@RequestBody SubmitSessionAnswerRequest request,
+			@AuthenticationPrincipal AppUserDetails user) {
+		return ResponseEntity.ok(testSessionService.submitSessionAnswer(sessionId, request, user.getId()));
 	}
 
 	@GetMapping("/test/{sessionId}/result")
-	public ResponseEntity<?> getTestResult(@PathVariable Long sessionId) {
-		// TODO: Implement
-		return ResponseEntity.ok().build();
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<TestResultResponse> getTestResult(@PathVariable Integer sessionId,
+															@AuthenticationPrincipal AppUserDetails user) {
+		return ResponseEntity.ok(testSessionService.getTestResult(sessionId, user.getId()));
 	}
 
 	@GetMapping("/statistics")
@@ -53,15 +70,10 @@ public class LearningController {
 		return ResponseEntity.ok().build();
 	}
 
-	private final MapService mapService;
-	private final QuestionService questionService;
-	private final UserQuestionStatsService userQuestionStatsService;
-
 	@GetMapping("/roadmap")
 	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<List<UserRoadMapResponse>> getUserMap(
-			@AuthenticationPrincipal AppUserDetails currentUser) {
-		return ResponseEntity.ok(mapService.getMapForUser(currentUser.getId()));
+	public ResponseEntity<List<UserRoadMapResponse>> getUserMap(@AuthenticationPrincipal AppUserDetails user) {
+		return ResponseEntity.ok(mapService.getMapForUser(user.getId()));
 	}
 
 /*	@PostMapping("/questions/{questionId}/submit")
@@ -69,10 +81,10 @@ public class LearningController {
 	public ResponseEntity<SubmitAnswerResponse> submitAnswer(
 			@PathVariable Long questionId,
 			@Valid @RequestBody SubmitAnswerRequest request,
-			@AuthenticationPrincipal AppUserDetails currentUser
+			@AuthenticationPrincipal AppUserDetails user
 	) {
 		SubmitAnswerResponse response = userQuestionStatsService.submitAnswer(
-				currentUser.getId(),
+				user.getId(),
 				questionId,
 				request.answerId()
 		);
@@ -82,7 +94,7 @@ public class LearningController {
 /*	@GetMapping("/topics/{topicId}/quiz")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<List<QuestionResponse>> getQuiz(@PathVariable Integer topicId,
-														  @AuthenticationPrincipal AppUserDetails currentUser) {
+														  @AuthenticationPrincipal AppUserDetails user) {
 		var questions = questionService.getByTopicId(topicId).stream()
 				.map(question -> new QuestionResponse(
 						question.getId(),
@@ -102,5 +114,3 @@ public class LearningController {
 		return ResponseEntity.ok(questions);
 	}*/
 }
-
-

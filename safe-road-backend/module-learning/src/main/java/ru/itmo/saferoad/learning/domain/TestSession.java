@@ -36,11 +36,11 @@ public class TestSession {
 	@Id
 	@NonNull
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Long id;
 
 	@NonNull
 	@Column(name = "user_id", nullable = false)
-	private Long user_id;
+	private Long userId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "topic_id")

@@ -132,7 +132,6 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
                         : '${AvatarManager.getAvailableAvatarMap()[_selectedAvatarId!]?.minLevel.toString()} Уровень',
                     style: AppTextStyles.buttonText,
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                   ),
                 ),

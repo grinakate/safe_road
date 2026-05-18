@@ -1,5 +1,5 @@
 import 'package:get_it/get_it.dart';
-import 'package:safe_road/services/quiz_service.dart';
+import 'package:safe_road/services/learning_service.dart';
 
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
@@ -23,5 +23,5 @@ void setupLocator() {
   getIt.registerLazySingleton<LearningService>(() => LearningService(getIt<ApiV1Client>()));
 
   getIt.registerLazySingleton(() => GameProfileService(getIt<ApiV1Client>()));
-  getIt.registerLazySingleton(() => QuizService(getIt<ApiV1Client>()));
+  getIt.registerLazySingleton(() => LearningService(getIt<ApiV1Client>()));
 }

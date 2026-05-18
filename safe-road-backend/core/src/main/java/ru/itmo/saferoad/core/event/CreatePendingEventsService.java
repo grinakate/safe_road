@@ -8,6 +8,7 @@ import ru.itmo.saferoad.core.domain.enums.EventType;
 import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 import ru.itmo.saferoad.core.domain.repository.PendingEventsRepository;
 import ru.itmo.saferoad.core.event.dto.CreateGameProfileEvent;
+import ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent;
 import ru.itmo.saferoad.core.event.dto.UnlockFirstTopicEvent;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -25,8 +26,8 @@ public class CreatePendingEventsService {
 		publishEvent(EventType.CREATE_GAME_PROFILE, content);
 	}
 
-	public void publishTestSessionCompletedEvent(@NonNull Long testSessionId) {
-		publishEvent(EventType.TEST_SESSIONS_COMPLETED, Map.of("testSessionId", testSessionId));
+	public void publishTestSessionCompletedEvent(@NonNull TestSessionCompletedEvent content) {
+		publishEvent(EventType.TEST_SESSIONS_COMPLETED, content);
 	}
 
 	public void publishUnlockFirstTopicEvent(@NonNull UnlockFirstTopicEvent content) {

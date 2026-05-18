@@ -9,8 +9,8 @@ import '../models/question.dart';
 import '../models/section.dart';
 import '../models/topic_status.dart';
 import '../models/game_profile.dart';
-import '../services/road_map_service.dart';
-import '../services/quiz_service.dart';
+import '../services/road_map_service.dart' hide LearningService;
+import '../services/learning_service.dart';
 import '../services/game_profile_service.dart';
 import '../widgets/section_header.dart';
 import '../theme.dart';
@@ -77,7 +77,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
     }
   }
 
-  final QuizService _quizService = GetIt.instance<QuizService>();
+  final LearningService _quizService = GetIt.instance<LearningService>();
 
   Future<void> _fetchAndStartQuizForTheme(int themeId) async {
     if (_isQuizLoading) return;
