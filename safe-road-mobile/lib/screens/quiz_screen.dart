@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:safe_road/screens/result_screen.dart';
 import 'package:safe_road/services/learning_service.dart';
+import 'package:safe_road/services/notification_service.dart';
 import '../theme.dart';
 
 import '../models/question.dart';
@@ -42,6 +43,16 @@ class _QuizScreenState extends State<QuizScreen> {
     });
   }
 
+  @override
+  void initState() {
+    super.initState();
+    // Помечаем, что пользователь занят прохождением теста — уведомления будут откладываться
+    try {
+      final notificationService = GetIt.I<NotificationService>();
+      notificationService.setBusy(true);
+    } catch (_) {}
+  }
+
   void _handleNextQuestion() {
     // Сохраняем ответ пользователя для текущего вопроса
     _userAnswers.add(
@@ -64,6 +75,15 @@ class _QuizScreenState extends State<QuizScreen> {
     }
   }
 
+  @override
+  void dispose() {
+    // Сбрасываем флаг занятости при уходе со страницы
+    try {
+      final notificationService = GetIt.I<NotificationService>();
+      notificationService.setBusy(false);
+    } catch (_) {}
+    super.dispose();
+  }
   Future<void> _sendFinalResultsAndNavigate() async {
     if (_isLoading) return; // Предотвращаем множественные нажатия
 
@@ -88,6 +108,11 @@ class _QuizScreenState extends State<QuizScreen> {
             ),
           ),
         );
+        // Сбрасываем флаг занятости — тест завершён, можно показывать отложенные уведомления
+        try {
+          final notificationService = GetIt.I<NotificationService>();
+          notificationService.setBusy(false);
+        } catch (_) {}
       }
     } catch (e) {
       if (mounted) {
