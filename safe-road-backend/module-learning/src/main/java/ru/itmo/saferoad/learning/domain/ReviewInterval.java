@@ -15,7 +15,7 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor
 @EqualsAndHashCode(of = "streakLevel")
-@Table(name = "\"ReviewIntervals\"")
+@Table(name = "review_intervals")
 public class ReviewInterval {
 
 	@Id

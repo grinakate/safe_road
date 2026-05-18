@@ -7,4 +7,7 @@ public interface AppUserDetails extends UserDetails {
 
 	@NonNull
 	Long getId();
+
+	@NonNull
+	String getNickname();
 }

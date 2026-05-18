@@ -40,7 +40,7 @@
 				<constraints nullable="false"/>
 			</column>
 			<column name="order_index" type="INTEGER">
-				<constraints nullable="false" unique="true"/>
+				<constraints nullable="false"/>
 			</column>
 			<column name="is_active" type="BOOLEAN">
 				<constraints nullable="false"/>

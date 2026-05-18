@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "\"Avatars\"")
+@Table(name = "avatars")
 @EqualsAndHashCode(of = "id")
 public class Avatar {
 
@@ -24,10 +24,6 @@ public class Avatar {
 	@NonNull
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-
-	@NonNull
-	@Column(nullable = false)
-	private String name;
 
 	@NonNull
 	@Column(nullable = false, unique = true)

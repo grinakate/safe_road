@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "\"GameProfiles\"")
+@Table(name = "game_profiles")
 @EqualsAndHashCode(of = "userId")
 public class GameProfile {
 
@@ -46,7 +46,7 @@ public class GameProfile {
 	@Column(name = "current_streak", nullable = false)
 	private Integer currentStreak;
 
-	@Column(name = "last_activity_date", nullable = true)
+	@Column(name = "last_activity_date")
 	private LocalDateTime lastActivityDate;
 
 	@NonNull

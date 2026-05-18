@@ -25,6 +25,8 @@ import ru.itmo.saferoad.auth.domain.Users;
 import ru.itmo.saferoad.auth.infrastructure.mapper.UsersMapper;
 import ru.itmo.saferoad.auth.infrastructure.security.AppUserDetailsImpl;
 import ru.itmo.saferoad.auth.infrastructure.security.JwtUtils;
+import ru.itmo.saferoad.core.event.CreatePendingEventsService;
+import ru.itmo.saferoad.core.event.UserRegisteredEvent;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -39,6 +41,7 @@ public class AuthController {
 	private final AuthService userService;
 	private final UsersMapper usersMapper;
 	private final PasswordEncoder passwordEncoder;
+	private final CreatePendingEventsService createPendingEventsService;
 
 	@PostMapping("/logout")
 	public ResponseEntity<?> logout() {
@@ -88,6 +91,9 @@ public class AuthController {
 		String passwordHash = passwordEncoder.encode(request.getPassword());
 		Users user = usersMapper.mapToEntity(request, passwordHash);
 		Users savedUser = userService.save(user);
+
+		createPendingEventsService.publishUserRegisteredEvent(
+				new UserRegisteredEvent(savedUser.getId(), savedUser.getBirthDate().toLocalDate()));
 
 		return ResponseEntity.ok(new TokenResponse(jwtUtils.generateToken(savedUser)));
 	}

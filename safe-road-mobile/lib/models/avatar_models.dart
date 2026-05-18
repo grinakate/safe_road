@@ -1,21 +1,21 @@
 class AvatarModel {
   final int id;
-  final String name;
   final String url;
+  final bool isAvailable;
   final int minLevel;
 
   AvatarModel({
     required this.id,
-    required this.name,
     required this.url,
+    required this.isAvailable,
     required this.minLevel,
   });
 
   factory AvatarModel.fromJson(Map<String, dynamic> json) {
     return AvatarModel(
       id: json['id'],
-      name: json['name'],
       url: json['url'],
+      isAvailable: json['isAvailable'],
       minLevel: json['minLevel'],
     );
   }

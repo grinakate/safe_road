@@ -20,7 +20,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import ru.itmo.saferoad.content.domain.Section;
 import ru.itmo.saferoad.content.domain.Topic;
-import ru.itmo.saferoad.core.types.ProgressStatus;
+import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -29,7 +29,7 @@ import java.util.Map;
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "\"TestSessions\"")
+@Table(name = "test_sessions")
 @EqualsAndHashCode(of = "id")
 public class TestSession {
 

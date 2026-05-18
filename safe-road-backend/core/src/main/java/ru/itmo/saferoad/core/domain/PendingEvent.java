@@ -20,15 +20,16 @@ import org.hibernate.type.SqlTypes;
 import ru.itmo.saferoad.core.domain.enums.EventType;
 import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Getter
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "\"PendingEvents\"")
+@Table(name = "pending_events")
 @EqualsAndHashCode(of = "id")
-public class PendingEvents {
+public class PendingEvent {
 
 	@Id
 	@NonNull
@@ -48,6 +49,10 @@ public class PendingEvents {
 	private ProgressStatus status;
 
 	@JdbcTypeCode(SqlTypes.JSON)
-	@Column(columnDefinition = "jsonb", nullable = false)
-	private Map<String, Object> content;
+	@Column(columnDefinition = "jsonb")
+	private String content;
+
+	@NonNull
+	@Column(name = "created_at", nullable = false)
+	private LocalDateTime createdAt;
 }

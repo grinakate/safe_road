@@ -1,21 +1,32 @@
 import 'dart:convert';
 
+import 'package:safe_road/models/achievement.dart';
 import 'package:safe_road/models/avatar_models.dart';
 
-import '../models/user_profile.dart';
+import '../models/game_profile.dart';
 import 'api_client.dart';
 
-class UserService {
+class GameProfileService {
   final ApiV1Client _apiClient;
 
-  UserService(this._apiClient);
+  GameProfileService(this._apiClient);
 
-  Future<UserProfile> getProfile() async {
-    final response = await _apiClient.get('/profile/me');
+  Future<GameProfile> getProfile() async {
+    final response = await _apiClient.get('/gamification/me');
     if (response.statusCode == 200) {
-      return UserProfile.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+      return GameProfile.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
     }
     throw Exception('Failed to load profile');
+  }
+
+  Future<List<Achievement>> getAchievements() async {
+    final response = await _apiClient.get('/gamification/me/achievements');
+    if (response.statusCode == 200) {
+      return (jsonDecode(utf8.decode(response.bodyBytes)) as List)
+          .map((a) => Achievement.fromJson(a))
+          .toList();
+    }
+    throw Exception('Failed to load achievements');
   }
 
   Future<AvatarModel> updateAvatar(int newAvatarId) async {
@@ -31,7 +42,7 @@ class UserService {
   }
 
   Future<List<AvatarModel>> getAvailableAvatars() async {
-    final response = await _apiClient.get('/profile/avatars');
+    final response = await _apiClient.get('/gamification/avatars');
     if (response.statusCode == 200) {
       return (jsonDecode(utf8.decode(response.bodyBytes)) as List)
           .map((a) => AvatarModel.fromJson(a))

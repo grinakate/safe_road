@@ -8,10 +8,10 @@ import '../core/service_locator.dart';
 import '../models/question.dart';
 import '../models/section.dart';
 import '../models/topic_status.dart';
-import '../models/user_profile.dart';
+import '../models/game_profile.dart';
 import '../services/road_map_service.dart';
 import '../services/quiz_service.dart';
-import '../services/user_service.dart';
+import '../services/game_profile_service.dart';
 import '../widgets/section_header.dart';
 import '../theme.dart';
 
@@ -25,7 +25,7 @@ class RoadMapScreen extends StatefulWidget {
 class _RoadMapScreenState extends State<RoadMapScreen> {
   late Future<void> _loadingFutures;
 
-  UserProfile? _currentUserProfile;
+  GameProfile? _currentUserProfile;
   List<Section>? _sections;
 
   bool _hasError = false;
@@ -51,7 +51,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
   Future<void> _performDataLoading() async {
     try {
       // Запускаем операции параллельно
-      final Future<UserProfile> profileFuture = getIt<UserService>()
+      final Future<GameProfile> profileFuture = getIt<GameProfileService>()
           .getProfile()
           .then((profile) {
             _currentUserProfile = profile;

@@ -117,18 +117,24 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
                 ),
               ),
               const SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: _selectedAvailable == null || _selectedAvailable!
-                    ? () {
-                        widget.onAvatarSelected(_selectedAvatarId!);
-                        Navigator.of(context).pop();
-                      } // Кнопка неактивна, если ничего не выбрано или выбрана текущая
-                    : null,
-                child: Text(
-                  _selectedAvailable!
-                      ? 'Выбрать'
-                      : '${AvatarManager.getAvailableAvatarMap()[_selectedAvatarId!]?.minLevel.toString()} Уровень',
-                  style: AppTextStyles.buttonText,
+              SizedBox(
+                width: 150,
+                child: ElevatedButton(
+                  onPressed: _selectedAvailable == null || _selectedAvailable!
+                      ? () {
+                          widget.onAvatarSelected(_selectedAvatarId!);
+                          Navigator.of(context).pop();
+                        } // Кнопка неактивна, если ничего не выбрано или выбрана текущая
+                      : null,
+                  child: Text(
+                    _selectedAvailable!
+                        ? 'Выбрать'
+                        : '${AvatarManager.getAvailableAvatarMap()[_selectedAvatarId!]?.minLevel.toString()} Уровень',
+                    style: AppTextStyles.buttonText,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
             ],

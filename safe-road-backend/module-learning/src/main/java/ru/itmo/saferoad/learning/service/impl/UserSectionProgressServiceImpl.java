@@ -2,7 +2,7 @@ package ru.itmo.saferoad.learning.service.impl;
 
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
-import ru.itmo.saferoad.core.types.ProgressStatus;
+import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 import ru.itmo.saferoad.learning.domain.UserSectionProgress;
 import ru.itmo.saferoad.learning.service.UserSectionProgressService;
 

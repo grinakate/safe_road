@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../models/user_profile.dart';
+import '../models/game_profile.dart';
 import '../theme.dart';
 
 class RoadHeader extends StatelessWidget {
-  final UserProfile profile; // Принимаем профиль
+  final GameProfile profile; // Принимаем профиль
 
   const RoadHeader({super.key, required this.profile});
 
@@ -55,7 +55,7 @@ class RoadHeader extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Уровень ${profile.level.number}: ${profile.currentXp} очков',
+                'Уровень ${profile.level}: ${profile.currentXp} очков',
                 style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold, fontSize: 14),
               ),
               Text(

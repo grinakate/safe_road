@@ -30,6 +30,10 @@ public class AppUserDetailsImpl implements AppUserDetails {
 	@NonNull
 	private String password;
 
+	@Getter
+	@NonNull
+	private String nickname;
+
 	@NonNull
 	private Collection<? extends GrantedAuthority> authorities;
 

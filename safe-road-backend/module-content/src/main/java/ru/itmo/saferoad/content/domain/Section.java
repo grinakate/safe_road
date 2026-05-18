@@ -21,7 +21,7 @@ import java.util.List;
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "\"Sections\"")
+@Table(name = "sections")
 @EqualsAndHashCode(of = "id")
 public class Section {
 

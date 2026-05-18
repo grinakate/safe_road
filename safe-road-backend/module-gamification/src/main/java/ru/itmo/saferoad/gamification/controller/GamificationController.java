@@ -1,6 +1,7 @@
 package ru.itmo.saferoad.gamification.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,11 +12,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.itmo.saferoad.core.dto.gamification.AchievementDto;
-import ru.itmo.saferoad.core.dto.gamification.LeaderboardEntryDto;
-import ru.itmo.saferoad.core.dto.gamification.MyGamificationStatsDto;
+import org.springframework.web.server.ResponseStatusException;
 import ru.itmo.saferoad.core.security.AppUserDetails;
-import ru.itmo.saferoad.gamification.service.UserAchievementService;
+import ru.itmo.saferoad.gamification.controller.dto.AvatarDto;
+import ru.itmo.saferoad.gamification.controller.dto.LeaderboardEntryDto;
+import ru.itmo.saferoad.gamification.controller.dto.MyGamificationStatsDto;
+import ru.itmo.saferoad.gamification.controller.dto.UserAchievementsResponse;
+import ru.itmo.saferoad.gamification.service.AchievementService;
+import ru.itmo.saferoad.gamification.service.AvatarService;
+import ru.itmo.saferoad.gamification.service.GameProfileService;
+import ru.itmo.saferoad.gamification.service.LevelService;
 import ru.itmo.saferoad.gamification.service.UserMetricService;
 
 import java.util.List;
@@ -25,6 +31,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/gamification")
 public class GamificationController {
+
+	private final LevelService levelService;
+	private final UserMetricService userMetricService;
+	private final GameProfileService gameProfileService;
+	private final AchievementService achievementService;
+	private final AvatarService avatarService;
 
 	@GetMapping("/levels")
 	public ResponseEntity<?> getLevels() {
@@ -39,9 +51,18 @@ public class GamificationController {
 	}
 
 	@GetMapping("/avatars")
-	public ResponseEntity<?> getAvatars() {
-		// TODO: Implement
-		return ResponseEntity.ok().build();
+	public ResponseEntity<List<AvatarDto>> getAvatars(@AuthenticationPrincipal AppUserDetails currentUser) {
+		var gameProfile = gameProfileService.existiongByUserId(currentUser.getId());
+
+		var avatars = avatarService.findAll();
+		var avatarsForUser = avatars.stream()
+				.map(avatar -> AvatarDto.builder()
+						.id(avatar.getId())
+						.url(avatar.getUrl())
+						.minLevel(avatar.getMinLevel())
+						.isAvailable(avatar.getMinLevel() <= gameProfile.getLevel().getNumber()).build())
+				.toList();
+		return ResponseEntity.ok(avatarsForUser);
 	}
 
 	@PatchMapping("/avatars/select")
@@ -129,9 +150,6 @@ public class GamificationController {
 		return ResponseEntity.ok().build();
 	}
 
-	private final UserMetricService userMetricService;
-	private final UserAchievementService userAchievementService;
-
 	@GetMapping("/leaderboard")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<List<LeaderboardEntryDto>> getLeaderboard(
@@ -146,20 +164,33 @@ public class GamificationController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/status")
+	@GetMapping("/me")
 	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<MyGamificationStatsDto> getMyStats(
+	public ResponseEntity<MyGamificationStatsDto> getMe(
 			@AuthenticationPrincipal AppUserDetails currentUser
 	) {
-		var achievements = userAchievementService.getAchievementsByUserId(currentUser.getId()).stream()
-				.map(a -> new AchievementDto(a.getId(), a.getName(), a.getDescription(), a.getIconUrl(), a.getRewardXp()))
-				.toList();
+		var gameProfile = gameProfileService.findById(currentUser.getId()).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Игровой профиль не найден")
+		);
+
 		var response = new MyGamificationStatsDto(
-				currentUser.getId(),
-				userMetricService.getXp(currentUser.getId()),
-				achievements
+				currentUser.getUsername(),
+				gameProfile.getLevel().getNumber(),
+				gameProfile.getCurrentXp(),
+				levelService.getXpProgress(gameProfile.getLevel().getNumber(), gameProfile.getCurrentXp()),
+				gameProfile.getAvatar().getId(),
+				gameProfile.getCurrentStreak()
 		);
 		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/me/achievements")
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<List<UserAchievementsResponse>> getMyAchievements(
+			@AuthenticationPrincipal AppUserDetails currentUser
+	) {
+		var achievements = achievementService.getAchievementsForUser(currentUser.getId());
+		return ResponseEntity.ok(achievements);
 	}
 }
 

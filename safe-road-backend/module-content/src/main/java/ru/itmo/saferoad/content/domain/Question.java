@@ -23,7 +23,7 @@ import org.hibernate.type.SqlTypes;
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "\"Questions\"")
+@Table(name = "questions")
 @EqualsAndHashCode(of = "id")
 public class Question {
 

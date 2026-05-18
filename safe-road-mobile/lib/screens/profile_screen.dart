@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import '../core/avatar_manager.dart';
 import '../core/service_locator.dart';
 import '../models/achievement.dart';
-import '../models/user_profile.dart';
-import '../services/user_service.dart';
+import '../models/game_profile.dart';
+import '../services/game_profile_service.dart';
+import '../theme.dart';
 import '../widgets/achievement_info_dialog.dart';
 import '../widgets/avatar_selection_dialog.dart';
 import '../widgets/secure_network_image.dart';
-import '../theme.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -18,92 +18,98 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late Future<UserProfile> _profileFuture;
+  late Future<GameProfile> _profileFuture;
+  late Future<List<Achievement>> _achievementsFuture;
   late Future<void> _avatarsInitFuture;
-  UserProfile? _currentUserProfile;
+  GameProfile? _currentUserProfile;
+  List<Achievement> _currenAchievements = [];
 
   @override
   void initState() {
     super.initState();
-    _avatarsInitFuture = getIt<UserService>().getAvailableAvatars().then((
-      avatarInfoList,
-    ) {
-      AvatarManager.initialize(avatarInfoList);
-    });
+    _avatarsInitFuture = getIt<GameProfileService>().getAvailableAvatars().then(
+      (avatarInfoList) {
+        AvatarManager.initialize(avatarInfoList);
+      },
+    );
 
-    _profileFuture = getIt<UserService>().getProfile().then((profile) {
+    _profileFuture = getIt<GameProfileService>().getProfile().then((profile) {
       _currentUserProfile = profile;
       return profile;
+    });
+
+    _achievementsFuture = getIt<GameProfileService>().getAchievements().then((
+      achievements,
+    ) {
+      _currenAchievements = achievements;
+      return achievements;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      /*      appBar: AppBar(
-        title: const Text('Профиль', style: TextStyle()),
-        centerTitle: true,
-        actions: [
-          IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
-        ],
-      ),*/
       body: SafeArea(
-        child: FutureBuilder<void>(
-          future: Future.wait([_avatarsInitFuture, _profileFuture]),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (snapshot.hasError) {
-              return Center(child: Text("Ошибка: ${snapshot.error}"));
-            }
-
-            final user = _currentUserProfile!;
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(height: 30),
-                _buildHeader(user),
-                const SizedBox(height: 10),
-                _buildTabs(),
-                const SizedBox(height: 10),
-                Expanded(child: _buildAchievementsGrid(user.achievements)),
-              ],
-            );
-          },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const SizedBox(height: 30),
+            _buildHeader(),
+            const SizedBox(height: 10),
+            _buildTabs(),
+            const SizedBox(height: 10),
+            _buildAchievementsGrid(),
+          ],
         ),
       ),
     );
   }
 
   // Верхняя часть: Уровень, Аватар, Очки
-  Widget _buildHeader(UserProfile user) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: _buildStatItem("Уровень", user.level.number.toString()),
-          ),
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                _showAvatarSelectionDialog(user.avatarId, user.level.number);
-              },
-              child: CircleAvatar(
-                radius: 60,
-                backgroundColor: AppColors.lightBlueBackground,
-                child: SecureNetworkImage(
-                  imageUrl: AvatarManager.getAvatarItem(user.avatarId).url,
-                  fit: BoxFit.cover,
+  Widget _buildHeader() {
+    return FutureBuilder(
+      future: Future.wait([_avatarsInitFuture, _profileFuture]),
+      builder: (context, asyncSnapshot) {
+        if (asyncSnapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (asyncSnapshot.hasError) {
+          return Center(child: Text("Ошибка: ${asyncSnapshot.error}"));
+        }
+        final user = _currentUserProfile!;
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: _buildStatItem("Уровень", user.level.toString()),
+              ),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    _showAvatarSelectionDialog(
+                      user.avatarId,
+                      user.level,
+                    );
+                  },
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundColor: AppColors.lightBlueBackground,
+                    child: SecureNetworkImage(
+                      imageUrl: AvatarManager.getAvatarItem(user.avatarId).url,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
               ),
-            ),
+              Expanded(
+                child: _buildStatItem("Очки", user.currentXp.toString()),
+              ),
+            ],
           ),
-          Expanded(child: _buildStatItem("Очки", user.currentXp.toString())),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -119,7 +125,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return;
           }
           // 1. Отправляем на бэкенд
-          var newAvatar = await getIt<UserService>().updateAvatar(newAvatarId);
+          var newAvatar = await getIt<GameProfileService>().updateAvatar(
+            newAvatarId,
+          );
           // 2. Обновляем UI
           setState(() {
             _currentUserProfile = _currentUserProfile!.copyWith(
@@ -137,14 +145,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildStatItem(String label, String value) {
     return Column(
       children: [
-        Text(
-          label,
-          style: AppTextStyles.bodyLarge.copyWith(fontSize: 24),
-        ),
-        Text(
-          value,
-          style: AppTextStyles.headlineLarge.copyWith(fontSize: 24),
-        ),
+        Text(label, style: AppTextStyles.bodyLarge.copyWith(fontSize: 24)),
+        Text(value, style: AppTextStyles.headlineLarge.copyWith(fontSize: 24)),
       ],
     );
   }
@@ -180,73 +182,88 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // Сетка достижений
-  Widget _buildAchievementsGrid(List<Achievement> achievements) {
-    final rows = chunkAchievements(achievements);
+  Widget _buildAchievementsGrid() {
+    return FutureBuilder(
+      future: Future.wait([_achievementsFuture]),
+      builder: (context, asyncSnapshot) {
+        if (asyncSnapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (asyncSnapshot.hasError) {
+          return Center(child: Text("Ошибка: ${asyncSnapshot.error}"));
+        }
+        return Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              double listPadding = 20.0;
+              double itemMargin = 4.0;
+              double availableWidth = constraints.maxWidth - listPadding;
+              double itemWidth = availableWidth / 3.3;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        double listPadding = 20.0;
-        double itemMargin = 4.0;
-        double availableWidth = constraints.maxWidth - listPadding;
-        double itemWidth = availableWidth / 3.3;
+              double fontSize = itemWidth * 0.12;
+              double textHeight = fontSize * 1.2 * 2.5;
 
-        double fontSize = itemWidth * 0.12;
-        double textHeight = fontSize * 1.2 * 2.5;
-
-        return ListView.builder(
-          itemCount: rows.length,
-          itemBuilder: (context, rowIndex) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: rows[rowIndex].map((item) {
-                return GestureDetector(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AchievementInfoDialog(
-                        achievement: item,
-                        imageSize: itemWidth * 1.5,
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: itemWidth,
-                    //color: Colors.red.withOpacity(0.1), // для отладки границ
-                    margin: EdgeInsets.symmetric(horizontal: itemMargin),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Opacity(
-                          opacity: item.isUnlocked ? 1.0 : 0.4,
-                          child: SecureNetworkImage(imageUrl: item.iconUrl),
-                        ),
-                        const SizedBox(height: 8),
-                        // --- ТЕКСТ ---
-                        SizedBox(
-                          height: textHeight,
-                          child: Text(
-                            item.title,
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTheme.topicName.copyWith(
-                              fontSize: fontSize,
-                              fontWeight: FontWeight.w600,
-                              height: 1.0,
-                              color: item.isUnlocked
-                                  ? AppColors.darkBrownText
-                                  : AppColors.greyText,
+              var achievements = _currenAchievements;
+              final rows = chunkAchievements(achievements);
+              return ListView.builder(
+                itemCount: rows.length,
+                itemBuilder: (context, rowIndex) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: rows[rowIndex].map((item) {
+                      return GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AchievementInfoDialog(
+                              achievement: item,
+                              imageSize: itemWidth * 1.5,
                             ),
+                          );
+                        },
+                        child: Container(
+                          width: itemWidth,
+                          //color: Colors.red.withOpacity(0.1), // для отладки границ
+                          margin: EdgeInsets.symmetric(horizontal: itemMargin),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Opacity(
+                                opacity: item.isUnlocked ? 1.0 : 0.4,
+                                child: SecureNetworkImage(
+                                  imageUrl: item.iconUrl,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              // --- ТЕКСТ ---
+                              SizedBox(
+                                height: textHeight,
+                                child: Text(
+                                  item.title,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTheme.topicName.copyWith(
+                                    fontSize: fontSize,
+                                    fontWeight: FontWeight.w600,
+                                    height: 1.0,
+                                    color: item.isUnlocked
+                                        ? AppColors.darkBrownText
+                                        : AppColors.greyText,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
-            );
-          },
+                      );
+                    }).toList(),
+                  );
+                },
+              );
+            },
+          ),
         );
       },
     );

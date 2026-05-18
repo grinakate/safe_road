@@ -12,14 +12,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
-import ru.itmo.saferoad.core.types.ProgressStatus;
+import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 
 @Getter
 @Setter
 @Entity
 @NoArgsConstructor
 @IdClass(UserTopicProgressId.class)
-@Table(name = "\"UserTopicProgress\"")
+@Table(name = "user_topic_progress")
 @EqualsAndHashCode(of = {"userId", "topicId"})
 public class UserTopicProgress {
 

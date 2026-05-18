@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.itmo.saferoad.content.api.ContentService;
 import ru.itmo.saferoad.content.dto.SectionTreeDto;
-import ru.itmo.saferoad.core.types.ProgressStatus;
+import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 import ru.itmo.saferoad.learning.domain.UserTopicProgress;
 import ru.itmo.saferoad.learning.dto.UserRoadMapResponse;
 import ru.itmo.saferoad.learning.dto.TopicUserMapResponse;

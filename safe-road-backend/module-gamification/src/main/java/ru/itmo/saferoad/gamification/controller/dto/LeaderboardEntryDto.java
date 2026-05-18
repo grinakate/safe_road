@@ -1,4 +1,4 @@
-package ru.itmo.saferoad.core.dto.gamification;
+package ru.itmo.saferoad.gamification.controller.dto;
 
 public record LeaderboardEntryDto(
 		Long userId,

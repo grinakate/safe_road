@@ -21,7 +21,7 @@ import org.hibernate.type.SqlTypes;
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "\"Topics\"")
+@Table(name = "topics")
 @EqualsAndHashCode(of = "id")
 public class Topic {
 

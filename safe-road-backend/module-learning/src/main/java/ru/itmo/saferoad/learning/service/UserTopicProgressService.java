@@ -1,7 +1,7 @@
 package ru.itmo.saferoad.learning.service;
 
 import lombok.NonNull;
-import ru.itmo.saferoad.core.types.ProgressStatus;
+import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 import ru.itmo.saferoad.learning.domain.UserTopicProgress;
 
 import java.util.List;

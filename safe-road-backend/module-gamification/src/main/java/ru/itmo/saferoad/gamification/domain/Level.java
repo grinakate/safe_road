@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "\"Levels\"")
+@Table(name = "levels")
 @EqualsAndHashCode(of = "id")
 public class Level {
 
@@ -27,7 +27,7 @@ public class Level {
 
 	@NonNull
 	@Column(nullable = false, unique = true)
-	private String name;
+	private String title;
 
 	@NonNull
 	@Column(nullable = false, unique = true)
