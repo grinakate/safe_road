@@ -9,8 +9,9 @@ import '../models/question.dart';
 
 class QuizScreen extends StatefulWidget {
   final List<Question> quizData;
+  final String sessionId;
 
-  const QuizScreen({super.key, required this.quizData});
+  const QuizScreen({super.key, required this.quizData, required this.sessionId});
 
   @override
   _QuizScreenState createState() => _QuizScreenState();
@@ -22,9 +23,11 @@ class _QuizScreenState extends State<QuizScreen> {
   bool _showResultArea =
       false; // Показываем область с результатом и кнопкой "Далее"
   bool _isLoading = false; // Общий флаг загрузки (для финальной отправки)
+  // флаг отправки выбранного ответа убран: ответы валидируются локально
 
   // Список для хранения данных каждого ответа пользователя
   final List<UserAnswer> _userAnswers = [];
+  String? _sessionId;
 
   List<Question> get _questions => widget.quizData;
 
@@ -38,8 +41,9 @@ class _QuizScreenState extends State<QuizScreen> {
 
     setState(() {
       _selectedAnswerId = answerId;
-      _showResultArea =
-          true; // Показываем область результата сразу после выбора
+      _showResultArea = true; // Показываем область результата сразу после выбора
+      // Сохраняем локально ответ пользователя — отправим все ответы в конце
+      _userAnswers.add(UserAnswer(questionId: _currentQuestion.id, selectedAnswerId: answerId));
     });
   }
 
@@ -51,20 +55,13 @@ class _QuizScreenState extends State<QuizScreen> {
       final notificationService = GetIt.I<NotificationService>();
       notificationService.setBusy(true);
     } catch (_) {}
+    _sessionId = widget.sessionId;
   }
 
   void _handleNextQuestion() {
-    // Сохраняем ответ пользователя для текущего вопроса
-    _userAnswers.add(
-      UserAnswer(
-        questionId: _currentQuestion.id,
-        selectedAnswerId: _selectedAnswerId!,
-      ),
-    );
-
     if (_currentQuestionIndex < _totalQuestions - 1) {
       // Переход к следующему вопросу
-      setState(() {
+        setState(() {
         _currentQuestionIndex++;
         _selectedAnswerId = null; // Сбрасываем выбор для нового вопроса
         _showResultArea = false; // Скрываем область результата
@@ -74,6 +71,8 @@ class _QuizScreenState extends State<QuizScreen> {
       _sendFinalResultsAndNavigate();
     }
   }
+
+  // per-answer submission removed: backend expects full session submission at the end
 
   @override
   void dispose() {
@@ -92,28 +91,33 @@ class _QuizScreenState extends State<QuizScreen> {
     });
 
     try {
-      final submission = QuizFullSubmission(answers: _userAnswers);
-      final finalResult = await GetIt.I<LearningService>().submitAllAnswers(
-        submission,
-      );
+      // Build map questionId -> answerId from _userAnswers
+      final answersMap = <int, int>{};
+      for (var a in _userAnswers) {
+        answersMap[a.questionId] = a.selectedAnswerId;
+      }
+
+      final resp = await GetIt.I<LearningService>().submitSessionAnswers(_sessionId ?? '', answersMap);
 
       if (mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => ResultScreen(
-              correctAnswers: finalResult.correctAnswers,
-              totalQuestions: finalResult.totalQuestions,
-              totalExperience: finalResult.awardedExperience, // Передаем опыт
+              correctAnswers: resp.correctCount,
+              totalQuestions: resp.totalQuestions,
+              totalExperience: 0, // backend TestSessionSubmitResponse doesn't include experience
             ),
           ),
         );
-        // Сбрасываем флаг занятости — тест завершён, можно показывать отложенные уведомления
-        try {
-          final notificationService = GetIt.I<NotificationService>();
-          notificationService.setBusy(false);
-        } catch (_) {}
       }
+
+      // Сбрасываем флаг занятости — тест завершён, можно показывать отложенные уведомления
+      try {
+        final notificationService = GetIt.I<NotificationService>();
+        notificationService.setBusy(false);
+      } catch (_) {}
+    
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -138,12 +142,15 @@ class _QuizScreenState extends State<QuizScreen> {
     }
 
     final bool isCorrect =
-        _selectedAnswerId != null &&
-        _selectedAnswerId == _currentQuestion.correctAnswerId;
+        _selectedAnswerId != null && _selectedAnswerId == _currentQuestion.correctAnswerId;
     final String resultText = _selectedAnswerId != null
         ? (isCorrect ? 'Правильно!' : 'Неправильно')
         : '';
-    final feedback = "";
+    String feedback = '';
+    if (_selectedAnswerId != null) {
+      final opt = _currentQuestion.options.firstWhere((o) => o.id == _selectedAnswerId, orElse: () => _currentQuestion.options.first);
+      feedback = opt.feedback;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -195,15 +202,14 @@ class _QuizScreenState extends State<QuizScreen> {
               Spacer(),
 
               // Область результата и пояснения
-              if (_showResultArea)
-                _buildResultArea(resultText, isCorrect, feedback),
+              if (_showResultArea) _buildResultArea(resultText, isCorrect, feedback),
 
               // Кнопка "Далее" или "Завершить"
               if (_showResultArea)
                 Padding(
                   padding: const EdgeInsets.only(top: 20.0),
                   child: ElevatedButton(
-                    onPressed: _isLoading ? null : _handleNextQuestion,
+                    onPressed: (_isLoading) ? null : _handleNextQuestion,
                     // Отключаем, если идет загрузка
                     child: _isLoading
                         ? const CircularProgressIndicator(color: AppColors.white)
@@ -241,8 +247,12 @@ class _QuizScreenState extends State<QuizScreen> {
                 color: isCorrect ? AppColors.primaryGreen : AppColors.errorRed,
               ),
             ),
-          // Можно добавить пояснение, если оно приходит с бэка
-          SizedBox(height: 16),
+            if (feedback.isNotEmpty) ...[
+              SizedBox(height: 12),
+              Text(feedback, style: AppTextStyles.bodyMedium),
+            ],
+            // Можно добавить пояснение, если оно приходит с бэка
+            SizedBox(height: 16),
         ],
       ),
     );

@@ -99,3 +99,48 @@ class FinalQuizResult {
     );
   }
 }
+
+class SubmitAnswerResult {
+  // Matches backend SubmitAnswerResponse { boolean correct; int awardedXp }
+  final bool correct;
+  final int awardedXp;
+
+  SubmitAnswerResult({required this.correct, required this.awardedXp});
+
+  factory SubmitAnswerResult.fromJson(Map<String, dynamic> json) {
+    return SubmitAnswerResult(
+      correct: json['correct'] ?? false,
+      awardedXp: json['awardedXp'] ?? 0,
+    );
+  }
+}
+
+class StartTestResponse {
+  final String sessionId;
+  final int totalQuestions;
+
+  StartTestResponse({required this.sessionId, required this.totalQuestions});
+
+  factory StartTestResponse.fromJson(Map<String, dynamic> json) {
+    // backend uses Long sessionId and Integer totalQuestions
+    final sid = (json['sessionId'] ?? json['id'] ?? '').toString();
+    return StartTestResponse(sessionId: sid, totalQuestions: (json['totalQuestions'] ?? 0) as int);
+  }
+}
+
+class TestSessionSubmitResult {
+  final int totalQuestions;
+  final int correctCount;
+  final List<dynamic> errors;
+
+  TestSessionSubmitResult({required this.totalQuestions, required this.correctCount, required this.errors});
+
+  factory TestSessionSubmitResult.fromJson(Map<String, dynamic> json) {
+    return TestSessionSubmitResult(
+      totalQuestions: (json['totalQuestions'] ?? 0) as int,
+      correctCount: (json['correctCount'] ?? 0) as int,
+      errors: (json['errors'] as List<dynamic>?) ?? [],
+    );
+  }
+}
+

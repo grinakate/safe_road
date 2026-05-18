@@ -86,7 +86,10 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
     });
 
     try {
-      final List<Question> quizData = await _quizService.fetchQuizData(themeId);
+      // Start session on backend
+      final startResp = await _quizService.startTest(themeId);
+      final String sessionId = startResp.sessionId;
+      final List<Question> quizData = await _quizService.getTestQuestions(sessionId);
 
       if (mounted) {
         if (quizData.isEmpty) {
@@ -97,7 +100,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => QuizScreen(quizData: quizData),
+              builder: (context) => QuizScreen(sessionId: sessionId, quizData: quizData),
             ),
           );
         }
