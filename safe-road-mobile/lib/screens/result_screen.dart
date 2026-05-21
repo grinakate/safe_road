@@ -83,109 +83,103 @@ class ResultScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 6),
-              Text(
-                'Разбор ошибок',
-                style: AppTextStyles.headlineLarge.copyWith(fontSize: 18),
-              ),
-              const SizedBox(height: 6),
+              if (errors.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Text(
+                  'Разбор ошибок',
+                  style: AppTextStyles.headlineLarge.copyWith(fontSize: 18),
+                ),
+                const SizedBox(height: 6),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: errors.length,
+                    itemBuilder: (context, index) {
+                      final item = errors[index];
+                      final parsed = QuestionError.tryParse(item);
 
-              // Список разборов
-              Expanded(
-                child: errors.isEmpty
-                    ? Center(
-                        child: Text(
-                          'Ошибок нет. Отличная работа!',
-                          style: AppTextStyles.bodyLarge,
+                      String questionText = parsed?.questionText ?? '';
+                      String userAnswer = parsed?.userAnswer ?? '';
+                      String correctAnswer = parsed?.correctAnswer ?? '';
+                      String analysis = parsed?.analysis ?? '';
+
+                      if (questionText.isEmpty) {
+                        questionText = 'Вопрос ${index + 1}';
+                      }
+
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                      )
-                    : ListView.builder(
-                        itemCount: errors.length,
-                        itemBuilder: (context, index) {
-                          final item = errors[index];
-                          final parsed = QuestionError.tryParse(item);
-
-                          String questionText = parsed?.questionText ?? '';
-                          String userAnswer = parsed?.userAnswer ?? '';
-                          String correctAnswer = parsed?.correctAnswer ?? '';
-                          String analysis = parsed?.analysis ?? '';
-
-                          if (questionText.isEmpty) {
-                            questionText = 'Вопрос ${index + 1}';
-                          }
-
-                          return Card(
-                            margin: const EdgeInsets.symmetric(vertical: 8),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 8.0,
-                                horizontal: 12,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8.0,
+                            horizontal: 12,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Вопрос ${index + 1}: $questionText',
+                                style: AppTextStyles.bodyLarge.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              const SizedBox(height: 8),
+                              Row(
                                 children: [
-                                  Text(
-                                    'Вопрос ${index + 1}: $questionText',
-                                    style: AppTextStyles.bodyLarge.copyWith(
-                                      fontWeight: FontWeight.w600,
+                                  const Text('Вы выбрали: '),
+                                  Expanded(
+                                    child: Text(
+                                      '[ $userAnswer ]',
+                                      style: AppTextStyles.bodyLarge
+                                          .copyWith(
+                                            color: AppColors.errorRed,
+                                          ),
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      const Text('Вы выбрали: '),
-                                      Expanded(
-                                        child: Text(
-                                          '[ $userAnswer ]',
-                                          style: AppTextStyles.bodyLarge
-                                              .copyWith(
-                                                color: AppColors.errorRed,
-                                              ),
-                                        ),
-                                      ),
-                                      if (userAnswer.isNotEmpty)
-                                        const SizedBox(width: 6),
-                                      if (userAnswer.isNotEmpty)
-                                        Icon(
-                                          Icons.cancel,
-                                          color: AppColors.errorRed,
-                                          size: 18,
-                                        ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Row(
-                                    children: [
-                                      const Text('Верный ответ: '),
-                                      Expanded(
-                                        child: Text(
-                                          '[ $correctAnswer ]',
-                                          style: AppTextStyles.bodyLarge
-                                              .copyWith(
-                                                color: AppColors.primaryGreen,
-                                              ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  if (analysis.isNotEmpty)
-                                    Text(
-                                      'Разбор: $analysis',
-                                      style: AppTextStyles.bodySmall.copyWith(
-                                        color: AppColors.darkBrownText,
-                                      ),
+                                  if (userAnswer.isNotEmpty)
+                                    const SizedBox(width: 6),
+                                  if (userAnswer.isNotEmpty)
+                                    Icon(
+                                      Icons.cancel,
+                                      color: AppColors.errorRed,
+                                      size: 18,
                                     ),
                                 ],
                               ),
-                            ),
-                          );
-                        },
-                      ),
-              ),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  const Text('Верный ответ: '),
+                                  Expanded(
+                                    child: Text(
+                                      '[ $correctAnswer ]',
+                                      style: AppTextStyles.bodyLarge
+                                          .copyWith(
+                                            color: AppColors.primaryGreen,
+                                          ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              if (analysis.isNotEmpty)
+                                Text(
+                                  'Разбор: $analysis',
+                                  style: AppTextStyles.bodySmall.copyWith(
+                                    color: AppColors.darkBrownText,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ] else
+                const Spacer(),
 
               Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -196,6 +190,11 @@ class ResultScreen extends StatelessWidget {
                         onPressed: () => Navigator.popUntil(
                           context,
                           (route) => route.isFirst,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                         ),
                         child: const Text(
                           'Продолжить',

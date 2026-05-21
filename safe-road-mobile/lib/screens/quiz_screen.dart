@@ -214,26 +214,34 @@ class _QuizScreenState extends State<QuizScreen> {
 
               Spacer(),
 
-              // Область результата и пояснения
               if (_showResultArea)
-                _buildResultArea(resultText, isCorrect, feedback),
-
-              // Кнопка "Далее" или "Завершить"
-              if (_showResultArea)
-                Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
-                  child: ElevatedButton(
-                    onPressed: (_isLoading) ? null : _handleNextQuestion,
-                    // Отключаем, если идет загрузка
-                    child: _isLoading
-                        ? const CircularProgressIndicator(
-                            color: AppColors.white,
-                          )
-                        : Text(
-                            _currentQuestionIndex < _totalQuestions - 1
-                                ? 'Далее'
-                                : 'Завершить',
-                          ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      // Область результата и пояснения
+                      _buildResultArea(resultText, isCorrect, feedback),
+                      // Кнопка "Далее" или "Завершить"
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: ElevatedButton(
+                          onPressed: (_isLoading) ? null : _handleNextQuestion,
+                          // Отключаем, если идет загрузка
+                          child: _isLoading
+                              ? const CircularProgressIndicator(
+                                  color: AppColors.white,
+                                )
+                              : Text(
+                                  _currentQuestionIndex < _totalQuestions - 1
+                                      ? 'Далее'
+                                      : 'Завершить',
+                                ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
             ],
@@ -246,12 +254,6 @@ class _QuizScreenState extends State<QuizScreen> {
   Widget _buildResultArea(String resultText, bool isCorrect, String feedback) {
     return Container(
       padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isCorrect
-            ? AppColors.lightGreenBackground
-            : AppColors.errorRed.withAlpha(51),
-        borderRadius: BorderRadius.circular(8),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -260,7 +262,6 @@ class _QuizScreenState extends State<QuizScreen> {
             style: AppTextStyles.bodyLarge.copyWith(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: isCorrect ? AppColors.primaryGreen : AppColors.errorRed,
             ),
           ),
           SizedBox(height: 12),
@@ -268,8 +269,6 @@ class _QuizScreenState extends State<QuizScreen> {
             feedback,
             style: AppTextStyles.bodyLarge.copyWith(
               fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: isCorrect ? AppColors.primaryGreen : AppColors.errorRed,
             ),
           ),
           SizedBox(height: 16),
