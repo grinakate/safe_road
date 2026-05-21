@@ -230,15 +230,21 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
                     decoration: BoxDecoration(
                       color: statusUi.circleColor,
                       shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: statusUi.shadowColor.withAlpha(
-                            statusUi.placeIconTopRight ? 64 : 128,
-                          ),
-                          blurRadius: 9,
-                          offset: const Offset(0, 0),
-                        ),
-                      ],
+                      border: Border.all(
+                        color: statusUi.borderColor,
+                        width: statusUi.borderWidth,
+                      ),
+                      boxShadow: statusUi.showShadow
+                          ? [
+                              BoxShadow(
+                                color: statusUi.shadowColor.withAlpha(
+                                  statusUi.placeIconTopRight ? 64 : 128,
+                                ),
+                                blurRadius: 9,
+                                offset: const Offset(0, 0),
+                              ),
+                            ]
+                          : [],
                     ),
                   ),
                   if (statusUi.icon != null)
@@ -263,7 +269,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.topicNumber,
+                      style: statusUi.textStyle ?? AppTextStyles.topicNumber,
                     ),
                 ],
               ),

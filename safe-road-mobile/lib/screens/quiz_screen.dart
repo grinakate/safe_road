@@ -219,6 +219,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.white,
                     borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.darkBrownText, width: 1)
                   ),
                   child: Column(
                     children: [
@@ -300,7 +301,7 @@ class AnswerOptionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color backgroundColor = AppColors.white;
-    Color borderColor = AppColors.brownBorder;
+    Color borderColor = AppColors.greyBorder;
     Color textColor = AppColors.darkBrownText;
 
     if (isSelected) {
@@ -311,16 +312,16 @@ class AnswerOptionWidget extends StatelessWidget {
 
     if (isCorrect && isUserAnswer) {
       backgroundColor = AppColors.lightGreenBackground;
-      borderColor = AppColors.primaryGreen;
-      textColor = AppColors.primaryGreen;
+      borderColor = AppColors.darkGreen;
+      textColor = AppColors.darkGreen;
     } else if (isUserAnswer && !isCorrect) {
       backgroundColor = AppColors.errorRed.withAlpha(26);
       borderColor = AppColors.errorRed;
       textColor = AppColors.errorRed;
     } else if (isCorrect && !isUserAnswer && !isSelected) {
       backgroundColor = AppColors.lightGreenBackground;
-      borderColor = AppColors.primaryGreen;
-      textColor = AppColors.primaryGreen;
+      borderColor = AppColors.darkGreen;
+      textColor = AppColors.darkGreen;
     }
 
     return GestureDetector(
