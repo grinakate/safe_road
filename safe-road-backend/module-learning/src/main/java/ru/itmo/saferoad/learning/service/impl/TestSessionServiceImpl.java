@@ -241,8 +241,8 @@ public class TestSessionServiceImpl implements TestSessionService {
 							.orElseThrow();
 					errors.add(new TestErrorResponse(
 							questionText,
-							correctAnswer.getText(),
 							userAnswer.getText(),
+							correctAnswer.getText(),
 							userAnswer.getFeedback()));
 				}
 			}
