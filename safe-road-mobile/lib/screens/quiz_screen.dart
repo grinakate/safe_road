@@ -80,8 +80,6 @@ class _QuizScreenState extends State<QuizScreen> {
     }
   }
 
-  // per-answer submission removed: backend expects full session submission at the end
-
   @override
   void dispose() {
     // Сбрасываем флаг занятости при уходе со страницы
@@ -99,7 +97,6 @@ class _QuizScreenState extends State<QuizScreen> {
     });
 
     try {
-      // Build map questionId -> answerId from _userAnswers
       final answersMap = <int, int>{};
       for (var a in _userAnswers) {
         answersMap[a.questionId] = a.selectedAnswerId;
@@ -111,11 +108,12 @@ class _QuizScreenState extends State<QuizScreen> {
       );
 
       if (mounted) {
-        // Сохраняем результат в LearningProvider и показываем экран результатов
+        // Сохраняем результат и разбор ошибок в LearningProvider и показываем экран результатов
         context.read<LearningProvider>().setLastResult(
           resp.correctCount,
           resp.totalQuestions,
           0,
+          errors: resp.errors,
         );
         Navigator.pushReplacement(
           context,

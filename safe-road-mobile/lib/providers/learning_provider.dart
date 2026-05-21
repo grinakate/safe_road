@@ -11,10 +11,12 @@ class LearningProvider extends ChangeNotifier {
   int? _lastCorrectAnswers;
   int? _lastTotalQuestions;
   int? _lastTotalExperience;
+  List<dynamic> _lastErrors = [];
 
   int? get lastCorrectAnswers => _lastCorrectAnswers;
   int? get lastTotalQuestions => _lastTotalQuestions;
   int? get lastTotalExperience => _lastTotalExperience;
+  List<dynamic> get lastErrors => _lastErrors;
 
   List<Section> get sections => _sections;
   Map<String, dynamic> get progress => _progress;
@@ -29,10 +31,11 @@ class LearningProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setLastResult(int correct, int total, int experience) {
+  void setLastResult(int correct, int total, int experience, {List<dynamic>? errors}) {
     _lastCorrectAnswers = correct;
     _lastTotalQuestions = total;
     _lastTotalExperience = experience;
+    _lastErrors = errors ?? [];
     notifyListeners();
   }
 }
