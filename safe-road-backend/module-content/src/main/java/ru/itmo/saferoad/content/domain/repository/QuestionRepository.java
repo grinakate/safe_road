@@ -8,4 +8,5 @@ import java.util.List;
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
 	List<Question> findByTopicId(Integer topicId);
+	List<Question> findByTopicSectionId(Integer sectionId);
 }

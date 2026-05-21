@@ -54,16 +54,25 @@ public class TestSessionServiceImpl implements TestSessionService {
 
 	@Override
 	@Transactional
-	public StartTestResponse startTopicTest(StartTestRequest request, Long userId) {
+	public StartTestResponse startTest(StartTestRequest request, Long userId) {
 		TestSession session = new TestSession();
 		session.setUserId(userId);
-		session.setMode(TestMode.TOPIC); // default mode for now
 		session.setStatus(ProgressStatus.IN_PROGRESS);
 		session.setTopicId(request.topicId());
+		session.setSectionId(request.sectionId());
 
-		int totalQuestions = 10;
-		List<Question> selectedQuestions = selectQuestionsAdaptively(userId, request.topicId(), totalQuestions);
-		totalQuestions = selectedQuestions.size();
+		List<Question> selectedQuestions;
+		if (request.topicId() != null) {
+			session.setMode(TestMode.TOPIC);
+			selectedQuestions = selectQuestionsByTopic(userId, request.topicId());
+		} else if (request.sectionId() != null) {
+			session.setMode(TestMode.SECTION);
+			selectedQuestions = selectQuestionsBySection(userId, request.sectionId());
+		} else {
+			throw new IllegalArgumentException("Invalid request");
+		}
+
+		var totalQuestions = selectedQuestions.size();
 
 		session.setTotalQuestions(totalQuestions);
 		session.setCorrectCount(0);
@@ -115,15 +124,26 @@ public class TestSessionServiceImpl implements TestSessionService {
 		}).toList();
 	}
 
-	private List<Question> selectQuestionsAdaptively(Long userId, Integer topicId, int targetCount) {
-		List<Question> allQuestions = topicId != null
-				? questionRepository.findByTopicId(topicId)
-				: questionRepository.findAll();
+	@NotNull
+	private List<Question> selectQuestionsByTopic(@NotNull Long userId, @NotNull Integer topicId) {
+		List<Question> allQuestions = questionRepository.findByTopicId(topicId);
+		List<UserQuestionStats> userStats = userQuestionStatsRepository.findByUserIdAndTopicId(userId, topicId);
+		int targetCount = 10;
+		return selectQuestionsAdaptively(allQuestions, userStats, targetCount);
+	}
 
-		List<UserQuestionStats> userStats = topicId != null
-				? userQuestionStatsRepository.findByUserIdAndTopicId(userId, topicId)
-				: userQuestionStatsRepository.findByUserId(userId);
+	@NotNull
+	private List<Question> selectQuestionsBySection(@NotNull Long userId, @NotNull Integer sectionId) {
+		List<Question> allQuestions = questionRepository.findByTopicSectionId(sectionId);
+		List<UserQuestionStats> userStats = userQuestionStatsRepository.findByUserIdAndSectionId(userId, sectionId);
+		int targetCount = 20;
+		return selectQuestionsAdaptively(allQuestions, userStats, targetCount);
+	}
 
+	@NotNull
+	private List<Question> selectQuestionsAdaptively(@NotNull List<Question> allQuestions,
+													 @NotNull List<UserQuestionStats> userStats,
+													 int targetCount) {
 		LocalDateTime now = LocalDateTime.now();
 
 		Map<Long, UserQuestionStats> statsMap = new HashMap<>();

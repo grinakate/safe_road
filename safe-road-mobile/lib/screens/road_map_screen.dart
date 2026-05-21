@@ -6,6 +6,7 @@ import 'package:safe_road/screens/quiz_screen.dart';
 import 'package:safe_road/widgets/road_header.dart';
 
 import '../models/question.dart';
+import '../models/topic_status.dart';
 import '../models/topic_status_ui.dart';
 import '../providers/game_profile_provider.dart';
 import '../providers/learning_provider.dart';
@@ -46,6 +47,50 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
 
     try {
       final startResp = await _quizService.startTest(themeId);
+      final String sessionId = startResp.sessionId;
+      final List<Question> quizData = await _quizService.getTestQuestions(
+        sessionId,
+      );
+
+      if (mounted) {
+        if (quizData.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Для этой темы пока нет вопросов.')),
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  QuizScreen(sessionId: sessionId, quizData: quizData),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ошибка загрузки вопросов: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isQuizLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _fetchAndStartQuizForSection(int sectionId) async {
+    if (_isQuizLoading) return;
+
+    setState(() {
+      _isQuizLoading = true;
+    });
+
+    try {
+      final startResp = await _quizService.startSectionTest(sectionId);
       final String sessionId = startResp.sessionId;
       final List<Question> quizData = await _quizService.getTestQuestions(
         sessionId,
@@ -145,8 +190,20 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
       // 2. Обрабатываем топики этого раздела
       var firstRowLength = 3;
       var secondRowLength = 2;
+      final isFinalTestAvailable = section.topics.isNotEmpty &&
+          section.topics.every((topic) => topic.status == TopicStatus.COMPLETED);
+      // Добавляем искусственную тему в конец секции — итоговый тест
+      final topicsWithFinal = List<Topic>.from(section.topics);
+      // synthetic topic id will be negative of section id to distinguish
+      topicsWithFinal.add(Topic(
+        id: -section.id,
+        title: 'Итоговый тест',
+        orderIndex: section.topics.length + 1,
+        status: TopicStatus.UNLOCKED,
+      ));
+
       List<List<Topic>> topicsForRows = chunkTopics(
-        section.topics,
+        topicsWithFinal,
         firstRowLength,
         secondRowLength,
       );
@@ -158,6 +215,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
             section.id,
             isFirstRow ? firstRowLength : secondRowLength,
             isFirstRow,
+            isFinalTestAvailable,
           ),
         );
       }
@@ -170,6 +228,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
     int sectionId,
     int maxLength,
     bool rightDirection,
+    bool isFinalTestAvailable,
   ) {
     int emptyBlockCount = maxLength - topics.length;
     if (emptyBlockCount < 0) {
@@ -177,7 +236,13 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
     }
 
     List<Widget> widgetsInRow = topics
-        .map((topic) => _buildTopicWidget(topic, sectionId))
+        .map(
+          (topic) => _buildTopicWidget(
+            topic,
+            sectionId,
+            isFinalTestAvailable: isFinalTestAvailable,
+          ),
+        )
         .toList();
 
     for (int i = 0; i < emptyBlockCount; i++) {
@@ -206,8 +271,74 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
     );
   }
 
-  Widget _buildTopicWidget(Topic topic, int sectionId) {
-    final statusUi = resolveTopicStatusUi(topic.status);
+  Widget _buildTopicCircle(Topic topic, TopicStatusUiConfig statusUi) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Основной круглый контейнер
+        Container(
+          width: 64,
+          height: 64,
+          decoration: BoxDecoration(
+            color: statusUi.circleColor,
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: statusUi.borderColor,
+              width: statusUi.borderWidth,
+            ),
+            boxShadow: statusUi.showShadow
+                ? [
+                    BoxShadow(
+                      color: statusUi.shadowColor.withAlpha(128),
+                      blurRadius: 9,
+                      offset: const Offset(0, 0),
+                    ),
+                  ]
+                : [],
+          ),
+        ),
+        // Иконка в центре (галочка, кубок и т.д.)
+        if (statusUi.centerIcon != null)
+          Icon(
+            statusUi.centerIcon,
+            color: statusUi.centerIconColor ?? AppColors.white,
+            size: 28,
+          )
+        // Номер в центре (если нет центральной иконки)
+        else if (statusUi.showOrderIndex)
+          Text(
+            topic.orderIndex.toString(),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: statusUi.textStyle ?? AppTextStyles.topicNumber,
+          ),
+        // Бейдж-иконка в правом верхнем углу (замок и т.д.)
+        if (statusUi.badgeIcon != null)
+          Positioned(
+            top: 0,
+            right: 0,
+            child: Icon(
+              statusUi.badgeIcon,
+              color: statusUi.badgeIconColor ?? AppColors.white,
+              size: 28,
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildTopicWidget(
+    Topic topic,
+    int sectionId, {
+    required bool isFinalTestAvailable,
+  }) {
+    final isFinalTest = topic.id < 0;
+    final statusUi = resolveTopicStatusUi(
+      topic.status,
+      isFinalTest: isFinalTest,
+      isFinalTestAvailable: isFinalTestAvailable,
+    );
 
     return Expanded(
       child: Container(
@@ -218,61 +349,11 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
           children: [
             GestureDetector(
               onTap: statusUi.isTapEnabled
-                  ? () => _fetchAndStartQuizForTheme(topic.id)
+                  ? (topic.id < 0
+                      ? () => _fetchAndStartQuizForSection(sectionId)
+                      : () => _fetchAndStartQuizForTheme(topic.id))
                   : null,
-              child: Stack(
-                alignment: Alignment.center, // Центрируем элементы по умолчанию
-                children: [
-                  // Сам круглый Container
-                  Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      color: statusUi.circleColor,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: statusUi.borderColor,
-                        width: statusUi.borderWidth,
-                      ),
-                      boxShadow: statusUi.showShadow
-                          ? [
-                              BoxShadow(
-                                color: statusUi.shadowColor.withAlpha(
-                                  statusUi.placeIconTopRight ? 64 : 128,
-                                ),
-                                blurRadius: 9,
-                                offset: const Offset(0, 0),
-                              ),
-                            ]
-                          : [],
-                    ),
-                  ),
-                  if (statusUi.icon != null)
-                    statusUi.placeIconTopRight
-                        ? Positioned(
-                            top: 0,
-                            right: 0,
-                            child: Icon(
-                              statusUi.icon,
-                              color: statusUi.iconColor,
-                              size: 28,
-                            ),
-                          )
-                        : Icon(
-                            statusUi.icon,
-                            color: statusUi.iconColor,
-                            size: 28,
-                          ),
-                  if (statusUi.showOrderIndex)
-                    Text(
-                      topic.orderIndex.toString(),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: statusUi.textStyle ?? AppTextStyles.topicNumber,
-                    ),
-                ],
-              ),
+              child: _buildTopicCircle(topic, statusUi),
             ),
             const SizedBox(height: 5),
             SizedBox(

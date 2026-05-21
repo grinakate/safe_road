@@ -10,7 +10,7 @@ import ru.itmo.saferoad.learning.dto.TestSessionSubmitResponse;
 import java.util.List;
 
 public interface TestSessionService {
-    StartTestResponse startTopicTest(StartTestRequest request, Long userId);
+    StartTestResponse startTest(StartTestRequest request, Long userId);
     List<TestQuestionResponse> getTestQuestions(Integer sessionId, Long userId);
     TestSessionSubmitResponse submitSessionAnswer(Integer sessionId, SubmitSessionAnswerRequest request, Long userId);
     TestResultResponse getTestResult(Integer sessionId, Long userId);

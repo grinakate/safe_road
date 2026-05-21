@@ -46,6 +46,19 @@ class LearningService {
     }
   }
 
+  /// Start a final test session for a whole section. Returns session id.
+  Future<StartTestResponse> startSectionTest(int sectionId) async {
+    final body = {'sectionId': sectionId, 'mode': 'FINAL'};
+    final response = await _apiClient.post('/learning/test/start', body);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      return StartTestResponse.fromJson(data);
+    } else {
+      throw Exception('Failed to start section test session: ${response.statusCode}');
+    }
+  }
+
   /// Get questions for the test session
   Future<List<Question>> getTestQuestions(String sessionId) async {
     final response = await _apiClient.get(

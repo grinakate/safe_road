@@ -36,7 +36,7 @@ public class LearningController {
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<StartTestResponse> startTest(@RequestBody StartTestRequest request,
 													   @AuthenticationPrincipal AppUserDetails user) {
-		return ResponseEntity.ok(testSessionService.startTopicTest(request, user.getId()));
+		return ResponseEntity.ok(testSessionService.startTest(request, user.getId()));
 	}
 
 	@GetMapping("/test/{sessionId}/questions")
