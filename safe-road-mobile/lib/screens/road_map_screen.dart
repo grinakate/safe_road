@@ -209,7 +209,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
   Widget _buildTopicWidget(Topic topic, int sectionId) {
     final status = topic.status;
     final color = status == TopicStatus.LOCKED
-        ? AppColors.greyBorder
+        ? AppColors.brownBorder
         : AppColors.primaryGreen;
     final icon = status == TopicStatus.LOCKED
         ? Icons.lock

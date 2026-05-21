@@ -10,7 +10,7 @@ class AppTextStyles {
     fontFamily: _fontFamily,
     fontFamilyFallback: _fontFallback,
     fontSize: 28,
-    fontWeight: FontWeight.bold,
+    fontWeight: FontWeight.w800,
     color: AppColors.darkBrownText,
   );
 
@@ -43,14 +43,14 @@ class AppTextStyles {
     fontFamilyFallback: _fontFallback,
     fontSize: 14,
     fontWeight: FontWeight.normal,
-    color: AppColors.greyText,
+    color: AppColors.darkBrownText,
   );
 
   static const TextStyle buttonText = TextStyle(
     fontFamily: _fontFamily,
     fontFamilyFallback: _fontFallback,
     fontSize: 18,
-    fontWeight: FontWeight.bold,
+    fontWeight: FontWeight.w800,
     color: AppColors.white,
   );
 
@@ -59,7 +59,7 @@ class AppTextStyles {
     fontFamilyFallback: _fontFallback,
     fontSize: 16,
     fontWeight: FontWeight.normal,
-    color: AppColors.greyText,
+    color: AppColors.brownText,
   );
 
   static const TextStyle inputHint = TextStyle(
@@ -67,7 +67,7 @@ class AppTextStyles {
     fontFamilyFallback: _fontFallback,
     fontSize: 16,
     fontWeight: FontWeight.normal,
-    color: AppColors.greyText,
+    color: AppColors.brownText,
   );
 
   static const TextStyle bottomNavSelected = TextStyle(
@@ -83,7 +83,7 @@ class AppTextStyles {
     fontFamilyFallback: _fontFallback,
     fontSize: 12,
     fontWeight: FontWeight.normal,
-    color: AppColors.greyIcon,
+    color: AppColors.darkBrownIcon,
   );
 
   static const TextStyle errorText = TextStyle(
@@ -139,7 +139,7 @@ class AppTextStyles {
     fontFamilyFallback: _fontFallback,
     fontSize: 16,
     fontWeight: FontWeight.normal,
-    color: AppColors.greyText,
+    color: AppColors.brownText,
   );
 
   static const TextStyle bodySmall = TextStyle(
@@ -147,7 +147,7 @@ class AppTextStyles {
     fontFamilyFallback: _fontFallback,
     fontSize: 11,
     fontWeight: FontWeight.normal,
-    color: AppColors.greyText,
+    color: AppColors.brownText,
   );
 
   static const TextStyle body14 = TextStyle(

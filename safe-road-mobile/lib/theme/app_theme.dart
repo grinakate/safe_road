@@ -12,15 +12,15 @@ class AppTheme {
     hintStyle: AppTextStyles.inputHint,
     border: OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(12.0)),
-      borderSide: BorderSide(color: AppColors.greyBorder),
+      borderSide: BorderSide(color: AppColors.darkBrownText),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(12.0)),
-      borderSide: BorderSide(color: AppColors.greyBorder, width: 1),
+      borderSide: BorderSide(color: AppColors.darkBrownText, width: 1),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(12.0)),
-      borderSide: BorderSide(color: AppColors.primaryGreen, width: 2),
+      borderSide: BorderSide(color: AppColors.darkBrownText, width: 2),
     ),
   );
 
@@ -71,11 +71,11 @@ class AppTheme {
         hintStyle: AppTextStyles.inputHint,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(12.0)),
-          borderSide: BorderSide(color: AppColors.greyBorder),
+          borderSide: BorderSide(color: AppColors.brownBorder),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(12.0)),
-          borderSide: BorderSide(color: AppColors.greyBorder, width: 1),
+          borderSide: BorderSide(color: AppColors.brownBorder, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(12.0)),
@@ -93,7 +93,7 @@ class AppTheme {
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.white,
         selectedItemColor: AppColors.primaryGreen,
-        unselectedItemColor: AppColors.greyIcon,
+        unselectedItemColor: AppColors.darkBrownIcon,
         selectedLabelStyle: AppTextStyles.bottomNavSelected,
         unselectedLabelStyle: AppTextStyles.bottomNavUnselected,
         elevation: 8,

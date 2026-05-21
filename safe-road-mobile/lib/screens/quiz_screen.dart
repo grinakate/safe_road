@@ -303,7 +303,7 @@ class AnswerOptionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color backgroundColor = AppColors.white;
-    Color borderColor = AppColors.greyBorder;
+    Color borderColor = AppColors.brownBorder;
     Color textColor = AppColors.darkBrownText;
 
     if (isSelected) {

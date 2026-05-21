@@ -6,7 +6,7 @@ class RoadPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.greyBorder
+      ..color = AppColors.brownBorder
       ..style = PaintingStyle.stroke
       ..strokeWidth = 40
       ..strokeCap = StrokeCap.round

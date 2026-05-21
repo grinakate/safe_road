@@ -143,7 +143,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         text,
         style: AppTextStyles.bodyLarge.copyWith(
           fontSize: 18,
-          color: isActive ? AppColors.primaryGreen : AppColors.greyText,
+          color: isActive ? AppColors.primaryGreen : AppColors.brownText,
           fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
         ),
       ),
@@ -219,7 +219,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     height: 1.0,
                                     color: item.isUnlocked
                                         ? AppColors.darkBrownText
-                                        : AppColors.greyText,
+                                        : AppColors.brownText,
                                   ),
                                 ),
                               ),

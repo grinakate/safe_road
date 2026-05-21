@@ -27,6 +27,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _login() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     final token = await context.read<AuthProvider>().login(
@@ -72,10 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildHeader() {
     return Column(
       children: const [
-        Text(
-          'Добро пожаловать!',
-          style: AppTheme.headerTextStyle,
-        ),
+        Text('Добро пожаловать!', style: AppTheme.headerTextStyle),
         SizedBox(height: 8),
         Center(
           child: Text(
@@ -99,15 +100,13 @@ class _LoginScreenState extends State<LoginScreen> {
             decoration: AppTheme.inputDecoration.copyWith(
               labelText: 'Email',
               hintText: 'Введите email',
-              prefixIcon: const Icon(Icons.email_outlined),
+              prefixIcon: const Icon(Icons.email_outlined, color: AppColors.darkBrownIcon),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Введите email';
               }
-              if (!RegExp(
-                r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$',
-              ).hasMatch(value)) {
+              if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
                 return 'Введите корректный email';
               }
               return null;
@@ -120,10 +119,14 @@ class _LoginScreenState extends State<LoginScreen> {
             decoration: AppTheme.inputDecoration.copyWith(
               labelText: 'Пароль',
               hintText: 'Введите пароль',
-              prefixIcon: const Icon(Icons.lock_outline),
+              prefixIcon: const Icon(
+                Icons.lock_outline,
+                color: AppColors.darkBrownIcon,
+              ),
               suffixIcon: IconButton(
                 icon: Icon(
                   _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                  color: AppColors.darkBrownIcon,
                 ),
                 onPressed: () {
                   setState(() {
@@ -173,10 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
               ),
             )
-          : const Text(
-              'Войти',
-              style: AppTextStyles.buttonText,
-            ),
+          : const Text('Войти', style: AppTextStyles.buttonText),
     );
   }
 
@@ -191,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
             'Зарегистрироваться',
             style: TextStyle(
               fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
               color: AppColors.primaryGreen,
             ),
           ),

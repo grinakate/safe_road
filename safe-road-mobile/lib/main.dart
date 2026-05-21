@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:safe_road/screens/main_screen.dart';
 import 'package:safe_road/screens/register_screen.dart';
@@ -37,6 +38,16 @@ class SafeRoadApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+      // Поддержка локалей нужна для корректной работы системных виджетов локализации
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('ru'),
+        Locale('en'),
+      ],
       navigatorKey: getIt<GlobalKey<NavigatorState>>(),
       title: 'Безопасная дорога',
       debugShowCheckedModeBanner: false,

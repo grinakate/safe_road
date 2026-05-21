@@ -34,7 +34,7 @@ class TopicItem extends StatelessWidget {
         : alignmentsToLeft[index];
     final status = topic.status;
     final color = status == TopicStatus.LOCKED
-        ? AppColors.greyBorder
+        ? AppColors.brownBorder
         : AppColors.primaryGreen;
     final icon = status == TopicStatus.LOCKED
         ? Icons.lock

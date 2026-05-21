@@ -38,7 +38,7 @@ class AchievementTile extends StatelessWidget {
                       BlendMode.dst,
                     )
                   : const ColorFilter.mode(
-                      AppColors.greyIcon,
+                      AppColors.darkBrownIcon,
                       BlendMode.saturation,
                     ),
               child: SecureNetworkImage(imageUrl: achievement.iconUrl),

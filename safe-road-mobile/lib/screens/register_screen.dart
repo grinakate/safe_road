@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import 'package:intl/intl.dart';
 import '../theme.dart';
+import '../utils/date_picker_helper.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -64,7 +65,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Регистрация")),
+      appBar: AppBar(
+        title: const Text("Регистрация"),
+        iconTheme: const IconThemeData(color: AppColors.darkBrownIcon),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -111,7 +115,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             decoration: AppTheme.inputDecoration.copyWith(
               labelText: 'Имя',
               hintText: 'Введите имя',
-              prefixIcon: const Icon(Icons.email_outlined),
+              prefixIcon: const Icon(
+                Icons.person,
+                color: AppColors.darkBrownIcon,
+              ),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -127,7 +134,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             decoration: AppTheme.inputDecoration.copyWith(
               labelText: 'Email',
               hintText: 'Введите email',
-              prefixIcon: const Icon(Icons.email_outlined),
+              prefixIcon: const Icon(
+                Icons.email_outlined,
+                color: AppColors.darkBrownIcon,
+              ),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -148,10 +158,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
             decoration: AppTheme.inputDecoration.copyWith(
               labelText: 'Дата рождения',
               hintText: 'Введите дату рождения',
-              prefixIcon: const Icon(Icons.calendar_month),
+              prefixIcon: const Icon(
+                Icons.calendar_month,
+                color: AppColors.darkBrownIcon,
+              ),
             ),
             onTap: () async {
-              DateTime? picked = await showDatePicker(
+              DateTime? picked = await showAppDatePicker(
                 context: context,
                 initialDate: DateTime(2010, 1, 1),
                 firstDate: DateTime(1900),
@@ -174,10 +187,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
             decoration: AppTheme.inputDecoration.copyWith(
               labelText: 'Пароль',
               hintText: 'Введите пароль',
-              prefixIcon: const Icon(Icons.lock_outline),
+              prefixIcon: const Icon(
+                Icons.lock_outline,
+                color: AppColors.darkBrownIcon,
+              ),
               suffixIcon: IconButton(
                 icon: Icon(
                   _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                  color: AppColors.darkBrownIcon,
                 ),
                 onPressed: () {
                   setState(() {
@@ -203,12 +220,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
             decoration: AppTheme.inputDecoration.copyWith(
               labelText: 'Повторите пароль',
               hintText: 'Повторите пароль',
-              prefixIcon: const Icon(Icons.lock_outline),
+              prefixIcon: const Icon(
+                Icons.lock_outline,
+                color: AppColors.darkBrownIcon,
+              ),
               suffixIcon: IconButton(
                 icon: Icon(
                   _isSecondPasswordVisible
                       ? Icons.visibility_off
                       : Icons.visibility,
+                  color: AppColors.darkBrownIcon,
                 ),
                 onPressed: () {
                   setState(() {
