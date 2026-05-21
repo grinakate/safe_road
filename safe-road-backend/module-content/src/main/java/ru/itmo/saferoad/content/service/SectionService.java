@@ -4,6 +4,7 @@ import lombok.NonNull;
 import ru.itmo.saferoad.content.domain.Section;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SectionService {
 
@@ -18,4 +19,6 @@ public interface SectionService {
 
 	@NonNull
 	Section getFirstSection();
+
+	Optional<Section> getNextSection(@NonNull Integer currentSectionNumber);
 }

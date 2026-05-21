@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import '../core/avatar_manager.dart';
 import '../core/service_locator.dart';
 import '../models/achievement.dart';
-import '../models/game_profile.dart';
 import '../services/game_profile_service.dart';
+import 'package:provider/provider.dart';
+import '../providers/game_profile_provider.dart';
 import '../theme.dart';
 import '../widgets/achievement_info_dialog.dart';
 import '../widgets/avatar_selection_dialog.dart';
@@ -18,31 +19,15 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late Future<GameProfile> _profileFuture;
-  late Future<List<Achievement>> _achievementsFuture;
-  late Future<void> _avatarsInitFuture;
-  GameProfile? _currentUserProfile;
-  List<Achievement> _currenAchievements = [];
 
   @override
   void initState() {
     super.initState();
-    _avatarsInitFuture = getIt<GameProfileService>().getAvailableAvatars().then(
-      (avatarInfoList) {
-        AvatarManager.initialize(avatarInfoList);
-      },
-    );
-
-    _profileFuture = getIt<GameProfileService>().getProfile().then((profile) {
-      _currentUserProfile = profile;
-      return profile;
-    });
-
-    _achievementsFuture = getIt<GameProfileService>().getAchievements().then((
-      achievements,
-    ) {
-      _currenAchievements = achievements;
-      return achievements;
+    // Загружаем профиль и аватары через провайдер
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final gp = context.read<GameProfileProvider>();
+      gp.loadAvatars().then((_) => AvatarManager.initialize(gp.availableAvatars));
+      gp.loadProfile();
     });
   }
 
@@ -67,16 +52,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // Верхняя часть: Уровень, Аватар, Очки
   Widget _buildHeader() {
-    return FutureBuilder(
-      future: Future.wait([_avatarsInitFuture, _profileFuture]),
-      builder: (context, asyncSnapshot) {
-        if (asyncSnapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (asyncSnapshot.hasError) {
-          return Center(child: Text("Ошибка: ${asyncSnapshot.error}"));
-        }
-        final user = _currentUserProfile!;
+    return Consumer<GameProfileProvider>(builder: (context, gp, child) {
+      if (gp.profile == null) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      final user = gp.profile!;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Row(
@@ -121,19 +101,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         currentAvatarId: currentAvatarId,
         currentUserLevel: currentUserLevel,
         onAvatarSelected: (newAvatarId) async {
-          if (_currentUserProfile!.avatarId == newAvatarId) {
-            return;
-          }
-          // 1. Отправляем на бэкенд
-          var newAvatar = await getIt<GameProfileService>().updateAvatar(
-            newAvatarId,
-          );
-          // 2. Обновляем UI
-          setState(() {
-            _currentUserProfile = _currentUserProfile!.copyWith(
-              avatarId: newAvatar.id,
-            );
-          });
+          final gp = context.read<GameProfileProvider>();
+          await gp.updateAvatar(newAvatarId);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Аватар успешно обновлен!')),
           );
@@ -183,8 +152,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // Сетка достижений
   Widget _buildAchievementsGrid() {
-    return FutureBuilder(
-      future: Future.wait([_achievementsFuture]),
+    return FutureBuilder<List<Achievement>>(
+      future: getIt<GameProfileService>().getAchievements(),
       builder: (context, asyncSnapshot) {
         if (asyncSnapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -192,6 +161,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (asyncSnapshot.hasError) {
           return Center(child: Text("Ошибка: ${asyncSnapshot.error}"));
         }
+        final achievements = asyncSnapshot.data ?? [];
         return Expanded(
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -203,7 +173,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               double fontSize = itemWidth * 0.12;
               double textHeight = fontSize * 1.2 * 2.5;
 
-              var achievements = _currenAchievements;
               final rows = chunkAchievements(achievements);
               return ListView.builder(
                 itemCount: rows.length,

@@ -20,5 +20,8 @@ public class NotificationsProperties {
 
     @NotNull
     private Long confirmationTimeoutMs = 60000L;
+
+    @NotNull
+    private Integer schedulerSendingThreadsCount = 10;
 }
 

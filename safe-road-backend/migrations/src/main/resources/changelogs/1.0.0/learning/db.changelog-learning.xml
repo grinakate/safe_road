@@ -130,7 +130,7 @@
 	</changeSet>
 	<changeSet id="learning-create_test_sessions" author="safe-road">
 		<createTable tableName="test_sessions">
-			<column name="id" type="INTEGER" autoIncrement="true">
+			<column name="id" type="BIGINT" autoIncrement="true">
 				<constraints primaryKey="true"
 							 primaryKeyName="test_sessions_pkey"
 							 nullable="false"

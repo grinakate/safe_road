@@ -40,6 +40,11 @@
 			<artifactId>module-learning</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>ru.itmo</groupId>
+			<artifactId>module-notifications</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../models/game_profile.dart';
+import '../providers/game_profile_provider.dart';
 import '../theme.dart';
 
 class RoadHeader extends StatelessWidget {
-  final GameProfile profile; // Принимаем профиль
-
-  const RoadHeader({super.key, required this.profile});
+  const RoadHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final gp = context.watch<GameProfileProvider>();
+    final profile = gp.profile;
+    if (profile == null) {
+      return Container(
+        color: AppColors.lightBlueBackground,
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
     return Container(
       color: AppColors.lightBlueBackground,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
@@ -28,21 +36,13 @@ class RoadHeader extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-/*                    Text(
-                      '${profile.xpToNextLevel} очков до следующего уровня',
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.darkBrownText,
-                      ),
-                    ),*/
-                    //const SizedBox(height: 6),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: LinearProgressIndicator(
                         value: profile.xpProgress,
                         minHeight: 16,
-                          color: AppColors.primaryGreen,
-                          backgroundColor: AppColors.lightGreenBackground,
+                        color: AppColors.primaryGreen,
+                        backgroundColor: AppColors.lightGreenBackground,
                       ),
                     ),
                   ],

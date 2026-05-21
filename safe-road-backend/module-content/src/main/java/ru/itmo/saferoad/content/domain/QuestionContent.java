@@ -28,7 +28,7 @@ public class QuestionContent {
 		@JsonProperty(value = "text")
 		private String text;
 
-		@JsonProperty(value = "is_correct")
+		@JsonProperty(value = "isCorrect")
 		private Boolean isCorrect;
 
 		@JsonProperty(value = "feedback")

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../core/service_locator.dart';
-import '../services/auth_service.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import '../theme.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -12,7 +12,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _authService = getIt<AuthService>();
+  // auth через провайдер
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _login() async {
     setState(() => _isLoading = true);
 
-    final token = await _authService.login(
+    final token = await context.read<AuthProvider>().login(
       _emailController.text,
       _passwordController.text,
     );

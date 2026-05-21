@@ -18,9 +18,9 @@ class Question {
         .toList();
     return Question(
       id: json['id'],
-      text: json['text'],
+      text: json['questionText'],
       options: options,
-      correctAnswerId: json['correctAnswerId'],
+      correctAnswerId: json['correctAnswerNumber'],
     );
   }
 }
@@ -42,7 +42,7 @@ class AnswerOption {
     return AnswerOption(
       id: json['id'],
       text: json['text'],
-      feedback: json['feedBack'],
+      feedback: json['feedback'],
       isCorrect: json['isCorrect'],
     );
   }

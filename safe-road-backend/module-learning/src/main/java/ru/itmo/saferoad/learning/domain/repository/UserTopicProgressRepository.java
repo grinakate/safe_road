@@ -1,16 +1,17 @@
 package ru.itmo.saferoad.learning.domain.repository;
 
-import java.util.List;
-
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.itmo.saferoad.learning.domain.UserTopicProgress;
 import ru.itmo.saferoad.learning.domain.UserTopicProgressId;
 
+import java.util.List;
+
 public interface UserTopicProgressRepository
-    extends JpaRepository<UserTopicProgress, UserTopicProgressId> {
-  List<UserTopicProgress> findByUserId(Long userId);
+		extends JpaRepository<UserTopicProgress, UserTopicProgressId> {
+
+	List<UserTopicProgress> findByUserId(Long userId);
 
 	@Query("""
 			    SELECT COUNT(p) FROM UserTopicProgress p

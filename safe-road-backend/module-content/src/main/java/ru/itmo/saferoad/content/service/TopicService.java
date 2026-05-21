@@ -4,6 +4,7 @@ import lombok.NonNull;
 import ru.itmo.saferoad.content.domain.Topic;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TopicService {
 
@@ -22,4 +23,6 @@ public interface TopicService {
 
 	@NonNull
 	Topic existingById(@NonNull Integer id);
+
+	Optional<Topic> getNextTopic(@NonNull Topic currentTopic);
 }

@@ -8,13 +8,12 @@ import ru.itmo.saferoad.core.domain.enums.EventType;
 import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 import ru.itmo.saferoad.core.domain.repository.PendingEventsRepository;
 import ru.itmo.saferoad.core.event.dto.CreateGameProfileEvent;
+import ru.itmo.saferoad.core.event.dto.NotificationEvent;
 import ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent;
 import ru.itmo.saferoad.core.event.dto.UnlockFirstTopicEvent;
-import ru.itmo.saferoad.core.event.dto.NotificationEvent;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @Service
 @AllArgsConstructor

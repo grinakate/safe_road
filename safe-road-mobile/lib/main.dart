@@ -1,36 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:safe_road/screens/main_screen.dart';
 import 'package:safe_road/screens/register_screen.dart';
 import 'package:safe_road/theme/app_theme.dart';
 
 import 'core/service_locator.dart';
-import 'screens/login_screen.dart';
 import 'services/auth_service.dart';
-import 'services/notification_service.dart';
-import 'package:flutter/material.dart';
-
-// navigatorKey registered in service locator
-// navigatorKey берётся из service_locator через getIt
+import 'screens/login_screen.dart';
+import 'providers/auth_provider.dart';
+import 'providers/notification_provider.dart';
+import 'providers/game_profile_provider.dart';
+import 'providers/learning_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupLocator();
   final bool isAuth = await getIt<AuthService>().isAuthenticated();
-  if (isAuth) {
-    try {
-      getIt<NotificationService>().start();
-    } catch (_) {}
-  }
-  runApp(SafeRoadApp(initialRoute: isAuth ? '/map' : '/login'));
+  runApp(SafeRoadApp(initialRoute: isAuth ? '/map' : '/login', isAuth: isAuth));
 }
 
 class SafeRoadApp extends StatelessWidget {
   final String initialRoute;
-  const SafeRoadApp({super.key, required this.initialRoute});
+  final bool isAuth;
+  const SafeRoadApp({super.key, required this.initialRoute, required this.isAuth});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => GameProfileProvider()),
+        ChangeNotifierProvider(create: (_) => LearningProvider()),
+        // NotificationProvider: используем единственный экземпляр, доступный через GetIt
+        ChangeNotifierProvider<NotificationProvider>(
+          create: (_) => getIt<NotificationProvider>(),
+        ),
+      ],
+      child: MaterialApp(
       navigatorKey: getIt<GlobalKey<NavigatorState>>(),
       title: 'Безопасная дорога',
       debugShowCheckedModeBanner: false,
@@ -41,6 +47,7 @@ class SafeRoadApp extends StatelessWidget {
         '/login': (context) => LoginScreen(),
         '/map': (context) => MainScreen(),
       },
+      ),
     );
   }
 }

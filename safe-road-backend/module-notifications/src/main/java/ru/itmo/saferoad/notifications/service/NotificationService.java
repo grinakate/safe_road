@@ -5,7 +5,6 @@ import ru.itmo.saferoad.core.event.dto.notifications.NotificationType;
 import ru.itmo.saferoad.notifications.domain.Notification;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public interface NotificationService {
@@ -17,6 +16,9 @@ public interface NotificationService {
 	List<Notification> getUnreadByUserId(@NonNull Long userId);
 
 	List<Long> getUnreadIdsByUserIds(@NonNull Set<Long> userIds);
+
+	@NonNull
+	List<Notification> getUnreadByUserIds(@NonNull Set<Long> userIds);
 
 	@NonNull
 	Notification create(@NonNull Long userId, @NonNull NotificationType type, @NonNull String content);

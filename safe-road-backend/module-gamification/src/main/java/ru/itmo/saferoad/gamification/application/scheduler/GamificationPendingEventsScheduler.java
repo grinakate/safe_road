@@ -19,7 +19,8 @@ import java.util.concurrent.Executors;
 public class GamificationPendingEventsScheduler {
 
 	private static final List<EventType> GAMIFICATION_EVENT_TYPES = List.of(
-			EventType.CREATE_GAME_PROFILE
+			EventType.CREATE_GAME_PROFILE,
+			EventType.TEST_SESSIONS_COMPLETED
 	);
 
 	private final ExecutorService executorService;

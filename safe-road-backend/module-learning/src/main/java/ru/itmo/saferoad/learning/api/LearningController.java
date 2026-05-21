@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.itmo.saferoad.content.service.QuestionService;
 import ru.itmo.saferoad.core.security.AppUserDetails;
 import ru.itmo.saferoad.learning.dto.StartTestRequest;
 import ru.itmo.saferoad.learning.dto.StartTestResponse;
@@ -21,7 +20,6 @@ import ru.itmo.saferoad.learning.dto.TestResultResponse;
 import ru.itmo.saferoad.learning.dto.TestSessionSubmitResponse;
 import ru.itmo.saferoad.learning.dto.UserRoadMapResponse;
 import ru.itmo.saferoad.learning.service.TestSessionService;
-import ru.itmo.saferoad.learning.service.UserQuestionStatsService;
 
 import java.util.List;
 
@@ -38,7 +36,7 @@ public class LearningController {
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<StartTestResponse> startTest(@RequestBody StartTestRequest request,
 													   @AuthenticationPrincipal AppUserDetails user) {
-		return ResponseEntity.ok(testSessionService.startTest(request, user.getId()));
+		return ResponseEntity.ok(testSessionService.startTopicTest(request, user.getId()));
 	}
 
 	@GetMapping("/test/{sessionId}/questions")

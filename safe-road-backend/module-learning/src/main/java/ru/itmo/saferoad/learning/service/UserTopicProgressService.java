@@ -18,4 +18,6 @@ public interface UserTopicProgressService {
 	long countCompletedTopicsInSection(@NonNull Long userId, @NonNull Integer id);
 
 	void unlockTopic(@NonNull Long userId, @NonNull Topic topic);
+
+	void updateProgress(@NonNull Long userId, @NonNull Integer topicId, @NonNull ProgressStatus status);
 }

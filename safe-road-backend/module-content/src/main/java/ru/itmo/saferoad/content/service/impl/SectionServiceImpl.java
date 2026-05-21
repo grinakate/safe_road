@@ -9,6 +9,7 @@ import ru.itmo.saferoad.content.service.SectionService;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,5 +43,10 @@ public class SectionServiceImpl implements SectionService {
 	public Section getFirstSection() {
 		return sectionRepository.findFirstByOrderByOrderIndexAsc()
 				.orElseThrow(() -> new IllegalArgumentException("Section with id " + 1 + " does not exist"));
+	}
+
+	@Override
+	public Optional<Section> getNextSection(@NonNull Integer currentSectionNumber) {
+		return sectionRepository.findFirstByOrderIndexGreaterThanOrderByOrderIndexAsc(currentSectionNumber);
 	}
 }

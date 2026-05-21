@@ -22,10 +22,7 @@ class AuthService {
     if (response.statusCode == 200) {
       final tokenData = TokenResponse.fromJson(jsonDecode(response.body));
       await _tokenStorageService.saveToken(tokenData.token);
-      // Запустить подписку на уведомления после сохранения токена
-      try {
-        GetIt.I<NotificationService>().start();
-      } catch (_) {}
+      // Подписка на уведомления теперь управляется через NotificationProvider
       return tokenData.token;
     }
     return null;
@@ -42,10 +39,7 @@ class AuthService {
       final data = jsonDecode(response.body);
       String token = data['token'];
       await _tokenStorageService.saveToken(token);
-      // Запустить подписку на уведомления после сохранения токена
-      try {
-        GetIt.I<NotificationService>().start();
-      } catch (_) {}
+      // Подписка на уведомления теперь управляется через NotificationProvider
       return token;
     }
     return null;
@@ -53,9 +47,7 @@ class AuthService {
 
   Future<void> logout() async {
     await _tokenStorageService.deleteToken();
-    try {
-      GetIt.I<NotificationService>().dispose();
-    } catch (_) {}
+    // Уведомления теперь останавливаются через NotificationProvider
   }
 
   Future<bool> isAuthenticated() async {

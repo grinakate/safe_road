@@ -16,10 +16,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication(scanBasePackages = {
 		"ru.itmo.saferoad.app",
 		"ru.itmo.saferoad.core",
+		"ru.itmo.saferoad.auth",
 		"ru.itmo.saferoad.content",
 		"ru.itmo.saferoad.learning",
-		"ru.itmo.saferoad.auth",
-		"ru.itmo.saferoad.gamification"
+		"ru.itmo.saferoad.gamification",
+		"ru.itmo.saferoad.notifications"
 })
 public class SafeRoadApplication {
 

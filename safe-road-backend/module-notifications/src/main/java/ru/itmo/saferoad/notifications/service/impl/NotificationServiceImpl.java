@@ -34,6 +34,11 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	@Override
+	public @NonNull List<Notification> getUnreadByUserIds(@NonNull Set<Long> userIds) {
+		return notificationRepository.findByUserIdInAndIsReadFalse(userIds);
+	}
+
+	@Override
 	public @NonNull Notification create(@NonNull Long userId, @NonNull NotificationType type, @NonNull String content) {
 
 		Notification notification = new Notification();

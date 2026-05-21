@@ -1,6 +1,6 @@
 package ru.itmo.saferoad.notifications.api;
 
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,25 +13,37 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import ru.itmo.saferoad.core.event.EventExecutor;
 import ru.itmo.saferoad.core.security.AppUserDetails;
 import ru.itmo.saferoad.notifications.config.NotificationsProperties;
+import ru.itmo.saferoad.notifications.domain.Notification;
 import ru.itmo.saferoad.notifications.dto.NotificationDto;
 import ru.itmo.saferoad.notifications.service.NotificationService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Transactional
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/v1/notifications")
 public class NotificationController {
-	
+
 	private final ExecutorService executorService;
 	private final SseNotificationManager sseNotificationManager;
 	private final NotificationService notificationService;
 	private final NotificationsProperties notificationsProperties;
+
+	public NotificationController(SseNotificationManager sseNotificationManager,
+								  NotificationService notificationService,
+								  NotificationsProperties notificationsProperties) {
+		this.sseNotificationManager = sseNotificationManager;
+		this.notificationService = notificationService;
+		this.notificationsProperties = notificationsProperties;
+		this.executorService = Executors.newFixedThreadPool(notificationsProperties.getSchedulerSendingThreadsCount());
+	}
 
 	@GetMapping("/subscribe")
 	public SseEmitter subscribe(@AuthenticationPrincipal AppUserDetails user) {
@@ -52,12 +64,27 @@ public class NotificationController {
 			return; // Нет подключенных пользователей, нет смысла опрашивать
 		}
 
-		// Запрашиваем из БД все НОВЫЕ уведомления для этих пользователей
-		List<Long> newNotificationIds = notificationService.getUnreadIdsByUserIds(connectedUserIds);
+		// Запрашиваем из БД все НОВЫЕ уведомления для этих пользователей одним запросом
+		var allNotifications = notificationService.getUnreadByUserIds(connectedUserIds);
 
-		for (long notificationId : newNotificationIds) {
+		if (allNotifications.isEmpty()) {
+			return;
+		}
+
+		Map<Long, List<Notification>> notificationsByUser = allNotifications.stream()
+				.collect(Collectors.groupingBy(Notification::getUserId));
+
+		for (var userNotifications : notificationsByUser.entrySet()) {
+			var notifications = userNotifications.getValue();
 			executorService.submit(() -> {
-				sseNotificationManager.sendNotification(notificationId);
+				for (var n : notifications) {
+					try {
+						sseNotificationManager.sendNotification(n.getId());
+					} catch (Exception _) {
+						log.error("Ошибка во время отправки уведомления с ИД {} пользователю с ИД {}",
+								n.getId(), n.getUserId());
+					}
+				}
 			});
 		}
 	}

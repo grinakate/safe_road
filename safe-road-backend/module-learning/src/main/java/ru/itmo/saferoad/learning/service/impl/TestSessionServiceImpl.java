@@ -6,10 +6,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.saferoad.content.domain.Question;
 import ru.itmo.saferoad.content.domain.QuestionContent;
+import ru.itmo.saferoad.content.domain.Topic;
 import ru.itmo.saferoad.content.domain.repository.QuestionRepository;
+import ru.itmo.saferoad.content.service.TopicService;
 import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 import ru.itmo.saferoad.core.event.CreatePendingEventsService;
 import ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent;
+import ru.itmo.saferoad.learning.config.LearningProperties;
 import ru.itmo.saferoad.learning.domain.TestMode;
 import ru.itmo.saferoad.learning.domain.TestSession;
 import ru.itmo.saferoad.learning.domain.UserQuestionStats;
@@ -23,9 +26,9 @@ import ru.itmo.saferoad.learning.dto.TestErrorResponse;
 import ru.itmo.saferoad.learning.dto.TestQuestionResponse;
 import ru.itmo.saferoad.learning.dto.TestResultResponse;
 import ru.itmo.saferoad.learning.dto.TestSessionSubmitResponse;
-import ru.itmo.saferoad.learning.config.LearningProperties;
 import ru.itmo.saferoad.learning.service.TestSessionService;
 import ru.itmo.saferoad.learning.service.UserQuestionStatsService;
+import ru.itmo.saferoad.learning.service.UserTopicProgressService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,6 +37,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -45,14 +49,17 @@ public class TestSessionServiceImpl implements TestSessionService {
 	private final QuestionRepository questionRepository;
 	private final UserQuestionStatsRepository userQuestionStatsRepository;
 	private final LearningProperties learningProperties;
+	private final TopicService topicService;
+	private final UserTopicProgressService userTopicProgressService;
 
 	@Override
 	@Transactional
-	public StartTestResponse startTest(StartTestRequest request, Long userId) {
+	public StartTestResponse startTopicTest(StartTestRequest request, Long userId) {
 		TestSession session = new TestSession();
 		session.setUserId(userId);
-		session.setMode(TestMode.PRACTICE); // default mode for now
+		session.setMode(TestMode.TOPIC); // default mode for now
 		session.setStatus(ProgressStatus.IN_PROGRESS);
+		session.setTopicId(request.topicId());
 
 		int totalQuestions = 10;
 		List<Question> selectedQuestions = selectQuestionsAdaptively(userId, request.topicId(), totalQuestions);
@@ -90,7 +97,11 @@ public class TestSessionServiceImpl implements TestSessionService {
 					.orElse(null);
 
 			List<TestAnswerOptionResponse> options = q.getContent().getOptions().stream()
-					.map(o -> new TestAnswerOptionResponse(o.getNumber(), o.getText()))
+					.map(o -> new TestAnswerOptionResponse(
+							o.getNumber(),
+							o.getText(),
+							o.getFeedback(),
+							o.getIsCorrect()))
 					.toList();
 
 			return new TestQuestionResponse(
@@ -244,12 +255,19 @@ public class TestSessionServiceImpl implements TestSessionService {
 
 		TestSessionCompletedEvent eventPayload = new TestSessionCompletedEvent(
 				userId,
-				session.getTopic() != null ? session.getTopic().getId() : null,
+				session.getTopicId(),
 				session.getTotalQuestions(),
 				correctAnswers,
 				details
 		);
 		createPendingEventsService.publishTestSessionCompletedEvent(eventPayload);
+
+		if (correctAnswers >= session.getTotalQuestions() * 0.8) {
+			Topic currentTopic = topicService.existingById(session.getTopicId());
+			userTopicProgressService.updateProgress(userId, currentTopic.getId(), ProgressStatus.COMPLETED);
+			Optional<Topic> nextTopicOpt = topicService.getNextTopic(currentTopic);
+			nextTopicOpt.ifPresent(nextTopic -> userTopicProgressService.unlockTopic(userId, nextTopic));
+		}
 
 		return new TestSessionSubmitResponse(session.getTotalQuestions(), correctAnswers, errors);
 	}

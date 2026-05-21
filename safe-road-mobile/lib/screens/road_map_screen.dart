@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 import 'package:safe_road/models/topic.dart';
 import 'package:safe_road/screens/quiz_screen.dart';
 import 'package:safe_road/widgets/road_header.dart';
 
-import '../core/service_locator.dart';
 import '../models/question.dart';
-import '../models/section.dart';
 import '../models/topic_status.dart';
-import '../models/game_profile.dart';
+import '../providers/game_profile_provider.dart';
+import '../providers/learning_provider.dart';
 import '../services/learning_service.dart';
-import '../services/game_profile_service.dart';
-import '../widgets/section_header.dart';
 import '../theme.dart';
+import '../widgets/section_header.dart';
 
 class RoadMapScreen extends StatefulWidget {
   const RoadMapScreen({super.key});
@@ -22,59 +21,19 @@ class RoadMapScreen extends StatefulWidget {
 }
 
 class _RoadMapScreenState extends State<RoadMapScreen> {
-  late Future<void> _loadingFutures;
-
-  GameProfile? _currentUserProfile;
-  List<Section>? _sections;
-
-  bool _hasError = false;
   bool _isQuizLoading = false;
 
   @override
   void initState() {
     super.initState();
-    // Вызываем метод загрузки данных при первом открытии экрана
-    loadData();
-  }
-
-  // Метод для загрузки данных
-  void loadData() {
-    setState(() {
-      _hasError = false; // Сбрасываем ошибку перед новой загрузкой
-      // Переинициализируем Future, который будет управлять FutureBuilder
-      _loadingFutures = _performDataLoading();
+    // Загружаем профиль и разделы через провайдер
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<GameProfileProvider>().loadProfile();
+      context.read<LearningProvider>().loadSections();
     });
   }
 
-  // Асинхронный метод, который выполняет все загрузки
-  Future<void> _performDataLoading() async {
-    try {
-      // Запускаем операции параллельно
-      final Future<GameProfile> profileFuture = getIt<GameProfileService>()
-          .getProfile()
-          .then((profile) {
-            _currentUserProfile = profile;
-            return profile;
-          });
-
-      final Future<List<Section>> sectionsFuture = getIt<LearningService>()
-          .getRoadMap()
-          .then((sections) {
-            _sections = sections;
-            return sections;
-          });
-
-      // Ждем завершения обеих операций
-      await Future.wait([profileFuture, sectionsFuture]);
-    } catch (e) {
-      // Если произошла какая-либо ошибка при загрузке
-      print('Ошибка при загрузке данных: $e');
-      setState(() {
-        _hasError = true; // Устанавливаем флаг ошибки
-      });
-      rethrow;
-    }
-  }
+  // Асинхронный метод, который выполняет все загрузки через провайдеры — см. initState
 
   final LearningService _quizService = GetIt.instance<LearningService>();
 
@@ -86,10 +45,11 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
     });
 
     try {
-      // Start session on backend
       final startResp = await _quizService.startTest(themeId);
       final String sessionId = startResp.sessionId;
-      final List<Question> quizData = await _quizService.getTestQuestions(sessionId);
+      final List<Question> quizData = await _quizService.getTestQuestions(
+        sessionId,
+      );
 
       if (mounted) {
         if (quizData.isEmpty) {
@@ -100,7 +60,8 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => QuizScreen(sessionId: sessionId, quizData: quizData),
+              builder: (context) =>
+                  QuizScreen(sessionId: sessionId, quizData: quizData),
             ),
           );
         }
@@ -122,41 +83,31 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final gp = context.watch<GameProfileProvider>();
+    final lp = context.watch<LearningProvider>();
+
+    if (gp.profile == null || lp.sections.isEmpty) {
+      return const Scaffold(
+        body: SafeArea(child: Center(child: CircularProgressIndicator())),
+      );
+    }
+
     return Scaffold(
       body: SafeArea(
-        child: FutureBuilder(
-          future: _loadingFutures,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (_hasError) {
-              return _buildRetryButton();
-            } else if (snapshot.hasError) {
-              return _buildRetryButton();
-            } else if (_currentUserProfile == null || _sections == null) {
-              throw Exception("Данные не были полностью загружены.");
-            } else {
-              return SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppBar(
-                      title: Text(
-                        "Безопасная дорога",
-                      ),
-                    ),
-                    RoadHeader(profile: _currentUserProfile!),
-                    Stack(
-                      children: [
-                        Image.asset("assets/images/plant5.png"),
-                        Column(children: _buildRoadmapContent()),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            }
-          },
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppBar(title: Text("Безопасная дорога")),
+              RoadHeader(),
+              Stack(
+                children: [
+                  Image.asset("assets/images/plant5.png"),
+                  Column(children: _buildRoadmapContent()),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -170,7 +121,10 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
           Text("Не удалось загрузить данные.", style: AppTextStyles.bodyLarge),
           const SizedBox(height: 10),
           ElevatedButton(
-            onPressed: loadData,
+            onPressed: () {
+              context.read<GameProfileProvider>().loadProfile();
+              context.read<LearningProvider>().loadSections();
+            },
             child: const Text("Повторить"),
           ),
         ],
@@ -179,10 +133,11 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
   }
 
   List<Widget> _buildRoadmapContent() {
+    final sections = context.watch<LearningProvider>().sections;
     List<Widget> roadmapWidgets = [];
 
-    for (int i = 0; i < _sections!.length; i++) {
-      final section = _sections![i];
+    for (int i = 0; i < sections.length; i++) {
+      final section = sections[i];
 
       // 1. Добавляем виджет раздела (прямоугольник)
       roadmapWidgets.add(SectionHeader(section: section));
@@ -259,7 +214,9 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
     final icon = status == TopicStatus.LOCKED
         ? Icons.lock
         : (status == TopicStatus.COMPLETED ? Icons.check : null);
-    final iconColor = icon == Icons.lock ? AppColors.darkBrownText : AppColors.white;
+    final iconColor = icon == Icons.lock
+        ? AppColors.darkBrownText
+        : AppColors.white;
 
     return Expanded(
       child: Container(

@@ -1,6 +1,8 @@
 package ru.itmo.saferoad.learning.dto;
 
 public record TestAnswerOptionResponse(
-    Integer number,
-    String text
+    Integer id,
+    String text,
+    String feedback,
+    Boolean isCorrect
 ) {}

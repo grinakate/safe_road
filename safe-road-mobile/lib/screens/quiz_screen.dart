@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 import 'package:safe_road/screens/result_screen.dart';
 import 'package:safe_road/services/learning_service.dart';
-import 'package:safe_road/services/notification_service.dart';
-import '../theme.dart';
 
 import '../models/question.dart';
+import '../providers/learning_provider.dart';
+import '../providers/notification_provider.dart';
+import '../theme.dart';
 
 class QuizScreen extends StatefulWidget {
   final List<Question> quizData;
   final String sessionId;
 
-  const QuizScreen({super.key, required this.quizData, required this.sessionId});
+  const QuizScreen({
+    super.key,
+    required this.quizData,
+    required this.sessionId,
+  });
 
   @override
   _QuizScreenState createState() => _QuizScreenState();
@@ -41,9 +47,12 @@ class _QuizScreenState extends State<QuizScreen> {
 
     setState(() {
       _selectedAnswerId = answerId;
-      _showResultArea = true; // Показываем область результата сразу после выбора
+      _showResultArea =
+          true; // Показываем область результата сразу после выбора
       // Сохраняем локально ответ пользователя — отправим все ответы в конце
-      _userAnswers.add(UserAnswer(questionId: _currentQuestion.id, selectedAnswerId: answerId));
+      _userAnswers.add(
+        UserAnswer(questionId: _currentQuestion.id, selectedAnswerId: answerId),
+      );
     });
   }
 
@@ -52,8 +61,7 @@ class _QuizScreenState extends State<QuizScreen> {
     super.initState();
     // Помечаем, что пользователь занят прохождением теста — уведомления будут откладываться
     try {
-      final notificationService = GetIt.I<NotificationService>();
-      notificationService.setBusy(true);
+      context.read<NotificationProvider>().setUserBusy(true);
     } catch (_) {}
     _sessionId = widget.sessionId;
   }
@@ -61,7 +69,7 @@ class _QuizScreenState extends State<QuizScreen> {
   void _handleNextQuestion() {
     if (_currentQuestionIndex < _totalQuestions - 1) {
       // Переход к следующему вопросу
-        setState(() {
+      setState(() {
         _currentQuestionIndex++;
         _selectedAnswerId = null; // Сбрасываем выбор для нового вопроса
         _showResultArea = false; // Скрываем область результата
@@ -78,11 +86,11 @@ class _QuizScreenState extends State<QuizScreen> {
   void dispose() {
     // Сбрасываем флаг занятости при уходе со страницы
     try {
-      final notificationService = GetIt.I<NotificationService>();
-      notificationService.setBusy(false);
+      context.read<NotificationProvider>().setUserBusy(false);
     } catch (_) {}
     super.dispose();
   }
+
   Future<void> _sendFinalResultsAndNavigate() async {
     if (_isLoading) return; // Предотвращаем множественные нажатия
 
@@ -97,27 +105,28 @@ class _QuizScreenState extends State<QuizScreen> {
         answersMap[a.questionId] = a.selectedAnswerId;
       }
 
-      final resp = await GetIt.I<LearningService>().submitSessionAnswers(_sessionId ?? '', answersMap);
+      final resp = await GetIt.I<LearningService>().submitSessionAnswers(
+        _sessionId ?? '',
+        answersMap,
+      );
 
       if (mounted) {
+        // Сохраняем результат в LearningProvider и показываем экран результатов
+        context.read<LearningProvider>().setLastResult(
+          resp.correctCount,
+          resp.totalQuestions,
+          0,
+        );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => ResultScreen(
-              correctAnswers: resp.correctCount,
-              totalQuestions: resp.totalQuestions,
-              totalExperience: 0, // backend TestSessionSubmitResponse doesn't include experience
-            ),
-          ),
+          MaterialPageRoute(builder: (context) => ResultScreen()),
         );
       }
 
       // Сбрасываем флаг занятости — тест завершён, можно показывать отложенные уведомления
       try {
-        final notificationService = GetIt.I<NotificationService>();
-        notificationService.setBusy(false);
+        context.read<NotificationProvider>().setUserBusy(false);
       } catch (_) {}
-    
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -142,13 +151,17 @@ class _QuizScreenState extends State<QuizScreen> {
     }
 
     final bool isCorrect =
-        _selectedAnswerId != null && _selectedAnswerId == _currentQuestion.correctAnswerId;
+        _selectedAnswerId != null &&
+        _selectedAnswerId == _currentQuestion.correctAnswerId;
     final String resultText = _selectedAnswerId != null
         ? (isCorrect ? 'Правильно!' : 'Неправильно')
         : '';
     String feedback = '';
     if (_selectedAnswerId != null) {
-      final opt = _currentQuestion.options.firstWhere((o) => o.id == _selectedAnswerId, orElse: () => _currentQuestion.options.first);
+      final opt = _currentQuestion.options.firstWhere(
+        (o) => o.id == _selectedAnswerId,
+        orElse: () => _currentQuestion.options.first,
+      );
       feedback = opt.feedback;
     }
 
@@ -160,7 +173,9 @@ class _QuizScreenState extends State<QuizScreen> {
           child: LinearProgressIndicator(
             value: (_currentQuestionIndex + 1) / _totalQuestions,
             backgroundColor: AppColors.lightGreenBackground,
-            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primaryGreen),
+            valueColor: const AlwaysStoppedAnimation<Color>(
+              AppColors.primaryGreen,
+            ),
           ),
         ),
       ),
@@ -176,7 +191,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   Expanded(
                     child: Text(
                       _currentQuestion.text,
-                        style: AppTextStyles.titleLarge.copyWith(fontSize: 20),
+                      style: AppTextStyles.titleLarge.copyWith(fontSize: 20),
                     ),
                   ),
                 ],
@@ -202,7 +217,8 @@ class _QuizScreenState extends State<QuizScreen> {
               Spacer(),
 
               // Область результата и пояснения
-              if (_showResultArea) _buildResultArea(resultText, isCorrect, feedback),
+              if (_showResultArea)
+                _buildResultArea(resultText, isCorrect, feedback),
 
               // Кнопка "Далее" или "Завершить"
               if (_showResultArea)
@@ -212,7 +228,9 @@ class _QuizScreenState extends State<QuizScreen> {
                     onPressed: (_isLoading) ? null : _handleNextQuestion,
                     // Отключаем, если идет загрузка
                     child: _isLoading
-                        ? const CircularProgressIndicator(color: AppColors.white)
+                        ? const CircularProgressIndicator(
+                            color: AppColors.white,
+                          )
                         : Text(
                             _currentQuestionIndex < _totalQuestions - 1
                                 ? 'Далее'
@@ -236,23 +254,27 @@ class _QuizScreenState extends State<QuizScreen> {
             : AppColors.errorRed.withAlpha(51),
         borderRadius: BorderRadius.circular(8),
       ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              resultText,
-              style: AppTextStyles.bodyLarge.copyWith(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: isCorrect ? AppColors.primaryGreen : AppColors.errorRed,
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            resultText,
+            style: AppTextStyles.bodyLarge.copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: isCorrect ? AppColors.primaryGreen : AppColors.errorRed,
             ),
-            if (feedback.isNotEmpty) ...[
-              SizedBox(height: 12),
-              Text(feedback, style: AppTextStyles.bodyMedium),
-            ],
-            // Можно добавить пояснение, если оно приходит с бэка
-            SizedBox(height: 16),
+          ),
+          SizedBox(height: 12),
+          Text(
+            feedback,
+            style: AppTextStyles.bodyLarge.copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: isCorrect ? AppColors.primaryGreen : AppColors.errorRed,
+            ),
+          ),
+          SizedBox(height: 16),
         ],
       ),
     );
@@ -284,25 +306,25 @@ class AnswerOptionWidget extends StatelessWidget {
     Color borderColor = AppColors.greyBorder;
     Color textColor = AppColors.darkBrownText;
 
-      if (isSelected) {
-        backgroundColor = AppColors.lightBlueBackground;
-        borderColor = AppColors.primaryGreen;
-        textColor = AppColors.primaryGreen;
-      }
+    if (isSelected) {
+      backgroundColor = AppColors.lightBlueBackground;
+      borderColor = AppColors.primaryGreen;
+      textColor = AppColors.primaryGreen;
+    }
 
-      if (isCorrect && isUserAnswer) {
-        backgroundColor = AppColors.lightGreenBackground;
-        borderColor = AppColors.primaryGreen;
-        textColor = AppColors.primaryGreen;
-      } else if (isUserAnswer && !isCorrect) {
-        backgroundColor = AppColors.errorRed.withAlpha(26);
-        borderColor = AppColors.errorRed;
-        textColor = AppColors.errorRed;
-      } else if (isCorrect && !isUserAnswer && !isSelected) {
-        backgroundColor = AppColors.lightGreenBackground;
-        borderColor = AppColors.primaryGreen;
-        textColor = AppColors.primaryGreen;
-      }
+    if (isCorrect && isUserAnswer) {
+      backgroundColor = AppColors.lightGreenBackground;
+      borderColor = AppColors.primaryGreen;
+      textColor = AppColors.primaryGreen;
+    } else if (isUserAnswer && !isCorrect) {
+      backgroundColor = AppColors.errorRed.withAlpha(26);
+      borderColor = AppColors.errorRed;
+      textColor = AppColors.errorRed;
+    } else if (isCorrect && !isUserAnswer && !isSelected) {
+      backgroundColor = AppColors.lightGreenBackground;
+      borderColor = AppColors.primaryGreen;
+      textColor = AppColors.primaryGreen;
+    }
 
     return GestureDetector(
       onTap: isEnabled ? onTap : null,
@@ -319,7 +341,10 @@ class AnswerOptionWidget extends StatelessWidget {
             Expanded(
               child: Text(
                 option.text,
-                style: AppTextStyles.bodyLarge.copyWith(fontSize: 16, color: textColor),
+                style: AppTextStyles.bodyLarge.copyWith(
+                  fontSize: 16,
+                  color: textColor,
+                ),
               ),
             ),
             if (isCorrect && !isSelected && isUserAnswer)

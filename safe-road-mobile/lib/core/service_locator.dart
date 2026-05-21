@@ -7,6 +7,7 @@ import '../services/auth_service.dart';
 import '../services/game_profile_service.dart';
 import '../services/notification_service.dart';
 import '../services/token_storage_service.dart';
+import '../providers/notification_provider.dart';
 
 final getIt = GetIt.instance;
 
@@ -38,5 +39,9 @@ void setupLocator() {
       getIt<ApiV1Client>(),
       getIt<GlobalKey<NavigatorState>>(),
     ),
+  );
+  // NotificationProvider available via service locator so other services/providers can start/stop SSE
+  getIt.registerLazySingleton<NotificationProvider>(
+    () => NotificationProvider(),
   );
 }

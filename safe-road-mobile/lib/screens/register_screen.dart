@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../core/service_locator.dart';
-import '../models/auth_models.dart';
-import '../services/auth_service.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import 'package:intl/intl.dart';
 import '../theme.dart';
 
@@ -12,7 +11,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final _authService = getIt<AuthService>();
+  // use AuthProvider
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -43,15 +42,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     setState(() => _isLoading = true);
-
-    final request = UserRegisterRequest(
-      nickname: _nameController.text,
-      email: _emailController.text,
-      password: _passwordController.text,
-      birthDate: _birthDate,
+    final token = await context.read<AuthProvider>().register(
+      _nameController.text,
+      _emailController.text,
+      _birthDate,
+      _passwordController.text,
     );
-
-    final token = await _authService.register(request);
     setState(() => _isLoading = false);
 
     if (token != null) {

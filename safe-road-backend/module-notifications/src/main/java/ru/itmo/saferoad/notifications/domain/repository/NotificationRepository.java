@@ -16,9 +16,15 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 	List<Notification> findByUserId(Long userId);
 
 	@NotNull
+	@Query(value = "select * from notifications n " +
+				   "where n.user_id in (:userIds) " +
+				   "and n.is_read = false " +
+				   "order by n.created_at asc " +
+				   "for update skip locked", nativeQuery = true)
 	List<Notification> findByUserIdInAndIsReadFalse(Set<Long> userIds);
 
 	@NotNull
+	@Query("select n.id from Notification n where n.userId in (:userIds) and n.isRead = false")
 	List<Long> findIdsByUserIdInAndIsReadFalse(Set<Long> userIds);
 
 	@Query("SELECT n FROM Notification n WHERE n.userId = :userId ORDER BY n.createdAt DESC")

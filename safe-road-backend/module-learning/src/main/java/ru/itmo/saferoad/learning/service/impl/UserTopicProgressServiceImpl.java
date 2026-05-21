@@ -25,8 +25,8 @@ public class UserTopicProgressServiceImpl implements UserTopicProgressService {
 
 	@Override
 	public @NonNull UserTopicProgress upsertStatus(@NonNull Long userId,
-	                                               @NonNull Integer topicId,
-	                                               @NonNull ProgressStatus status) {
+												   @NonNull Integer topicId,
+												   @NonNull ProgressStatus status) {
 		UserTopicProgress progress = repository.findById(new UserTopicProgressId(userId, topicId))
 				.orElseGet(UserTopicProgress::new);
 		progress.setUserId(userId);
@@ -47,5 +47,11 @@ public class UserTopicProgressServiceImpl implements UserTopicProgressService {
 		userTopicProgress.setTopicId(topic.getId());
 		userTopicProgress.setStatus(ProgressStatus.UNLOCKED);
 		repository.save(userTopicProgress);
+	}
+
+	@Override
+	public void updateProgress(@NonNull Long userId, @NonNull Integer topicId, @NonNull ProgressStatus status) {
+		var userTopicProgress = repository.findById(new UserTopicProgressId(userId, topicId)).orElseThrow();
+		userTopicProgress.setStatus(status);
 	}
 }
