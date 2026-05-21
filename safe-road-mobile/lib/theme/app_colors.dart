@@ -11,5 +11,8 @@ class AppColors {
   static const Color brownText = Color(0xAB54160B);
   static const Color brownBorder = Color(0x4954160B);
   static const Color darkBrownIcon = Color(0xFF551913);
+  static const Color greyText = Color(0xFF757575);
+  static const Color greyBorder = Color(0xFFBDBDBD);
+  static const Color greyIcon = Color(0xFF9E9E9E);
 }
 

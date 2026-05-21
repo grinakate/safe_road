@@ -6,7 +6,7 @@ import 'package:safe_road/screens/quiz_screen.dart';
 import 'package:safe_road/widgets/road_header.dart';
 
 import '../models/question.dart';
-import '../models/topic_status.dart';
+import '../models/topic_status_ui.dart';
 import '../providers/game_profile_provider.dart';
 import '../providers/learning_provider.dart';
 import '../services/learning_service.dart';
@@ -207,16 +207,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
   }
 
   Widget _buildTopicWidget(Topic topic, int sectionId) {
-    final status = topic.status;
-    final color = status == TopicStatus.LOCKED
-        ? AppColors.brownBorder
-        : AppColors.primaryGreen;
-    final icon = status == TopicStatus.LOCKED
-        ? Icons.lock
-        : (status == TopicStatus.COMPLETED ? Icons.check : null);
-    final iconColor = icon == Icons.lock
-        ? AppColors.darkBrownText
-        : AppColors.white;
+    final statusUi = resolveTopicStatusUi(topic.status);
 
     return Expanded(
       child: Container(
@@ -226,9 +217,9 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             GestureDetector(
-              onTap: status == TopicStatus.LOCKED
-                  ? null
-                  : () => _fetchAndStartQuizForTheme(topic.id),
+              onTap: statusUi.isTapEnabled
+                  ? () => _fetchAndStartQuizForTheme(topic.id)
+                  : null,
               child: Stack(
                 alignment: Alignment.center, // Центрируем элементы по умолчанию
                 children: [
@@ -237,34 +228,43 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
                     width: 64,
                     height: 64,
                     decoration: BoxDecoration(
-                      color: color,
+                      color: statusUi.circleColor,
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: icon == Icons.lock
-                              ? AppColors.darkBrownText.withAlpha(64)
-                              : AppColors.white.withAlpha(128),
+                          color: statusUi.shadowColor.withAlpha(
+                            statusUi.placeIconTopRight ? 64 : 128,
+                          ),
                           blurRadius: 9,
                           offset: const Offset(0, 0),
                         ),
                       ],
                     ),
                   ),
-                  // Иконка, позиционированная в верхнем правом углу
-                  icon == Icons.lock
-                      ? Positioned(
-                          top: 0, // Сдвигаем иконку на 0px сверху
-                          right: 0, // Сдвигаем иконку на 0px справа
-                          child: Icon(icon, color: iconColor, size: 28),
-                        )
-                      : Icon(icon, color: iconColor, size: 28),
-                  Text(
-                    topic.orderIndex.toString(),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.topicNumber,
-                  ),
+                  if (statusUi.icon != null)
+                    statusUi.placeIconTopRight
+                        ? Positioned(
+                            top: 0,
+                            right: 0,
+                            child: Icon(
+                              statusUi.icon,
+                              color: statusUi.iconColor,
+                              size: 28,
+                            ),
+                          )
+                        : Icon(
+                            statusUi.icon,
+                            color: statusUi.iconColor,
+                            size: 28,
+                          ),
+                  if (statusUi.showOrderIndex)
+                    Text(
+                      topic.orderIndex.toString(),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.topicNumber,
+                    ),
                 ],
               ),
             ),
