@@ -30,6 +30,9 @@ class NotificationService {
   bool _busy = false;
 
   StreamSubscription<sse.SSEModel>? _subscription;
+  String? _lastEventId;
+  int _reconnectAttempts = 0;
+  Timer? _watchdogTimer;
 
   NotificationService(this._apiClient, this._navigatorKey);
 
@@ -51,8 +54,16 @@ class NotificationService {
     final uri = Uri.parse(
       '${AppConstants.baseUrl}${ApiV1Client.apiVersion}/notifications/subscribe',
     );
-    try {
-      final headers = await _apiClient.getAuthHeaders();
+      try {
+        final headers = await _apiClient.getAuthHeaders();
+        // Ensure correct headers for SSE subscription
+        headers['Accept'] = 'text/event-stream';
+        headers['Cache-Control'] = 'no-cache';
+        headers['Connection'] = 'keep-alive';
+        // Если есть id последнего полученного события — просим сервер возобновить поток с этого места
+        if (_lastEventId != null && _lastEventId!.isNotEmpty) {
+          headers['Last-Event-ID'] = _lastEventId!;
+        }
 
       // Используем flutter_client_sse: получаем Stream<SSEModel>
       try {
@@ -64,6 +75,13 @@ class NotificationService {
 
         _subscription = stream.listen(
           (sse.SSEModel model) {
+            // сохраняем id последнего события (если предоставлено), чтобы при переподключении
+            // можно было попросить сервер прислать события с нужного места
+            try {
+              final idVal = (model.id ?? '').toString();
+              if (idVal.isNotEmpty) _lastEventId = idVal;
+            } catch (_) {}
+
             final String eventName = (model.event ?? '').trim();
             final String data = (model.data ?? '').trim();
             if (data.isNotEmpty) {
@@ -71,25 +89,74 @@ class NotificationService {
                 eventName.isEmpty ? 'notification' : eventName,
                 data,
               );
+              // Успешный приход события — сбрасываем счётчик попыток переподключения
+              _reconnectAttempts = 0;
+              _resetWatchdog();
               _onEvent(evt);
             }
           },
           onDone: () {
-            Future.delayed(const Duration(seconds: 2), _startListening);
+            _stopWatchdog();
+            _scheduleReconnect();
           },
           onError: (err) {
-            Future.delayed(const Duration(seconds: 2), _startListening);
+            _stopWatchdog();
+            _scheduleReconnect();
           },
           cancelOnError: true,
         );
+        _startWatchdog();
       } catch (e) {
         // если подписка не удалась — переподключаемся позже
-        Future.delayed(const Duration(seconds: 2), _startListening);
+        _scheduleReconnect();
       }
     } catch (e) {
       // reconnect
-      Future.delayed(const Duration(seconds: 2), _startListening);
+      _scheduleReconnect();
     }
+  }
+
+  void _scheduleReconnect() {
+    _reconnectAttempts = (_reconnectAttempts + 1).clamp(0, 10);
+    // экспоненциальная задержка: 2,4,8,... ограничим 60 сек
+    final delaySeconds = (2 << (_reconnectAttempts - 1)).clamp(2, 60);
+    Future.delayed(Duration(seconds: delaySeconds), () {
+      _startListening();
+    });
+  }
+
+  void _cancelSubscription() {
+    try {
+      _subscription?.cancel();
+    } catch (_) {}
+    try {
+      sse.SSEClient.unsubscribeFromSSE();
+    } catch (_) {}
+    _subscription = null;
+    _stopWatchdog();
+  }
+
+  void _startWatchdog() {
+    _watchdogTimer?.cancel();
+    // Если в течение 90 секунд не пришло ни одного события — считаем соединение мёртвым и переподключаемся
+    _watchdogTimer = Timer(const Duration(seconds: 90), () {
+      _cancelSubscription();
+      _scheduleReconnect();
+    });
+  }
+
+  void _resetWatchdog() {
+    if (_watchdogTimer != null && _watchdogTimer!.isActive) {
+      _watchdogTimer!.cancel();
+      _startWatchdog();
+    }
+  }
+
+  void _stopWatchdog() {
+    try {
+      _watchdogTimer?.cancel();
+    } catch (_) {}
+    _watchdogTimer = null;
   }
 
   // Используем парсинг, предоставляемый flutter_client_sse; ручной буфер и

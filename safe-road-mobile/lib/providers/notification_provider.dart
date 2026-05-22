@@ -31,7 +31,9 @@ class NotificationProvider extends ChangeNotifier {
   bool _isUserBusy = false;
 
   StreamSubscription<sse.SSEModel>? _subscription;
-
+  String? _lastEventId;
+  int _reconnectAttempts = 0;
+  Timer? _watchdogTimer;
   bool get isUserBusy => _isUserBusy;
 
   void setUserBusy(bool busy) {
@@ -67,6 +69,11 @@ class NotificationProvider extends ChangeNotifier {
   }
 
   void start() async {
+    // debug log to verify subscription attempts
+    try {
+      // ignore: avoid_print
+      print('[NotificationProvider] start() called');
+    } catch (_) {}
     _startListening();
   }
 
@@ -74,12 +81,28 @@ class NotificationProvider extends ChangeNotifier {
     final uri = Uri.parse('${AppConstants.baseUrl}${ApiV1Client.apiVersion}/notifications/subscribe');
     try {
       final headers = await _apiClient.getAuthHeaders();
+      // Ensure correct headers for SSE subscription
+      headers['Accept'] = 'text/event-stream';
+      headers['Cache-Control'] = 'no-cache';
+      headers['Connection'] = 'keep-alive';
+      // add Last-Event-ID header if available to resume stream
+      if (_lastEventId != null && _lastEventId!.isNotEmpty) headers['Last-Event-ID'] = _lastEventId!;
       final stream = sse.SSEClient.subscribeToSSE(
         method: sse_consts.SSERequestType.GET,
         url: uri.toString(),
         header: headers,
       );
       _subscription = stream.listen((sse.SSEModel model) {
+        try {
+          // ignore: avoid_print
+          print('[NotificationProvider] SSE stream.listen attached');
+        } catch (_) {}
+        // сохраняем id последнего события если он присутствует
+        try {
+          final idVal = (model.id ?? '').toString();
+          if (idVal.isNotEmpty) _lastEventId = idVal;
+        } catch (_) {}
+
         final String eventName = (model.event ?? '').trim();
         final String data = (model.data ?? '').trim();
         if (data.isNotEmpty) {
@@ -87,6 +110,9 @@ class NotificationProvider extends ChangeNotifier {
             eventName.isEmpty ? 'notification' : eventName,
             data,
           );
+          // on any incoming event reset reconnect attempts and watchdog
+          _reconnectAttempts = 0;
+          _resetWatchdog();
           addNotification(evt);
           if (evt.title == 'REWARDS_EARNED') {
             // также обновляем профиль
@@ -104,12 +130,15 @@ class NotificationProvider extends ChangeNotifier {
           }
         }
       }, onDone: () {
-        Future.delayed(const Duration(seconds: 2), _startListening);
+        _stopWatchdog();
+        _scheduleReconnect();
       }, onError: (err) {
-        Future.delayed(const Duration(seconds: 2), _startListening);
+        _stopWatchdog();
+        _scheduleReconnect();
       }, cancelOnError: true);
+      _startWatchdog();
     } catch (e) {
-      Future.delayed(const Duration(seconds: 2), _startListening);
+      _scheduleReconnect();
     }
   }
 
@@ -185,6 +214,47 @@ class NotificationProvider extends ChangeNotifier {
     } catch (_) {}
     _subscription = null;
     super.dispose();
+  }
+
+  void _scheduleReconnect() {
+    _reconnectAttempts = (_reconnectAttempts + 1).clamp(0, 10);
+    final delaySeconds = (2 << (_reconnectAttempts - 1)).clamp(2, 60);
+    Future.delayed(Duration(seconds: delaySeconds), () {
+      _startListening();
+    });
+  }
+
+  void _cancelSubscription() {
+    try {
+      _subscription?.cancel();
+    } catch (_) {}
+    try {
+      sse.SSEClient.unsubscribeFromSSE();
+    } catch (_) {}
+    _subscription = null;
+    _stopWatchdog();
+  }
+
+  void _startWatchdog() {
+    _watchdogTimer?.cancel();
+    _watchdogTimer = Timer(const Duration(seconds: 90), () {
+      _cancelSubscription();
+      _scheduleReconnect();
+    });
+  }
+
+  void _resetWatchdog() {
+    if (_watchdogTimer != null && _watchdogTimer!.isActive) {
+      _watchdogTimer!.cancel();
+      _startWatchdog();
+    }
+  }
+
+  void _stopWatchdog() {
+    try {
+      _watchdogTimer?.cancel();
+    } catch (_) {}
+    _watchdogTimer = null;
   }
 
   /// Остановить подписку (не уничтожая провайдер)

@@ -244,10 +244,7 @@ class ResultScreen extends StatelessWidget {
                     ],
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () => Navigator.popUntil(
-                          context,
-                          (route) => route.isFirst,
-                        ),
+                        onPressed: () => Navigator.pushReplacementNamed(context, '/map'),
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),

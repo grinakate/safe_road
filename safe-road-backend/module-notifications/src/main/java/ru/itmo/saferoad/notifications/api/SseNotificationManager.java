@@ -58,4 +58,19 @@ public class SseNotificationManager {
 			return false;
 		}
 	}
+
+	/**
+	 * Send a lightweight heartbeat (comment) to keep the SSE connection alive.
+	 * The client ignores empty/comment events, but this resets connection activity
+	 * on the server side and prevents emitter timeout.
+	 */
+	public void sendHeartbeat(@NotNull Long userId) {
+		SseEmitter emitter = emitters.get(userId);
+		if (emitter == null) return;
+		try {
+			emitter.send(SseEmitter.event().comment("heartbeat"));
+		} catch (IOException e) {
+			emitters.remove(userId);
+		}
+	}
 }

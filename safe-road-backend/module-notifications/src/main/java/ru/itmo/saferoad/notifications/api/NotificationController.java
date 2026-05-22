@@ -87,6 +87,20 @@ public class NotificationController {
 				}
 			});
 		}
+
+		// For connected users who had no new notifications, send a lightweight heartbeat
+		// to keep the SSE connection alive (prevents emitter timeout on idle connections).
+		for (Long userId : connectedUserIds) {
+			if (!notificationsByUser.containsKey(userId)) {
+				executorService.submit(() -> {
+					try {
+						sseNotificationManager.sendHeartbeat(userId);
+					} catch (Exception e) {
+						log.debug("Failed to send heartbeat to user {}: {}", userId, e.getMessage());
+					}
+				});
+			}
+		}
 	}
 
 	@GetMapping

@@ -18,9 +18,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with TickerProvid
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     // Fetch initial data
-    final provider = context.read<LeaderboardProvider>();
-    provider.fetchWeek();
-    provider.fetchAll();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<LeaderboardProvider>();
+      provider.fetchWeek();
+      provider.fetchAll();
+    });
   }
 
   @override

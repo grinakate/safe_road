@@ -60,9 +60,13 @@ class _QuizScreenState extends State<QuizScreen> {
   void initState() {
     super.initState();
     // Помечаем, что пользователь занят прохождением теста — уведомления будут откладываться
-    try {
-      context.read<NotificationProvider>().setUserBusy(true);
-    } catch (_) {}
+    // setUserBusy изменяет состояние провайдера; вызываем после первого кадра,
+    // чтобы не вызывать notifyListeners() во время фазы build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        context.read<NotificationProvider>().setUserBusy(true);
+      } catch (_) {}
+    });
     _sessionId = widget.sessionId;
   }
 
@@ -84,6 +88,7 @@ class _QuizScreenState extends State<QuizScreen> {
   void dispose() {
     // Сбрасываем флаг занятости при уходе со страницы
     try {
+      // В dispose можно безопасно вызывать setUserBusy(false)
       context.read<NotificationProvider>().setUserBusy(false);
     } catch (_) {}
     super.dispose();
