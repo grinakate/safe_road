@@ -24,7 +24,6 @@ import ru.itmo.saferoad.content.service.QuestionService;
 import ru.itmo.saferoad.content.service.SectionService;
 import ru.itmo.saferoad.content.service.TopicService;
 import ru.itmo.saferoad.core.security.AppUserDetails;
-
 import java.util.List;
 
 @Transactional
@@ -34,15 +33,30 @@ import java.util.List;
 public class ContentController {
 
 	@GetMapping("/sections/{id}/topics")
-	public ResponseEntity<?> getTopicsForSection(@PathVariable Integer id) {
-		// TODO: Implement
-		return ResponseEntity.ok().build();
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<@NonNull List<TopicBriefDto>> getTopicsForSection(@PathVariable Integer id) {
+		List<TopicBriefDto> topics = topicService.getBySectionId(id).stream()
+				.map(topic -> new TopicBriefDto(
+						topic.getId(),
+						topic.getTitle(),
+						topic.getContent(),
+						topic.getOrderIndex()
+					))
+				.toList();
+		return ResponseEntity.ok(topics);
 	}
 
 	@GetMapping("/topics/{id}")
-	public ResponseEntity<?> getTopic(@PathVariable Integer id) {
-		// TODO: Implement
-		return ResponseEntity.ok().build();
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<@NonNull TopicBriefDto> getTopic(@PathVariable Integer id) {
+		var topic = topicService.existingById(id);
+		var dto = new TopicBriefDto(
+				topic.getId(),
+				topic.getTitle(),
+				topic.getContent(),
+				topic.getOrderIndex()
+		);
+		return ResponseEntity.ok(dto);
 	}
 
 	@PutMapping("/admin/sections/{id}")
@@ -192,6 +206,3 @@ public class ContentController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}*/
 }
-
-
-

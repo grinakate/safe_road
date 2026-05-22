@@ -13,6 +13,7 @@ import 'providers/notification_provider.dart';
 import 'providers/game_profile_provider.dart';
 import 'providers/learning_provider.dart';
 import 'providers/leaderboard_provider.dart';
+import 'providers/topic_provider.dart';
 import 'screens/leaderboard_screen.dart';
 
 void main() async {
@@ -35,6 +36,7 @@ class SafeRoadApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => GameProfileProvider()),
         ChangeNotifierProvider(create: (_) => LearningProvider()),
         ChangeNotifierProvider(create: (_) => LeaderboardProvider()),
+        ChangeNotifierProvider(create: (_) => TopicProvider()),
         // NotificationProvider: используем единственный экземпляр, доступный через GetIt
         ChangeNotifierProvider<NotificationProvider>(
           create: (_) => getIt<NotificationProvider>(),

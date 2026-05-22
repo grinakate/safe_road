@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:safe_road/models/topic.dart';
 import 'package:safe_road/screens/quiz_screen.dart';
+import 'package:safe_road/screens/topic_screen.dart';
 import 'package:safe_road/widgets/road_header.dart';
 
 import '../models/question.dart';
@@ -11,6 +12,7 @@ import '../models/topic_status_ui.dart';
 import '../providers/game_profile_provider.dart';
 import '../providers/learning_provider.dart';
 import '../services/learning_service.dart';
+import '../providers/topic_provider.dart';
 import '../theme.dart';
 import '../widgets/section_header.dart';
 
@@ -45,7 +47,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
       _isQuizLoading = true;
     });
 
-    try {
+      try {
       final startResp = await _quizService.startTest(themeId);
       final String sessionId = startResp.sessionId;
       final List<Question> quizData = await _quizService.getTestQuestions(
@@ -53,6 +55,10 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
       );
 
       if (mounted) {
+        // Сохраняем информацию о теме, для которой был запущен тест
+        try {
+          context.read<LearningProvider>().setLastTestTopicId(themeId);
+        } catch (_) {}
         if (quizData.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Для этой темы пока нет вопросов.')),
@@ -89,7 +95,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
       _isQuizLoading = true;
     });
 
-    try {
+      try {
       final startResp = await _quizService.startSectionTest(sectionId);
       final String sessionId = startResp.sessionId;
       final List<Question> quizData = await _quizService.getTestQuestions(
@@ -97,6 +103,10 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
       );
 
       if (mounted) {
+        // Для секционного теста тема теории недоступна — сбрасываем идентификатор
+        try {
+          context.read<LearningProvider>().setLastTestTopicId(null);
+        } catch (_) {}
         if (quizData.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Для этой темы пока нет вопросов.')),
@@ -122,6 +132,76 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
         setState(() {
           _isQuizLoading = false;
         });
+      }
+    }
+  }
+
+  Future<void> _onTopicTap(Topic topic, int sectionId, bool isFinalTestAvailable) async {
+    // Show choice dialog
+    final choice = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(topic.title),
+        content: const Text('Выберите действие'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop('theory'),
+            child: const Text('Перейти к теории'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop('test'),
+            child: const Text('Перейти к тестированию'),
+          ),
+        ],
+      ),
+    );
+
+    if (choice == null) return; // cancelled
+
+    if (choice == 'test') {
+      if (topic.id < 0) {
+        await _fetchAndStartQuizForSection(sectionId);
+      } else {
+        await _fetchAndStartQuizForTheme(topic.id);
+      }
+      return;
+    }
+
+    // choice == 'theory'
+    if (topic.id < 0) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Для итогового теста теория недоступна')));
+      return;
+    }
+
+    final topicProvider = context.read<TopicProvider>();
+    final cached = topicProvider.getCached(topic.id);
+    if (cached != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (c) => TopicScreen(topic: cached)),
+      );
+      return;
+    }
+
+    // show loading dialog
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final topicContent = await topicProvider.getTopic(topic.id);
+      Navigator.of(context).pop(); // remove loading
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (c) => TopicScreen(topic: topicContent)),
+      );
+    } catch (e) {
+      Navigator.of(context).pop();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Не удалось загрузить теорию: ${e.toString()}')));
       }
     }
   }
@@ -349,9 +429,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
           children: [
             GestureDetector(
               onTap: statusUi.isTapEnabled
-                  ? (topic.id < 0
-                      ? () => _fetchAndStartQuizForSection(sectionId)
-                      : () => _fetchAndStartQuizForTheme(topic.id))
+                  ? () => _onTopicTap(topic, sectionId, isFinalTestAvailable)
                   : null,
               child: _buildTopicCircle(topic, statusUi),
             ),

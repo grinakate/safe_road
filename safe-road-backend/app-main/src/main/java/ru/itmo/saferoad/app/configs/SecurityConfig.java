@@ -38,7 +38,7 @@ public class SecurityConfig {
 						.requestMatchers("/static/**").permitAll()
 						.requestMatchers("/api/v1/auth/register").permitAll()
 						.requestMatchers("/api/v1/auth/login").permitAll()
-						.requestMatchers("/api/v1/content/**").hasRole(UserRole.ADMIN.name())
+						.requestMatchers("/api/v1/content/admin/**").hasRole(UserRole.ADMIN.name())
 
 						// Разрешения для swagger-а:
 						.requestMatchers("/v3/api-docs/**").permitAll()

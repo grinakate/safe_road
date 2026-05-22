@@ -39,7 +39,7 @@ public class UserMetricServiceImpl implements UserMetricService {
 			var maybe = xpHistoryRepository.findByUserIdAndWeekStart(userId, weekStart);
 			XpHistory h;
 			if (maybe.isPresent()) {
-				h = (XpHistory) maybe.get();
+				h = maybe.get();
 				h.setXp(h.getXp() + (long) added);
 			} else {
 				h = new XpHistory();

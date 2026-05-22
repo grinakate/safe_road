@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:safe_road/services/learning_service.dart';
 import '../services/leaderboard_service.dart';
+import '../services/content_service.dart';
 
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
@@ -30,6 +31,10 @@ void setupLocator() {
 
   getIt.registerLazySingleton<LearningService>(
     () => LearningService(getIt<ApiV1Client>()),
+  );
+
+  getIt.registerLazySingleton<ContentService>(
+    () => ContentService(getIt<ApiV1Client>()),
   );
 
   getIt.registerLazySingleton<GameProfileService>(

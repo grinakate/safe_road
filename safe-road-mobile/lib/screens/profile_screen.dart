@@ -53,44 +53,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // Верхняя часть: Уровень, Аватар, Очки
   Widget _buildHeader() {
     return Consumer<GameProfileProvider>(builder: (context, gp, child) {
+      // Профиль и список аватаров загружаются независимо; ждём оба источника.
       if (gp.profile == null || !AvatarManager.isInitialized) {
         return const Center(child: CircularProgressIndicator());
       }
+
       final user = gp.profile!;
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: _buildStatItem("Уровень", user.level.toString()),
-              ),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    _showAvatarSelectionDialog(
-                      user.avatarId,
-                      user.level,
-                    );
-                  },
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundColor: AppColors.lightBlueBackground,
-                    child: SecureNetworkImage(
-                      imageUrl: AvatarManager.getAvatarItem(user.avatarId).url,
-                      fit: BoxFit.cover,
-                    ),
+      final avatarUrl = AvatarManager.getAvatarItem(user.avatarId).url;
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: _buildStatItem("Уровень", user.level.toString()),
+            ),
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  _showAvatarSelectionDialog(
+                    user.avatarId,
+                    user.level,
+                  );
+                },
+                child: CircleAvatar(
+                  radius: 60,
+                  backgroundColor: AppColors.lightBlueBackground,
+                  child: SecureNetworkImage(
+                    imageUrl: avatarUrl,
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
-              Expanded(
-                child: _buildStatItem("Очки", user.currentXp.toString()),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+            ),
+            Expanded(
+              child: _buildStatItem("Очки", user.currentXp.toString()),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   // Новый метод для показа диалога выбора аватара

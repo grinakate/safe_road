@@ -12,6 +12,7 @@ class LearningProvider extends ChangeNotifier {
   int? _lastTotalQuestions;
   int? _lastTotalExperience;
   List<dynamic> _lastErrors = [];
+  int? _lastTestTopicId; // id темы, для которой был запущен последний тест (может быть null для секционного теста)
 
   int? get lastCorrectAnswers => _lastCorrectAnswers;
   int? get lastTotalQuestions => _lastTotalQuestions;
@@ -20,6 +21,7 @@ class LearningProvider extends ChangeNotifier {
 
   List<Section> get sections => _sections;
   Map<String, dynamic> get progress => _progress;
+  int? get lastTestTopicId => _lastTestTopicId;
 
   Future<void> loadSections() async {
     _sections = await _service.getRoadMap();
@@ -36,6 +38,11 @@ class LearningProvider extends ChangeNotifier {
     _lastTotalQuestions = total;
     _lastTotalExperience = experience;
     _lastErrors = errors ?? [];
+    notifyListeners();
+  }
+
+  void setLastTestTopicId(int? topicId) {
+    _lastTestTopicId = topicId;
     notifyListeners();
   }
 }

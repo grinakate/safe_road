@@ -23,7 +23,8 @@ public interface XpHistoryRepository extends JpaRepository<XpHistory, XpHistoryI
 				   + "AND x.week_start = :weekStart "
 				   + "ORDER BY x.xp DESC",
 			nativeQuery = true)
-	Optional<LeaderboardProjection> findByUserIdAndWeekStart(@NonNull Long userId, @NonNull LocalDate weekStart);
+	Optional<LeaderboardProjection> findByUserIdAndWeekStartForLeaderboard(@NonNull Long userId, @NonNull LocalDate weekStart);
+	Optional<XpHistory> findByUserIdAndWeekStart(@NonNull Long userId, @NonNull LocalDate weekStart);
 
 	@NonNull
 	@Query(value = "SELECT x.user_id as userId, x.xp as currentXp, a.url as avatarUrl, u.nickname as nickname "
