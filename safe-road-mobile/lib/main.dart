@@ -12,6 +12,8 @@ import 'providers/auth_provider.dart';
 import 'providers/notification_provider.dart';
 import 'providers/game_profile_provider.dart';
 import 'providers/learning_provider.dart';
+import 'providers/leaderboard_provider.dart';
+import 'screens/leaderboard_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +34,7 @@ class SafeRoadApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => GameProfileProvider()),
         ChangeNotifierProvider(create: (_) => LearningProvider()),
+        ChangeNotifierProvider(create: (_) => LeaderboardProvider()),
         // NotificationProvider: используем единственный экземпляр, доступный через GetIt
         ChangeNotifierProvider<NotificationProvider>(
           create: (_) => getIt<NotificationProvider>(),
@@ -53,11 +56,12 @@ class SafeRoadApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       initialRoute: initialRoute,
-      routes: {
-        '/register': (context) => RegisterScreen(),
-        '/login': (context) => LoginScreen(),
-        '/map': (context) => MainScreen(),
-      },
+        routes: {
+          '/register': (context) => RegisterScreen(),
+          '/login': (context) => LoginScreen(),
+          '/map': (context) => MainScreen(),
+          '/leaderboard': (context) => LeaderboardScreen(),
+        },
       ),
     );
   }

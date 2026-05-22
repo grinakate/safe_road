@@ -5,11 +5,21 @@
 		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
 	<changeSet id="content-001-create-enum-question_type" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">SELECT COUNT(1)
+										 FROM pg_type
+										 WHERE typname = 'question_type'</sqlCheck>
+		</preConditions>
 		<sql>
 			CREATE TYPE question_type AS ENUM ('CHOICE', 'MATCH');
 		</sql>
 	</changeSet>
 	<changeSet id="content-002-sections" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<not>
+				<tableExists tableName="sections"/>
+			</not>
+		</preConditions>
 		<createTable tableName="sections">
 			<column autoIncrement="true" name="id" type="INTEGER">
 				<constraints primaryKey="true" primaryKeyName="sections_pkey"/>
@@ -26,6 +36,11 @@
 		</createTable>
 	</changeSet>
 	<changeSet id="content-003-topics" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<not>
+				<tableExists tableName="topics"/>
+			</not>
+		</preConditions>
 		<createTable tableName="topics">
 			<column autoIncrement="true" name="id" type="INTEGER">
 				<constraints primaryKey="true" primaryKeyName="topics_pkey"/>
@@ -50,6 +65,11 @@
 								 referencedColumnNames="id" referencedTableName="sections"/>
 	</changeSet>
 	<changeSet id="content-004-questions" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<not>
+				<tableExists tableName="questions"/>
+			</not>
+		</preConditions>
 		<createTable tableName="questions">
 			<column autoIncrement="true" name="id" type="BIGINT">
 				<constraints primaryKey="true" primaryKeyName="questions_pkey"/>

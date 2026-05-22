@@ -5,11 +5,21 @@
 		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
 	<changeSet id="auth-001-create-enum-user_role" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">SELECT COUNT(1)
+										 FROM pg_type
+										 WHERE typname = 'user_role'</sqlCheck>
+		</preConditions>
 		<sql>
 			CREATE TYPE user_role AS ENUM ('ADMIN', 'USER', 'MODERATOR');
 		</sql>
 	</changeSet>
 	<changeSet id="auth-002-create_users_table" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<not>
+				<tableExists tableName="users"/>
+			</not>
+		</preConditions>
 		<createTable tableName="users">
 			<column autoIncrement="true" name="id" type="BIGINT">
 				<constraints primaryKey="true" primaryKeyName="users_pkey"/>

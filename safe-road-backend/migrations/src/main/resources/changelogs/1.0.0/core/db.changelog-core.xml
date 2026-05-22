@@ -5,6 +5,11 @@
 		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
 	<changeSet id="core-create_pending_events" author="safe-road">
+				<preConditions onFail="CONTINUE">
+					<not>
+						<tableExists tableName="pending_events"/>
+					</not>
+				</preConditions>
 		<createTable tableName="pending_events">
 			<column name="id" type="BIGINT" autoIncrement="true">
 				<constraints primaryKey="true"

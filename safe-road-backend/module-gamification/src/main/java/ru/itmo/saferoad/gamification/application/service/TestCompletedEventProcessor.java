@@ -47,7 +47,7 @@ public class TestCompletedEventProcessor implements EventProcessor {
 		try {
 			TestSessionCompletedEvent payload = jsonMapper.readValue(event.getContent(), TestSessionCompletedEvent.class);
 			Long userId = payload.userId();
-			GameProfile profile = gameProfileService.existiongByUserId(userId);
+			GameProfile profile = gameProfileService.existingByUserId(userId);
 
 			int earnedXp = getEarnedXp(payload);
 

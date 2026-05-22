@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:safe_road/screens/leaderboard_screen.dart';
 import 'package:safe_road/screens/profile_screen.dart';
 
 import 'road_map_screen.dart';
@@ -14,7 +15,7 @@ class _MainScreenState extends State<MainScreen> {
   // Список экранов для переключения
   final List<Widget> _screens = [
     RoadMapScreen(),
-    const Center(child: Text("Лидерборды")),
+    LeaderboardScreen(),
     ProfileScreen(),
   ];
 

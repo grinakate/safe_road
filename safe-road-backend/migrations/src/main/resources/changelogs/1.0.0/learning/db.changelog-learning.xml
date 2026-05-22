@@ -5,16 +5,31 @@
 		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
 	<changeSet id="learning-create-enum-progress_status" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">SELECT COUNT(1)
+										 FROM pg_type
+										 WHERE typname = 'progress_status'</sqlCheck>
+		</preConditions>
 		<sql>
 			CREATE TYPE progress_status AS ENUM ('LOCKED', 'UNLOCKED', 'COMPLETED');
 		</sql>
 	</changeSet>
 	<changeSet id="learning-create-enum-test_mode" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">SELECT COUNT(1)
+										 FROM pg_type
+										 WHERE typname = 'test_mode'</sqlCheck>
+		</preConditions>
 		<sql>
 			CREATE TYPE test_mode AS ENUM ('PRACTICE', 'EXAM', 'TOPIC', 'SECTION');
 		</sql>
 	</changeSet>
 	<changeSet id="learning-create_user_topic_progress" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<not>
+				<tableExists tableName="user_topic_progress"/>
+			</not>
+		</preConditions>
 		<createTable tableName="user_topic_progress">
 			<column name="user_id" type="BIGINT" autoIncrement="true">
 				<constraints
@@ -42,6 +57,11 @@
 								 referencedTableName="topics"/>
 	</changeSet>
 	<changeSet id="learning-create_UserQuestionStats" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<not>
+				<tableExists tableName="user_question_stats"/>
+			</not>
+		</preConditions>
 		<createTable tableName="user_question_stats">
 			<column name="user_id" type="BIGINT" autoIncrement="true">
 				<constraints
@@ -87,6 +107,11 @@
 								 referencedTableName="topics"/>
 	</changeSet>
 	<changeSet id="learning-create_ReviewIntervals" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<not>
+				<tableExists tableName="review_intervals"/>
+			</not>
+		</preConditions>
 		<createTable tableName="review_intervals">
 			<column name="streak_level" type="INTEGER" autoIncrement="true">
 				<constraints primaryKey="true"
@@ -102,6 +127,11 @@
 		</createTable>
 	</changeSet>
 	<changeSet id="learning-create_user_section_progress" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<not>
+				<tableExists tableName="user_section_progress"/>
+			</not>
+		</preConditions>
 		<createTable tableName="user_section_progress">
 			<column name="user_id" type="BIGINT" autoIncrement="true">
 				<constraints
@@ -129,6 +159,11 @@
 								 referencedTableName="sections"/>
 	</changeSet>
 	<changeSet id="learning-create_test_sessions" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<not>
+				<tableExists tableName="test_sessions"/>
+			</not>
+		</preConditions>
 		<createTable tableName="test_sessions">
 			<column name="id" type="BIGINT" autoIncrement="true">
 				<constraints primaryKey="true"

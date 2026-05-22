@@ -5,6 +5,11 @@
 		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
 	<changeSet id="notifications-create_notifications" author="safe-road">
+				<preConditions onFail="CONTINUE">
+					<not>
+						<tableExists tableName="notifications"/>
+					</not>
+				</preConditions>
 		<createTable tableName="notifications">
 			<column name="id" type="BIGINT" autoIncrement="true">
 				<constraints primaryKey="true"

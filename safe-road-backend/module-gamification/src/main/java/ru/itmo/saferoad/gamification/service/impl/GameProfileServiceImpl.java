@@ -5,11 +5,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itmo.saferoad.gamification.domain.GameProfile;
 import ru.itmo.saferoad.gamification.domain.repository.GameProfileRepository;
+import ru.itmo.saferoad.gamification.domain.repository.LeaderboardProjection;
 import ru.itmo.saferoad.gamification.service.AvatarService;
 import ru.itmo.saferoad.gamification.service.GameProfileService;
 import ru.itmo.saferoad.gamification.service.LevelService;
 
 import java.util.Optional;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -17,7 +19,6 @@ public class GameProfileServiceImpl implements GameProfileService {
 
 	private static final Integer START_LEVEL_NUMBER = 1;
 	private static final Integer START_AVATAR_ID = 1;
-
 
 	private final LevelService levelService;
 	private final AvatarService avatarService;
@@ -30,7 +31,7 @@ public class GameProfileServiceImpl implements GameProfileService {
 	}
 
 	@Override
-	public @NotNull GameProfile existiongByUserId(@NotNull Long id) {
+	public @NotNull GameProfile existingByUserId(@NotNull Long id) {
 		return repository.findById(id).orElseThrow();
 	}
 
@@ -46,5 +47,16 @@ public class GameProfileServiceImpl implements GameProfileService {
 		gameProfile.setIsLeaderboardParticipant(isLeaderboardParticipant);
 		gameProfile.setTotalActiveDays(0);
 		return repository.save(gameProfile);
+	}
+
+	@Override
+	public List<LeaderboardProjection> getTop10ByCurrentXp() {
+		return repository.findTop10ByOrderByCurrentXpDesc();
+	}
+
+	@Override
+	public long getRank(@NotNull Integer xp) {
+		long higher = repository.countByCurrentXpGreaterThan(xp);
+		return higher + 1;
 	}
 }

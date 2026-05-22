@@ -16,4 +16,9 @@ public interface UserMetricService {
 	List<UserMetric> getLeaderboardTop10ByXp();
 
 	long getXp(@NonNull Long userId);
+
+	/**
+	 * Returns 1-based rank of the given user by XP (1 = top). If user has no XP metric, returns rank for 0 XP.
+	 */
+	long getRank(@NonNull Long userId);
 }

@@ -13,4 +13,6 @@ public interface UserMetricRepository extends JpaRepository<UserMetric, UserMetr
 	List<UserMetric> findTop10ByMetricCodeOrderByValueDesc(String metricCode);
 
 	Optional<UserMetric> findByUserIdAndMetricCode(Long userId, String metricCode);
+
+	long countByMetricCodeAndValueGreaterThan(String metricCode, long value);
 }
