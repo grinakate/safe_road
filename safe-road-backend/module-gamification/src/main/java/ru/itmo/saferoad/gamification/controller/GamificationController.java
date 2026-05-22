@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import ru.itmo.saferoad.core.security.AppUserDetails;
+import ru.itmo.saferoad.gamification.controller.dto.AvatarDto;
 import ru.itmo.saferoad.gamification.controller.dto.LeaderboardEntryDto;
 import ru.itmo.saferoad.gamification.controller.dto.MyGamificationStatsDto;
 import ru.itmo.saferoad.gamification.controller.dto.UserAchievementsResponse;
 import ru.itmo.saferoad.gamification.domain.GameProfile;
 import ru.itmo.saferoad.gamification.domain.repository.LeaderboardProjection;
 import ru.itmo.saferoad.gamification.service.AchievementService;
+import ru.itmo.saferoad.gamification.service.AvatarService;
 import ru.itmo.saferoad.gamification.service.GameProfileService;
 import ru.itmo.saferoad.gamification.service.LevelService;
 import ru.itmo.saferoad.gamification.service.XpHistoryService;
@@ -36,6 +38,7 @@ import java.util.List;
 public class GamificationController {
 
 	private final LevelService levelService;
+	private final AvatarService avatarService;
 	private final XpHistoryService xpHistoryService;
 	private final GameProfileService gameProfileService;
 	private final AchievementService achievementService;
@@ -109,7 +112,6 @@ public class GamificationController {
 		return ResponseEntity.ok().build();
 	}
 
-	// Admin endpoints
 	@PostMapping("/admin/levels")
 	public ResponseEntity<?> createLevel() {
 		// TODO: Implement
@@ -176,8 +178,6 @@ public class GamificationController {
 		return ResponseEntity.ok().build();
 	}
 
-	// ...existing code...
-
 	@GetMapping("/me")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<MyGamificationStatsDto> getMe(
@@ -199,12 +199,25 @@ public class GamificationController {
 	}
 
 	@GetMapping("/me/achievements")
-	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<List<UserAchievementsResponse>> getMyAchievements(
-			@AuthenticationPrincipal AppUserDetails currentUser
-	) {
+			@AuthenticationPrincipal AppUserDetails currentUser) {
 		var achievements = achievementService.getAchievementsForUser(currentUser.getId());
 		return ResponseEntity.ok(achievements);
+	}
+
+	@GetMapping("/avatars")
+	public ResponseEntity<List<AvatarDto>> getAvatars(@AuthenticationPrincipal AppUserDetails currentUser) {
+		var gameProfile = gameProfileService.existingByUserId(currentUser.getId());
+
+		var avatars = avatarService.findAll();
+		var avatarsForUser = avatars.stream()
+				.map(avatar -> AvatarDto.builder()
+						.id(avatar.getId())
+						.url(avatar.getUrl())
+						.minLevel(avatar.getMinLevel())
+						.isAvailable(avatar.getMinLevel() <= gameProfile.getLevel().getNumber()).build())
+				.toList();
+		return ResponseEntity.ok(avatarsForUser);
 	}
 }
 

@@ -20,5 +20,5 @@ public interface UserTopicProgressRepository
 			    AND t.section.id = :sectionId
 			    AND p.status = 'COMPLETED'
 			""")
-	long countCompletedTopicsInSection(@NonNull Long userId, @NonNull Integer sectionId);
+	int countCompletedTopicsInSection(@NonNull Long userId, @NonNull Integer sectionId);
 }

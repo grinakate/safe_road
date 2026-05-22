@@ -36,7 +36,7 @@ public class UserTopicProgressServiceImpl implements UserTopicProgressService {
 	}
 
 	@Override
-	public long countCompletedTopicsInSection(@NonNull Long userId, @NonNull Integer sectionId) {
+	public int countCompletedTopicsInSection(@NonNull Long userId, @NonNull Integer sectionId) {
 		return repository.countCompletedTopicsInSection(userId, sectionId);
 	}
 
