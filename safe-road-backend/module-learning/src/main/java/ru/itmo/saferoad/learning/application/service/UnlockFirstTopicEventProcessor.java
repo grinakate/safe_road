@@ -29,8 +29,11 @@ public class UnlockFirstTopicEventProcessor implements EventProcessor {
 	@Override
 	public void processEvent(@NonNull PendingEvent event) {
 		Section firstSection = sectionService.getFirstSection();
-		Topic firstTopic = firstSection.getTopics().getFirst();
+		// topics is a List<Topic>, use index 0 to get the first topic
+		Topic firstTopic = firstSection.getTopics().isEmpty() ? null : firstSection.getTopics().get(0);
 		var openFirstTopicEvent = jsonMapper.readValue(event.getContent(), UnlockFirstTopicEvent.class);
-		userTopicProgressService.unlockTopic(openFirstTopicEvent.getUserId(), firstTopic);
+		if (firstTopic != null) {
+			userTopicProgressService.unlockTopic(openFirstTopicEvent.getUserId(), firstTopic);
+		}
 	}
 }

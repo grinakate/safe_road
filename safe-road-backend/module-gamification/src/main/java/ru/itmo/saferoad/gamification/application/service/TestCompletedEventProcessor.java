@@ -46,7 +46,7 @@ public class TestCompletedEventProcessor implements EventProcessor {
 	public void processEvent(@NonNull PendingEvent event) {
 		try {
 			TestSessionCompletedEvent payload = jsonMapper.readValue(event.getContent(), TestSessionCompletedEvent.class);
-			Long userId = payload.userId();
+			Long userId = payload.getUserId();
 			GameProfile profile = gameProfileService.existingByUserId(userId);
 
 			int earnedXp = getEarnedXp(payload);
@@ -97,14 +97,14 @@ public class TestCompletedEventProcessor implements EventProcessor {
 
 	private int getEarnedXp(TestSessionCompletedEvent payload) {
 		int earnedXp = 0;
-		if (payload.details() != null) {
+		if (payload.getDetails() != null) {
 			int baseXp = gamificationProperties.getBaseXpPerQuestion();
 			Map<String, Double> coeffs = gamificationProperties.getQuestionTypeCoefficients();
 
-			for (TestSessionCompletedEvent.QuestionDetail detail : payload.details()) {
-				if (Boolean.TRUE.equals(detail.isCorrect())) {
-					int difficulty = detail.difficulty() != null ? detail.difficulty() : 1;
-					double coeff = coeffs.getOrDefault(detail.type(), 1.0);
+			for (TestSessionCompletedEvent.QuestionDetail detail : payload.getDetails()) {
+				if (Boolean.TRUE.equals(detail.getIsCorrect())) {
+					int difficulty = detail.getDifficulty() != null ? detail.getDifficulty() : 1;
+					double coeff = coeffs.getOrDefault(detail.getType(), 1.0);
 					earnedXp += (int) Math.round(baseXp * difficulty * coeff);
 				}
 			}

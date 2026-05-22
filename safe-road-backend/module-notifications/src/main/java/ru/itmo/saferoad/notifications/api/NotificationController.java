@@ -48,6 +48,7 @@ public class NotificationController {
 	@GetMapping("/subscribe")
 	public SseEmitter subscribe(@AuthenticationPrincipal AppUserDetails user) {
 		Long userId = user.getId();
+		log.info("SSE subscribe requested for user {}", userId);
 		SseEmitter emitter = new SseEmitter(notificationsProperties.getSseTimeoutMs());
 		sseNotificationManager.addEmitter(userId, emitter);
 
@@ -80,9 +81,9 @@ public class NotificationController {
 				for (var n : notifications) {
 					try {
 						sseNotificationManager.sendNotification(n.getId());
-					} catch (Exception _) {
+					} catch (Exception ex) {
 						log.error("Ошибка во время отправки уведомления с ИД {} пользователю с ИД {}",
-								n.getId(), n.getUserId());
+								n.getId(), n.getUserId(), ex);
 					}
 				}
 			});

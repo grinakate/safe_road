@@ -1,9 +1,17 @@
 package ru.itmo.saferoad.learning.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import java.util.List;
 
-public record TestSessionSubmitResponse(
-    Integer totalQuestions,
-    Integer correctCount,
-    List<TestErrorResponse> errors
-) {}
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class TestSessionSubmitResponse {
+    private Integer totalQuestions;
+    private Integer correctCount;
+    private List<TestErrorResponse> errors;
+}

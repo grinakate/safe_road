@@ -1,7 +1,15 @@
 package ru.itmo.saferoad.learning.dto;
 
-public record StartTestResponse(
-		Long sessionId,
-		Integer totalQuestions
-) {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class StartTestResponse {
+	private Long sessionId;
+	private Integer totalQuestions;
 }

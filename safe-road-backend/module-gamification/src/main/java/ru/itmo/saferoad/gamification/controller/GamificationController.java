@@ -80,12 +80,12 @@ public class GamificationController {
 					? xpHistoryService.getWeeklyRank(userXp)
 					: gameProfileService.getRank(userXp);
 
-			response.add(new LeaderboardEntryDto(
-					userRank,
-					currentGameProfile.getAvatar().getUrl(),
-					currentUser.getNickname(),
-					currentGameProfile.getCurrentXp(),
-					true));
+			response.add(LeaderboardEntryDto.builder()
+					.xp(currentGameProfile.getCurrentXp())
+					.avatarUrl(currentGameProfile.getAvatar().getUrl())
+					.rank(userRank)
+					.isCurrentUser(true)
+					.nickname(currentUser.getNickname()).build());
 		}
 
 		return ResponseEntity.ok(response);

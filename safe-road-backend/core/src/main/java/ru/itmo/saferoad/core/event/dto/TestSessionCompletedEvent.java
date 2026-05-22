@@ -1,17 +1,34 @@
 package ru.itmo.saferoad.core.event.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
-public record TestSessionCompletedEvent(
-    Long userId,
-    Integer topicId,
-    Integer totalQuestions,
-    Integer correctAnswers,
-    List<QuestionDetail> details
-) {
-    public record QuestionDetail(
-        String type,
-        Integer difficulty,
-        Boolean isCorrect
-    ) {}
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class TestSessionCompletedEvent {
+    private Long userId;
+    private Integer topicId;
+    private Integer totalQuestions;
+    private Integer correctAnswers;
+    private List<QuestionDetail> details;
+
+    // Lombok-generated getters (getUserId/getTopicId/getTotalQuestions/getCorrectAnswers/getDetails) are used
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class QuestionDetail {
+        private String type;
+        private Integer difficulty;
+        private Boolean isCorrect;
+
+        // Lombok-generated getters (getType/getDifficulty/getIsCorrect) are used
+    }
 }

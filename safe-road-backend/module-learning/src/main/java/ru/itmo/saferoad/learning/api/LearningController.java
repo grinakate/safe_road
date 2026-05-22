@@ -18,7 +18,7 @@ import ru.itmo.saferoad.learning.dto.SubmitSessionAnswerRequest;
 import ru.itmo.saferoad.learning.dto.TestQuestionResponse;
 import ru.itmo.saferoad.learning.dto.TestResultResponse;
 import ru.itmo.saferoad.learning.dto.TestSessionSubmitResponse;
-import ru.itmo.saferoad.learning.dto.UserRoadMapResponse;
+import ru.itmo.saferoad.learning.dto.UserSectionResponse;
 import ru.itmo.saferoad.learning.service.TestSessionService;
 
 import java.util.List;
@@ -70,45 +70,7 @@ public class LearningController {
 
 	@GetMapping("/roadmap")
 	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<List<UserRoadMapResponse>> getUserMap(@AuthenticationPrincipal AppUserDetails user) {
+	public ResponseEntity<List<UserSectionResponse>> getRoadMap(@AuthenticationPrincipal AppUserDetails user) {
 		return ResponseEntity.ok(mapService.getMapForUser(user.getId()));
 	}
-
-/*	@PostMapping("/questions/{questionId}/submit")
-	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<SubmitAnswerResponse> submitAnswer(
-			@PathVariable Long questionId,
-			@Valid @RequestBody SubmitAnswerRequest request,
-			@AuthenticationPrincipal AppUserDetails user
-	) {
-		SubmitAnswerResponse response = userQuestionStatsService.submitAnswer(
-				user.getId(),
-				questionId,
-				request.answerId()
-		);
-		return ResponseEntity.ok(response);
-	}*/
-
-/*	@GetMapping("/topics/{topicId}/quiz")
-	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<List<QuestionResponse>> getQuiz(@PathVariable Integer topicId,
-														  @AuthenticationPrincipal AppUserDetails user) {
-		var questions = questionService.getByTopicId(topicId).stream()
-				.map(question -> new QuestionResponse(
-						question.getId(),
-						question.getContent().getQuestionText(),
-						question.getAnswers().stream()
-								.map(answer -> new AnswerResponse(
-										answer.getId(),
-										answer.getText(),
-										answer.getFeedback(),
-										answer.getIsCorrect()))
-								.toList(),
-						question.getAnswers().stream()
-								.filter(Answer::getIsCorrect)
-								.findFirst().orElseThrow().getId()
-				))
-				.toList();
-		return ResponseEntity.ok(questions);
-	}*/
 }

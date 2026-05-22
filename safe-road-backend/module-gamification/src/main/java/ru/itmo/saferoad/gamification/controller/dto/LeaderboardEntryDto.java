@@ -1,12 +1,20 @@
 package ru.itmo.saferoad.gamification.controller.dto;
 
-public record LeaderboardEntryDto(
-		Long rank,
-		String avatarUrl,
-		String nickname,
-		Integer xp,
-		Boolean isCurrentUser
-) {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class LeaderboardEntryDto {
+	private Long rank;
+	private String avatarUrl;
+	private String nickname;
+	private Integer xp;
+	private Boolean isCurrentUser;
 }
 
 

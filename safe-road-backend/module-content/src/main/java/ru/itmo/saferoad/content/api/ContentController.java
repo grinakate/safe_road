@@ -144,7 +144,7 @@ public class ContentController {
 			@Valid @RequestBody CreateSectionRequest request,
 			@AuthenticationPrincipal AppUserDetails currentUser
 	) {
-		var section = sectionService.create(request.name(), request.orderIndex());
+		var section = sectionService.create(request.getName(), request.getOrderIndex());
 		var response = new SectionTreeDto(section.getId(), section.getTitle(), section.getOrderIndex(), List.of());
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
@@ -156,11 +156,11 @@ public class ContentController {
 			@AuthenticationPrincipal AppUserDetails currentUser
 	) {
 		var topic = topicService.create(
-				request.sectionId(),
-				request.name(),
-				request.description(),
-				request.orderIndex(),
-				request.xpReward()
+				request.getSectionId(),
+				request.getName(),
+				request.getDescription(),
+				request.getOrderIndex(),
+				request.getXpReward()
 		);
 		var response = new TopicBriefDto(
 				topic.getId(),

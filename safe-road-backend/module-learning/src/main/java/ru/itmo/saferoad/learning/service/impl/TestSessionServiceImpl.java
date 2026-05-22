@@ -11,7 +11,7 @@ import ru.itmo.saferoad.content.domain.repository.QuestionRepository;
 import ru.itmo.saferoad.content.service.TopicService;
 import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 import ru.itmo.saferoad.core.event.CreatePendingEventsService;
-import ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent;
+// ...existing imports...
 import ru.itmo.saferoad.learning.config.LearningProperties;
 import ru.itmo.saferoad.learning.domain.TestMode;
 import ru.itmo.saferoad.learning.domain.TestSession;
@@ -58,16 +58,16 @@ public class TestSessionServiceImpl implements TestSessionService {
 		TestSession session = new TestSession();
 		session.setUserId(userId);
 		session.setStatus(ProgressStatus.IN_PROGRESS);
-		session.setTopicId(request.topicId());
-		session.setSectionId(request.sectionId());
+		session.setTopicId(request.getTopicId());
+		session.setSectionId(request.getSectionId());
 
 		List<Question> selectedQuestions;
-		if (request.topicId() != null) {
+		if (request.getTopicId() != null) {
 			session.setMode(TestMode.TOPIC);
-			selectedQuestions = selectQuestionsByTopic(userId, request.topicId());
-		} else if (request.sectionId() != null) {
+			selectedQuestions = selectQuestionsByTopic(userId, request.getTopicId());
+		} else if (request.getSectionId() != null) {
 			session.setMode(TestMode.SECTION);
-			selectedQuestions = selectQuestionsBySection(userId, request.sectionId());
+			selectedQuestions = selectQuestionsBySection(userId, request.getSectionId());
 		} else {
 			throw new IllegalArgumentException("Invalid request");
 		}
@@ -225,29 +225,29 @@ public class TestSessionServiceImpl implements TestSessionService {
 
 		int correctAnswers = 0;
 		List<TestErrorResponse> errors = new ArrayList<>();
-		List<TestSessionCompletedEvent.QuestionDetail> details = new ArrayList<>();
+		List<ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent.QuestionDetail> details = new ArrayList<>();
 
-		if (request.answers() != null) {
-			for (var entry : request.answers().entrySet()) {
+		if (request.getAnswers() != null) {
+			for (var entry : request.getAnswers().entrySet()) {
 				Long questionId = entry.getKey();
 				Integer answerId = entry.getValue();
 
 				var response = userQuestionStatsService.submitAnswer(userId, questionId, answerId);
 				Question q = questionRepository.findById(questionId).orElseThrow();
 
-				if (response.correct()) {
+				if (response.isCorrect()) {
 					correctAnswers++;
-					details.add(new TestSessionCompletedEvent.QuestionDetail(
-							q.getType().name(),
-							q.getDifficultyLevel(),
-							true
-					));
+					details.add(ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent.QuestionDetail.builder()
+							.type(q.getType().name())
+							.difficulty(q.getDifficultyLevel())
+							.isCorrect(true)
+							.build());
 				} else {
-					details.add(new TestSessionCompletedEvent.QuestionDetail(
-							q.getType().name(),
-							q.getDifficultyLevel(),
-							false
-					));
+					details.add(ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent.QuestionDetail.builder()
+							.type(q.getType().name())
+							.difficulty(q.getDifficultyLevel())
+							.isCorrect(false)
+							.build());
 
 					String questionText = q.getContent().getQuestionText();
 					QuestionContent.AnswerOption correctAnswer = q.getContent().getOptions().stream()
@@ -273,13 +273,13 @@ public class TestSessionServiceImpl implements TestSessionService {
 		session.setFinishedAt(LocalDateTime.now());
 		testSessionRepository.save(session);
 
-		TestSessionCompletedEvent eventPayload = new TestSessionCompletedEvent(
-				userId,
-				session.getTopicId(),
-				session.getTotalQuestions(),
-				correctAnswers,
-				details
-		);
+		ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent eventPayload = ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent.builder()
+				.userId(userId)
+				.topicId(session.getTopicId())
+				.totalQuestions(session.getTotalQuestions())
+				.correctAnswers(correctAnswers)
+				.details(details)
+				.build();
 		createPendingEventsService.publishTestSessionCompletedEvent(eventPayload);
 
 		if (correctAnswers >= session.getTotalQuestions() * 0.8 && session.getTopicId() != null) {

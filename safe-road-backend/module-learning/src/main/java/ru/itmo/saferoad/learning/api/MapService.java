@@ -8,8 +8,8 @@ import ru.itmo.saferoad.content.api.ContentService;
 import ru.itmo.saferoad.content.dto.SectionTreeDto;
 import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 import ru.itmo.saferoad.learning.domain.UserTopicProgress;
-import ru.itmo.saferoad.learning.dto.UserRoadMapResponse;
 import ru.itmo.saferoad.learning.dto.TopicUserMapResponse;
+import ru.itmo.saferoad.learning.dto.UserSectionResponse;
 import ru.itmo.saferoad.learning.service.UserTopicProgressService;
 
 import java.util.List;
@@ -25,8 +25,7 @@ public class MapService {
 	private final UserTopicProgressService userTopicProgressService;
 
 	@NonNull
-	public List<UserRoadMapResponse> getMapForUser(@NonNull Long userId) {
-		log.info(userId.toString());
+	public List<UserSectionResponse> getMapForUser(@NonNull Long userId) {
 		List<SectionTreeDto> structure = contentService.getSectionTree();
 
 		Map<Integer, ProgressStatus> progress = userTopicProgressService.getByUserId(userId)
@@ -39,28 +38,28 @@ public class MapService {
 	/**
 	 * Превращает статическую секцию в динамическую с учетом прогресса
 	 */
-	private UserRoadMapResponse mapSection(SectionTreeDto section,
+	private UserSectionResponse mapSection(SectionTreeDto section,
 										   Map<Integer, ProgressStatus> progressMap) {
 		// Маппим список топиков
-		List<TopicUserMapResponse> topicResponses = section.topics().stream()
-				.map(topic -> new TopicUserMapResponse(
-						topic.id(),
-						topic.title(),
-						topic.orderIndex(),
+		List<TopicUserMapResponse> topicResponses = section.getTopics().stream()
+				.map(topic -> TopicUserMapResponse.builder()
+						.id(topic.getId())
+						.title(topic.getTitle())
+						.orderIndex(topic.getOrderIndex())
 						// Если записи в БД нет, по умолчанию топик заблокирован (LOCKED)
-						progressMap.getOrDefault(topic.id(), ProgressStatus.LOCKED)
-				))
+						.status(progressMap.getOrDefault(topic.getId(), ProgressStatus.LOCKED))
+						.build())
 				.toList();
 
 		// Рассчитываем прогресс секции на основе обработанных топиков
 		int progressPercent = calculatePercent(topicResponses);
 
-		return new UserRoadMapResponse(
-				section.id(),
-				section.title(),
-				progressPercent,
-				topicResponses
-		);
+		return UserSectionResponse.builder()
+				.id(section.getId())
+				.title(section.getTitle())
+				.progressPercent(progressPercent)
+				.topics(topicResponses)
+				.build();
 	}
 
 	/**
@@ -73,7 +72,7 @@ public class MapService {
 
 		// Считаем количество топиков со статусом COMPLETED
 		long completedCount = topics.stream()
-				.filter(t -> t.status() == ProgressStatus.COMPLETED)
+				.filter(t -> t.getStatus() == ProgressStatus.COMPLETED)
 				.count();
 
 		// Вычисляем процент: (завершенные / всего) * 100
