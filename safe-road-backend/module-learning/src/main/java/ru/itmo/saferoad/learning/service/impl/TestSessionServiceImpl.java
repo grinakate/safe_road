@@ -282,7 +282,7 @@ public class TestSessionServiceImpl implements TestSessionService {
 		);
 		createPendingEventsService.publishTestSessionCompletedEvent(eventPayload);
 
-		if (correctAnswers >= session.getTotalQuestions() * 0.8) {
+		if (correctAnswers >= session.getTotalQuestions() * 0.8 && session.getTopicId() != null) {
 			Topic currentTopic = topicService.existingById(session.getTopicId());
 			userTopicProgressService.updateProgress(userId, currentTopic.getId(), ProgressStatus.COMPLETED);
 			Optional<Topic> nextTopicOpt = topicService.getNextTopic(currentTopic);
