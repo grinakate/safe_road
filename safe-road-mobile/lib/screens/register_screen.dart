@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
 import 'package:intl/intl.dart';
 import '../theme.dart';
@@ -52,7 +53,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => _isLoading = false);
 
     if (token != null) {
-      Navigator.pushReplacementNamed(context, '/map');
+      context.go('/map');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

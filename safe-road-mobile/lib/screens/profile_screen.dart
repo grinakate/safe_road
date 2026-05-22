@@ -26,8 +26,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // Загружаем профиль и аватары через провайдер
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final gp = context.read<GameProfileProvider>();
+      // load avatars and profile; achievements will be fetched via provider and shown using cached data
       gp.loadAvatars().then((_) => AvatarManager.initialize(gp.availableAvatars));
       gp.loadProfile();
+      gp.loadAchievements();
     });
   }
 
@@ -152,18 +154,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Сетка достижений
-  Widget _buildAchievementsGrid() {
-    return FutureBuilder<List<Achievement>>(
-      future: getIt<GameProfileService>().getAchievements(),
-      builder: (context, asyncSnapshot) {
-        if (asyncSnapshot.connectionState == ConnectionState.waiting) {
+    // Сетка достижений (использует провайдер с кэшем и фоновым обновлением)
+    Widget _buildAchievementsGrid() {
+      return Consumer<GameProfileProvider>(builder: (context, gp, _) {
+        if (gp.loadingAchievements && gp.achievements.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (asyncSnapshot.hasError) {
-          return Center(child: Text("Ошибка: ${asyncSnapshot.error}"));
-        }
-        final achievements = asyncSnapshot.data ?? [];
+
+        final achievements = gp.achievements;
+
+        if (achievements.isEmpty) return const Center(child: Text('Нет достижений'));
+
         return Expanded(
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -236,9 +237,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             },
           ),
         );
-      },
-    );
-  }
+      });
+    }
 
   List<List<Achievement>> chunkAchievements(List<Achievement> data) {
     List<List<Achievement>> rows = [];

@@ -3,8 +3,7 @@ import 'dart:convert';
 import '../models/auth_models.dart';
 import 'api_client.dart';
 import 'token_storage_service.dart';
-import 'package:get_it/get_it.dart';
-import 'notification_service.dart';
+// Removed unused imports: get_it and notification_service
 
 class AuthService {
   final TokenStorageService _tokenStorageService;

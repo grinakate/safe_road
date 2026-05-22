@@ -42,7 +42,7 @@ class TopicContent {
         contentMap = {};
       }
     } else if (content is Map) {
-      contentMap = Map<String, dynamic>.from(content as Map);
+      contentMap = Map<String, dynamic>.from(content);
     } else {
       contentMap = {};
     }

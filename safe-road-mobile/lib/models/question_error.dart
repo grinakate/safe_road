@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+// No external imports required here
 
 /// Модель для представления ошибки вопроса (разбор ошибки).
 class QuestionError {

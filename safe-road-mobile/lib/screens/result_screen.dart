@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import '../providers/learning_provider.dart';
 import '../theme.dart';
 import '../models/question_error.dart';
-import '../providers/topic_provider.dart';
-import 'topic_screen.dart';
+// ...existing imports...
 
 class ResultScreen extends StatelessWidget {
   const ResultScreen({Key? key}) : super(key: key);
@@ -198,36 +198,9 @@ class ResultScreen extends StatelessWidget {
                               return;
                             }
 
-                            final topicProvider = context.read<TopicProvider>();
-                            final cached = topicProvider.getCached(topicId);
-                            if (cached != null) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (c) => TopicScreen(topic: cached)),
-                              );
-                              return;
-                            }
-
-                            // показать загрузку
-                            showDialog<void>(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (_) => const Center(child: CircularProgressIndicator()),
-                            );
-                            try {
-                              final topicContent = await topicProvider.getTopic(topicId);
-                              Navigator.of(context).pop(); // remove loading
-                              if (!context.mounted) return;
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (c) => TopicScreen(topic: topicContent)),
-                              );
-                            } catch (e) {
-                              Navigator.of(context).pop();
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Не удалось загрузить теорию: ${e.toString()}')));
-                              }
-                            }
+                            // Переходим на экран темы по id. `TopicScreen` покажет свой индикатор загрузки
+                            // и сам загрузит содержимое — это упрощает навигацию и поддерживает deep links.
+                            context.push('/topic/$topicId');
                           },
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
@@ -244,7 +217,7 @@ class ResultScreen extends StatelessWidget {
                     ],
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () => Navigator.pushReplacementNamed(context, '/map'),
+                        onPressed: () => context.go('/map'),
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),

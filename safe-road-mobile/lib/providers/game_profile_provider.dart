@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:safe_road/models/game_profile.dart';
 import 'package:safe_road/models/avatar_models.dart';
+import 'package:safe_road/models/achievement.dart';
 import 'package:safe_road/services/game_profile_service.dart';
 import '../core/service_locator.dart';
 
@@ -35,6 +36,10 @@ class GameProfileProvider extends ChangeNotifier {
 
   List<AvatarModel> _availableAvatars = [];
   List<AvatarModel> get availableAvatars => _availableAvatars;
+  List<Achievement> _achievements = [];
+  List<Achievement> get achievements => _achievements;
+  bool _loadingAchievements = false;
+  bool get loadingAchievements => _loadingAchievements;
 
   Future<void> loadProfile() async {
     _profile = await _service.getProfile();
@@ -47,8 +52,30 @@ class GameProfileProvider extends ChangeNotifier {
   }
 
   Future<void> loadAchievements() async {
-    // placeholder if UI will ask for achievements through provider in future
-    await _service.getAchievements();
+    // Prefer cached list if available; otherwise fetch and cache.
+    if (_achievements.isNotEmpty) return;
+    _loadingAchievements = true;
+    notifyListeners();
+    try {
+      _achievements = await _service.getAchievements();
+    } catch (_) {
+      _achievements = [];
+    }
+    _loadingAchievements = false;
+    notifyListeners();
+  }
+
+  /// Force refresh achievements from network (background or explicit)
+  Future<void> refreshAchievements() async {
+    _loadingAchievements = true;
+    notifyListeners();
+    try {
+      _achievements = await _service.getAchievements();
+    } catch (_) {
+      // keep old cache on error
+    }
+    _loadingAchievements = false;
+    notifyListeners();
   }
 
   Future<void> updateAvatar(int avatarId) async {

@@ -46,6 +46,7 @@ dependencies:
   get_it: ^9.2.1 # Для управления зависимостями и сервисами
   cached_network_image: ^3.4.1 # Для кэширования изображений и улучшения производительности
   flutter_client_sse: ^2.0.3 # Для работы с Server-Sent Events (SSE) и получения обновлений в реальном времени
+  go_router: ^7.0.0
 
 dev_dependencies:
   flutter_test:

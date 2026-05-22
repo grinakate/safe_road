@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
 import '../theme.dart';
 
@@ -41,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = false);
 
     if (token != null) {
-      Navigator.pushReplacementNamed(context, '/map');
+      context.go('/map');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Неверный логин или пароль')),
@@ -186,7 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         const Text("Еще нет аккаунта?", style: AppTextStyles.bodyMedium),
         TextButton(
-          onPressed: () => Navigator.pushNamed(context, '/register'),
+          onPressed: () => context.push('/register'),
           child: const Text(
             'Зарегистрироваться',
             style: TextStyle(

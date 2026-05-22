@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
-import 'package:safe_road/screens/quiz_screen.dart';
+import 'package:go_router/go_router.dart';
 import 'package:safe_road/models/topic_content.dart';
 
 import '../providers/learning_provider.dart';
+import '../providers/topic_provider.dart';
 import '../services/learning_service.dart';
 
 class TopicScreen extends StatefulWidget {
-  final TopicContent topic;
+  final int topicId;
 
-  const TopicScreen({super.key, required this.topic});
+  const TopicScreen({super.key, required this.topicId});
 
   @override
   State<TopicScreen> createState() => _TopicScreenState();
@@ -18,6 +19,8 @@ class TopicScreen extends StatefulWidget {
 
 class _TopicScreenState extends State<TopicScreen> {
   bool _isLoading = false;
+  bool _isRefreshing = false;
+  TopicContent? _topic;
 
   Future<void> _startQuiz() async {
     if (_isLoading) return;
@@ -25,24 +28,17 @@ class _TopicScreenState extends State<TopicScreen> {
 
     try {
       final service = GetIt.I<LearningService>();
-      final startResp = await service.startTest(widget.topic.id);
+      final startResp = await service.startTest(widget.topicId);
       final sessionId = startResp.sessionId;
-      final quizData = await service.getTestQuestions(sessionId);
 
       // Save last test topic id in provider
       try {
-        context.read<LearningProvider>().setLastTestTopicId(widget.topic.id);
+        context.read<LearningProvider>().setLastTestTopicId(widget.topicId);
       } catch (_) {}
 
       if (!mounted) return;
-      if (quizData.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Для этой темы пока нет вопросов.')));
-      } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (c) => QuizScreen(sessionId: sessionId, quizData: quizData)),
-        );
-      }
+      // navigate to quiz route with session id; QuizScreen will load questions
+      context.push('/quiz/$sessionId');
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ошибка загрузки теста: ${e.toString()}')));
@@ -53,32 +49,100 @@ class _TopicScreenState extends State<TopicScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    // Load topic content after first frame to avoid notifyListeners during build
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final provider = context.read<TopicProvider>();
+      try {
+        final cached = provider.getCached(widget.topicId);
+        if (cached != null) {
+          // Показываем кэш немедленно и запускаем фоновое обновление
+          setState(() {
+            _topic = cached;
+          });
+
+          // фоновая подгрузка, не блокируем UI
+          () async {
+            setState(() => _isRefreshing = true);
+            try {
+              final loaded = await provider.getTopic(widget.topicId);
+              if (!mounted) return;
+              setState(() {
+                _topic = loaded;
+              });
+            } catch (e) {
+              if (!mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Не удалось обновить теорию: ${e.toString()}')));
+            } finally {
+              if (mounted) setState(() => _isRefreshing = false);
+            }
+          }();
+
+          return;
+        }
+
+        // Нет кэша — показываем прогресс и ожидаем загрузки
+        setState(() {
+          _isLoading = true;
+        });
+        final loaded = await provider.getTopic(widget.topicId);
+        if (!mounted) return;
+        setState(() {
+          _topic = loaded;
+          _isLoading = false;
+        });
+      } catch (e) {
+        if (!mounted) return;
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Не удалось загрузить теорию: ${e.toString()}')));
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final topic = widget.topic;
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (_topic == null) {
+      return const Scaffold(body: Center(child: Text('Теория не найдена')));
+    }
+
+    final topic = _topic!;
     return Scaffold(
       appBar: AppBar(title: Text(topic.title)),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildContent(context),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _startQuiz,
-                child: _isLoading
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : const Text('Перейти к тестированию'),
+        child: Column(
+          children: [
+            if (_isRefreshing) const LinearProgressIndicator(minHeight: 3),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildContent(context, topic),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _isLoading ? null : _startQuiz,
+                      child: _isLoading
+                          ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                          : const Text('Перейти к тестированию'),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildContent(BuildContext context) {
+  Widget _buildContent(BuildContext context, TopicContent topic) {
     final List<Widget> widgets = [];
 
     // Group consecutive list_item blocks into a single bulleted list
@@ -90,7 +154,7 @@ class _TopicScreenState extends State<TopicScreen> {
       buffer = [];
     }
 
-    for (final block in widget.topic.blocks) {
+    for (final block in topic.blocks) {
       switch (block.type) {
         case 'list_item':
           buffer.add(block);
@@ -171,5 +235,3 @@ class _TopicScreenState extends State<TopicScreen> {
     );
   }
 }
-
-

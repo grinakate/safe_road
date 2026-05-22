@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:safe_road/screens/result_screen.dart';
 import 'package:safe_road/services/learning_service.dart';
 
 import '../models/question.dart';
@@ -10,12 +10,10 @@ import '../providers/notification_provider.dart';
 import '../theme.dart';
 
 class QuizScreen extends StatefulWidget {
-  final List<Question> quizData;
   final String sessionId;
 
   const QuizScreen({
     super.key,
-    required this.quizData,
     required this.sessionId,
   });
 
@@ -34,8 +32,8 @@ class _QuizScreenState extends State<QuizScreen> {
   // Список для хранения данных каждого ответа пользователя
   final List<UserAnswer> _userAnswers = [];
   String? _sessionId;
-
-  List<Question> get _questions => widget.quizData;
+  List<Question> _questions = [];
+  bool _isFetching = true;
 
   int get _totalQuestions => _questions.length;
 
@@ -68,6 +66,31 @@ class _QuizScreenState extends State<QuizScreen> {
       } catch (_) {}
     });
     _sessionId = widget.sessionId;
+    // load questions for session
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadQuestions();
+    });
+  }
+
+  Future<void> _loadQuestions() async {
+    setState(() {
+      _isFetching = true;
+    });
+    try {
+      final questions = await GetIt.I<LearningService>().getTestQuestions(widget.sessionId);
+      if (!mounted) return;
+      setState(() {
+        _questions = questions;
+        _isFetching = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _questions = [];
+        _isFetching = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ошибка загрузки вопросов: ${e.toString()}')));
+    }
   }
 
   void _handleNextQuestion() {
@@ -120,10 +143,8 @@ class _QuizScreenState extends State<QuizScreen> {
           0,
           errors: resp.errors,
         );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => ResultScreen()),
-        );
+        // navigate to result screen via GoRouter
+        context.go('/result');
       }
 
       // Сбрасываем флаг занятости — тест завершён, можно показывать отложенные уведомления
@@ -146,10 +167,17 @@ class _QuizScreenState extends State<QuizScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isFetching) {
+      return Scaffold(
+        appBar: AppBar(title: Text('Тест')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     if (_questions.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: Text('Тест')),
-        body: Center(child: Text('Нет вопросов для теста.')),
+        body: const Center(child: Text('Нет вопросов для теста.')),
       );
     }
 

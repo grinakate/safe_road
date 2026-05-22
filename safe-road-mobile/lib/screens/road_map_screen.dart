@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:safe_road/models/topic.dart';
-import 'package:safe_road/screens/quiz_screen.dart';
-import 'package:safe_road/screens/topic_screen.dart';
+// QuizScreen and TopicScreen imports removed; navigation uses GoRouter routes instead
+import 'package:go_router/go_router.dart';
 import 'package:safe_road/widgets/road_header.dart';
 
 import '../models/question.dart';
@@ -64,13 +64,8 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
             SnackBar(content: Text('Для этой темы пока нет вопросов.')),
           );
         } else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  QuizScreen(sessionId: sessionId, quizData: quizData),
-            ),
-          );
+          // Navigate via GoRouter, pass sessionId and quizData via extra
+          context.push('/quiz/$sessionId');
         }
       }
     } catch (e) {
@@ -112,13 +107,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
             SnackBar(content: Text('Для этой темы пока нет вопросов.')),
           );
         } else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  QuizScreen(sessionId: sessionId, quizData: quizData),
-            ),
-          );
+          context.push('/quiz/$sessionId');
         }
       }
     } catch (e) {
@@ -176,10 +165,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
     final topicProvider = context.read<TopicProvider>();
     final cached = topicProvider.getCached(topic.id);
     if (cached != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (c) => TopicScreen(topic: cached)),
-      );
+      context.push('/topic/${topic.id}');
       return;
     }
 
@@ -191,13 +177,10 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
     );
 
     try {
-      final topicContent = await topicProvider.getTopic(topic.id);
+      await topicProvider.getTopic(topic.id); // pre-load topic to cache; TopicScreen will read from provider
       Navigator.of(context).pop(); // remove loading
       if (!mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (c) => TopicScreen(topic: topicContent)),
-      );
+      context.push('/topic/${topic.id}');
     } catch (e) {
       Navigator.of(context).pop();
       if (mounted) {
@@ -238,24 +221,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
     );
   }
 
-  Widget _buildRetryButton() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text("Не удалось загрузить данные.", style: AppTextStyles.bodyLarge),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () {
-              context.read<GameProfileProvider>().loadProfile();
-              context.read<LearningProvider>().loadSections();
-            },
-            child: const Text("Повторить"),
-          ),
-        ],
-      ),
-    );
-  }
+  // _buildRetryButton removed — неиспользуемая утилита для показа кнопки повтора
 
   List<Widget> _buildRoadmapContent() {
     final sections = context.watch<LearningProvider>().sections;

@@ -11,6 +11,8 @@ class LeaderboardProvider extends ChangeNotifier {
 
   bool _loadingWeek = false;
   bool _loadingAll = false;
+  bool _refreshingWeek = false;
+  bool _refreshingAll = false;
 
   List<LeaderboardEntry> get week => _week;
   List<LeaderboardEntry> get all => _all;
@@ -18,6 +20,22 @@ class LeaderboardProvider extends ChangeNotifier {
   bool get loadingAll => _loadingAll;
 
   Future<void> fetchWeek() async {
+    // If we already have cached data, perform a background refresh so UI can show cached
+    // immediately and then update when network call completes.
+    if (_week.isNotEmpty) {
+      _refreshingWeek = true;
+      notifyListeners();
+      try {
+        final fresh = await _service.fetch('week');
+        _week = fresh;
+      } catch (_) {
+        // keep existing cache on error
+      }
+      _refreshingWeek = false;
+      notifyListeners();
+      return;
+    }
+
     _loadingWeek = true;
     notifyListeners();
     try {
@@ -30,6 +48,18 @@ class LeaderboardProvider extends ChangeNotifier {
   }
 
   Future<void> fetchAll() async {
+    if (_all.isNotEmpty) {
+      _refreshingAll = true;
+      notifyListeners();
+      try {
+        final fresh = await _service.fetch('all');
+        _all = fresh;
+      } catch (_) {}
+      _refreshingAll = false;
+      notifyListeners();
+      return;
+    }
+
     _loadingAll = true;
     notifyListeners();
     try {
@@ -40,5 +70,8 @@ class LeaderboardProvider extends ChangeNotifier {
     _loadingAll = false;
     notifyListeners();
   }
+
+  bool get refreshingWeek => _refreshingWeek;
+  bool get refreshingAll => _refreshingAll;
 }
 
