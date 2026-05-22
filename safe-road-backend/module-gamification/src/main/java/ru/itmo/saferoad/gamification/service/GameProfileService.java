@@ -18,7 +18,7 @@ public interface GameProfileService {
 	@NotNull
 	GameProfile create(@NotNull Long userId, @NotNull Boolean isLeaderboardParticipant);
 
-	List<LeaderboardProjection> getTop10ByCurrentXp();
+	List<LeaderboardProjection> getTotalTop10();
 
 	long getRank(@NotNull Integer xp);
 }

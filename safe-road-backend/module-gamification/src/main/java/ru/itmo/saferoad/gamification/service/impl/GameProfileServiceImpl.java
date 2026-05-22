@@ -50,7 +50,7 @@ public class GameProfileServiceImpl implements GameProfileService {
 	}
 
 	@Override
-	public List<LeaderboardProjection> getTop10ByCurrentXp() {
+	public List<LeaderboardProjection> getTotalTop10() {
 		return repository.findTop10ByOrderByCurrentXpDesc();
 	}
 

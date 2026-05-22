@@ -26,7 +26,7 @@ public interface XpHistoryRepository extends JpaRepository<XpHistory, XpHistoryI
 	Optional<LeaderboardProjection> findByUserIdAndWeekStart(@NonNull Long userId, @NonNull LocalDate weekStart);
 
 	@NonNull
-	@Query(value = "SELECT x.user_id as userId, x.xp as xp, a.url as avatarUrl, u.nickname as nickname "
+	@Query(value = "SELECT x.user_id as userId, x.xp as currentXp, a.url as avatarUrl, u.nickname as nickname "
 				   + "FROM xp_history x "
 				   + "JOIN game_profiles gp ON gp.user_id = x.user_id "
 				   + "JOIN users u ON u.id = x.user_id "
@@ -38,6 +38,9 @@ public interface XpHistoryRepository extends JpaRepository<XpHistory, XpHistoryI
 															  Pageable pageable);
 
 	long countByWeekStartAndXpGreaterThan(LocalDate weekStart, long xp);
+
+	@NonNull
+	Optional<XpHistory> findByUserId(@NonNull Long userId);
 }
 
 

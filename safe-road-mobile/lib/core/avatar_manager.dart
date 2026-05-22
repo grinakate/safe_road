@@ -15,8 +15,18 @@ class AvatarManager {
   }
 
   static AvatarModel getAvatarItem(int avatarId) {
-    return _avatarsById[avatarId] ?? _avatarsById[_defaultAvatarId]!;
+    final item = _avatarsById[avatarId];
+    if (item != null) return item;
+
+    final defaultItem = _avatarsById[_defaultAvatarId];
+    if (defaultItem != null) return defaultItem;
+
+    if (_avatars.isNotEmpty) return _avatars.first;
+
+    throw StateError('AvatarManager is not initialized or has no avatars');
   }
+
+  static bool get isInitialized => _avatars.isNotEmpty;
 
   static List<AvatarModel> getAvailableAvatarItems() {
     return _avatars;

@@ -48,9 +48,9 @@ public class GamificationController {
 	) {
 		List<LeaderboardProjection> leaders;
 		if ("week".equalsIgnoreCase(timeframe)) {
-			leaders = xpHistoryService.getCurrentTop10();
+			leaders = xpHistoryService.getTop10ForCurrentWeek();
 		} else {
-			leaders = gameProfileService.getTop10ByCurrentXp();
+			leaders = gameProfileService.getTotalTop10();
 		}
 
 		boolean currentInTop = false;
@@ -72,9 +72,13 @@ public class GamificationController {
 
 		if (!currentInTop) {
 			GameProfile currentGameProfile = gameProfileService.findById(currentUser.getId()).orElseThrow();
+			var xpHistoryForWeek = xpHistoryService.getXpHistoryByUser(currentUser.getId());
+			int userXp = Math.toIntExact(!"week".equalsIgnoreCase(timeframe)
+					? currentGameProfile.getCurrentXp()
+					: xpHistoryForWeek != null ? xpHistoryForWeek.getXp() : 0);
 			long userRank = "week".equalsIgnoreCase(timeframe)
-					? xpHistoryService.getWeeklyRank(currentGameProfile.getCurrentXp())
-					: gameProfileService.getRank(currentGameProfile.getCurrentXp());
+					? xpHistoryService.getWeeklyRank(userXp)
+					: gameProfileService.getRank(userXp);
 
 			response.add(new LeaderboardEntryDto(
 					userRank,

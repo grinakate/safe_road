@@ -53,7 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // Верхняя часть: Уровень, Аватар, Очки
   Widget _buildHeader() {
     return Consumer<GameProfileProvider>(builder: (context, gp, child) {
-      if (gp.profile == null) {
+      if (gp.profile == null || !AvatarManager.isInitialized) {
         return const Center(child: CircularProgressIndicator());
       }
       final user = gp.profile!;

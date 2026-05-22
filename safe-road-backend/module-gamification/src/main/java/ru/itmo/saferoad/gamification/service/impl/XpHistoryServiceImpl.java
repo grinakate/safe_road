@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.itmo.saferoad.gamification.domain.XpHistory;
 import ru.itmo.saferoad.gamification.domain.repository.LeaderboardProjection;
 import ru.itmo.saferoad.gamification.domain.repository.XpHistoryRepository;
 import ru.itmo.saferoad.gamification.service.XpHistoryService;
@@ -21,7 +22,7 @@ public class XpHistoryServiceImpl implements XpHistoryService {
 	private final XpHistoryRepository repository;
 
 	@Override
-	public @NonNull List<LeaderboardProjection> getCurrentTop10() {
+	public @NonNull List<LeaderboardProjection> getTop10ForCurrentWeek() {
 		LocalDate today = LocalDate.now();
 		LocalDate weekStart = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 		return repository.findWeekLeaderboardProjection(weekStart, Pageable.ofSize(10));
@@ -32,5 +33,10 @@ public class XpHistoryServiceImpl implements XpHistoryService {
 		LocalDate today = LocalDate.now();
 		LocalDate weekStart = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 		return repository.countByWeekStartAndXpGreaterThan(weekStart, xp);
+	}
+
+	@Override
+	public XpHistory getXpHistoryByUser(long userId) {
+		return repository.findByUserId(userId).orElse(null);
 	}
 }
