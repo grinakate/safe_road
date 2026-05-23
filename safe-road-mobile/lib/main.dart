@@ -16,6 +16,7 @@ import 'package:safe_road/ui/theme/app_theme.dart';
 import 'logic/providers/game_profile_provider.dart';
 import 'logic/providers/leaderboard_provider.dart';
 import 'logic/providers/learning_provider.dart';
+import 'logic/providers/notification_navigator_observer.dart';
 import 'logic/providers/notification_provider.dart';
 import 'logic/providers/topic_provider.dart';
 
@@ -35,14 +36,12 @@ class SafeRoadApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => GameProfileProvider()),
+        ChangeNotifierProvider(create: (_) => getIt<AuthProvider>()),
+        ChangeNotifierProvider(create: (_) => getIt<GameProfileProvider>()),
         ChangeNotifierProvider(create: (_) => LearningProvider()),
         ChangeNotifierProvider(create: (_) => LeaderboardProvider()),
         ChangeNotifierProvider(create: (_) => TopicProvider()),
-        ChangeNotifierProvider<NotificationProvider>(
-          create: (_) => getIt<NotificationProvider>(),
-        ),
+        ChangeNotifierProvider(create: (_) => getIt<NotificationProvider>()),
       ],
       child: Builder(
         builder: (context) {
@@ -52,6 +51,9 @@ class SafeRoadApp extends StatelessWidget {
             initialLocation: '/',
             navigatorKey: getIt<GlobalKey<NavigatorState>>(),
             refreshListenable: auth,
+            observers: [
+              NotificationNavigatorObserver(getIt<NotificationProvider>()),
+            ],
             redirect: (context, state) {
               final isLoggedIn = auth.isAuthenticated;
               final isLoggingInOrRegistering =

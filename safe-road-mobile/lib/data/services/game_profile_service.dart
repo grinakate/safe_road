@@ -24,7 +24,7 @@ class GameProfileService {
   Future<Avatar> updateAvatar(int newAvatarId) async {
     final request = ChangeAvatarRequest(avatarId: newAvatarId);
     final response = await _apiClient.post(
-      '/profile/me/avatar',
+      '/gamification/me/avatar',
       request.toJson(),
     );
     return Avatar.fromJson(response.data);

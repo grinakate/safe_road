@@ -7,7 +7,6 @@ import '../../data/models/learning/question.dart';
 import '../../data/services/learning_service.dart';
 import '../../logic/providers/learning_provider.dart';
 import '../../logic/providers/learning_state.dart';
-import '../../logic/providers/notification_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/learning/answer_option_tile.dart';
 
@@ -32,35 +31,12 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
-    _setNotificationStatus(true);
     _loadQuestions();
   }
 
   @override
   void dispose() {
-    // Вызываем обновление провайдера напрямую до super.dispose()
-    try {
-      context.read<NotificationProvider>().setBusy(false);
-    } catch (e) {
-      debugPrint('Не удалось сбросить статус занятости: $e');
-    }
     super.dispose();
-  }
-
-  void _setNotificationStatus(bool isBusy) {
-    if (isBusy) {
-      // Для initState откладываем вызов на конец кадра
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          context.read<NotificationProvider>().setBusy(true);
-        }
-      });
-    } else {
-      // Для обычных сценариев (если метод вызовется где-то еще) обновляем сразу
-      if (mounted) {
-        context.read<NotificationProvider>().setBusy(false);
-      }
-    }
   }
 
   Future<void> _loadQuestions() async {

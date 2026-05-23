@@ -7,7 +7,7 @@ import '../../data/services/notification_service.dart';
 import 'auth_state.dart';
 
 class AuthProvider extends ChangeNotifier {
-  final AuthService _authService = getIt<AuthService>();
+  final AuthService _authService;
 
   // Единое состояние авторизации
   AuthState _state = AuthState.initial();
@@ -23,7 +23,7 @@ class AuthProvider extends ChangeNotifier {
 
   String? get errorMessage => _state.errorMessage;
 
-  AuthProvider() {
+  AuthProvider(this._authService) {
     _init();
   }
 

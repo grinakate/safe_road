@@ -25,7 +25,7 @@ class RoadMapScreen extends StatefulWidget {
 
 class _RoadMapScreenState extends State<RoadMapScreen> {
   bool _isActionInProgress = false; // Блокировка кнопок при переходе/загрузке
-  final LearningService _quizService = GetIt.instance<LearningService>();
+  final LearningService _quizService = GetIt.I<LearningService>();
 
   @override
   void initState() {

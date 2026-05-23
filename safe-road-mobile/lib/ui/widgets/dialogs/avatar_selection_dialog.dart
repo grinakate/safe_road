@@ -62,58 +62,93 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    // Вычисляем статус кнопки "Выбрать" заранее
+    final activeAvatar = _selectedAvatar;
+    final bool isSelectedAvailable = activeAvatar?.isAvailable ?? false;
+    final profileProvider = context.read<GameProfileProvider>();
+
     return AlertDialog(
       backgroundColor: AppColors.white,
+      surfaceTintColor: Colors.transparent,
+      // Чтобы не было лишних оттенков
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: const Text('Выбрать аватар', textAlign: TextAlign.center),
+
+      // ГЛАВНОЕ: Только список аватаров в контенте
       content: _buildContent(context),
+
+      // ГЛАВНОЕ: Кнопки выносим в actions
+      actions: [
+        // TextButton(
+        //   onPressed: () => Navigator.of(context).pop(),
+        //   child: const Text(
+        //     'Отмена',
+        //     style: TextStyle(color: AppColors.brownText),
+        //   ),
+        // ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: isSelectedAvailable
+                ? AppColors.primaryGreen
+                : AppColors.greyBorder,
+            foregroundColor: Colors.white,
+          ),
+          onPressed: isSelectedAvailable
+              ? () async {
+                  if (_selectedAvatarId != null) {
+                    await profileProvider.updateAvatar(_selectedAvatarId!);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Аватар успешно обновлен!'),
+                        ),
+                      );
+                      Navigator.of(context).pop();
+                    }
+                  }
+                }
+              : null,
+          child: Text(
+            isSelectedAvailable
+                ? 'Выбрать'
+                : 'Доступно с ${activeAvatar?.minLevel ?? 0} ур.',
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildContent(BuildContext context) {
     if (_isLoading) {
       return const SizedBox(
-        height: 160,
+        height: 120,
         child: Center(child: CircularProgressIndicator()),
       );
     }
     if (_errorMessage != null || _avatars == null) {
-      return SizedBox(
-        height: 160,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(_errorMessage ?? 'Ошибка', style: AppTextStyles.bodyMedium),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _isLoading = true;
-                  _errorMessage = null;
-                });
-                _loadAvatars();
-              },
-              child: const Text('Повторить'),
-            ),
-          ],
-        ),
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(_errorMessage ?? 'Ошибка', style: AppTextStyles.bodyMedium),
+          TextButton(onPressed: _loadAvatars, child: const Text('Повторить')),
+        ],
       );
     }
 
-    // Читаем данные из провайдера
-    final profileProvider = context.read<GameProfileProvider>();
-    final activeAvatar = _selectedAvatar;
-    final isSelectedAvailable =
-        activeAvatar != null && activeAvatar.isAvailable;
-
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: MainAxisSize.min, // Чтобы диалог сжимался по контенту
       children: [
+        const Text(
+          'Листайте вправо, чтобы увидеть всех',
+          style: TextStyle(fontSize: 10, color: Colors.grey),
+        ),
+        const SizedBox(height: 10),
         SizedBox(
-          height: 160,
-          width: MediaQuery.of(context).size.width * 0.8,
+          height: 120, // Фиксированная высота для горизонтального списка
+          width: double.maxFinite, // Занимаем всю ширину диалога
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
+            shrinkWrap: true,
             itemCount: _avatars!.length,
             itemBuilder: (context, index) {
               final avatar = _avatars![index];
@@ -121,83 +156,59 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
               final isAvailable = avatar.isAvailable;
 
               return GestureDetector(
+                behavior: HitTestBehavior.opaque, // Чтобы кликалась вся область
                 onTap: () => setState(() => _selectedAvatarId = avatar.id),
                 child: _buildAvatarItem(avatar, isSelected, isAvailable),
               );
             },
           ),
         ),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Отмена', style: AppTextStyles.bodyMedium),
-            ),
-            const SizedBox(width: 10),
-            ElevatedButton(
-              onPressed: isSelectedAvailable
-                  ? () async {
-                      // Сами вызываем обновление в провайдере!
-                      if (_selectedAvatarId != null) {
-                        await profileProvider.updateAvatar(_selectedAvatarId!);
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Аватар успешно обновлен!'),
-                            ),
-                          );
-                          Navigator.of(context).pop();
-                        }
-                      }
-                    }
-                  : null,
-              child: Text(
-                isSelectedAvailable
-                    ? 'Выбрать'
-                    : 'Доступно с ${activeAvatar?.minLevel ?? 0} ур.',
-              ),
-            ),
-          ],
-        ),
       ],
     );
   }
 
   Widget _buildAvatarItem(Avatar avatar, bool isSelected, bool isAvailable) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 5),
-          padding: const EdgeInsets.all(3),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: isSelected ? AppColors.primaryGreen : Colors.transparent,
-              width: 3,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: isSelected ? AppColors.primaryGreen : Colors.transparent,
+                width: 3,
+              ),
             ),
-          ),
-          child: Opacity(
-            opacity: isAvailable ? 1.0 : 0.4,
-            child: CircleAvatar(
-              radius: 50,
-              backgroundColor: AppColors.lightBlueBackground,
-              child: ClipOval(
-                child: SecureNetworkImage(
-                  imageUrl: avatar.url,
-                  fit: BoxFit.cover,
-                  width: 100,
-                  height: 100,
+            child: Opacity(
+              opacity: isAvailable ? 1.0 : 0.4,
+              child: CircleAvatar(
+                radius: 45,
+                backgroundColor: AppColors.lightBlueBackground,
+                child: ClipOval(
+                  child: SecureNetworkImage(
+                    imageUrl: avatar.url,
+                    fit: BoxFit.cover,
+                    width: 90,
+                    height: 90,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        if (!isAvailable)
-          const Icon(Icons.lock, size: 40, color: Colors.black54),
-      ],
+          if (!isAvailable)
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.black26,
+                shape: BoxShape.circle,
+              ),
+              padding: const EdgeInsets.all(8),
+              child: const Icon(Icons.lock, size: 30, color: Colors.white),
+            ),
+        ],
+      ),
     );
   }
 }

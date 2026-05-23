@@ -8,7 +8,7 @@ import 'package:safe_road/data/models/gamification/reward_notification.dart';
 import 'package:safe_road/data/services/game_profile_service.dart';
 
 class GameProfileProvider extends ChangeNotifier {
-  final GameProfileService _service = getIt<GameProfileService>();
+  final GameProfileService _service;
 
   GameProfile? _profile;
 
@@ -23,6 +23,8 @@ class GameProfileProvider extends ChangeNotifier {
   bool get loadingProfile => _loadingProfile;
 
   bool _loadingAchievements = false;
+
+  GameProfileProvider(this._service);
 
   bool get loadingAchievements => _loadingAchievements;
 

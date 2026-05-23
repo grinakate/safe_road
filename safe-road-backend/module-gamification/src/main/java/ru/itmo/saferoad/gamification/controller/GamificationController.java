@@ -11,15 +11,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import ru.itmo.saferoad.core.security.AppUserDetails;
 import ru.itmo.saferoad.gamification.controller.dto.AvatarDto;
+import ru.itmo.saferoad.gamification.controller.dto.ChangeAvatarRequest;
 import ru.itmo.saferoad.gamification.controller.dto.LeaderboardEntryDto;
 import ru.itmo.saferoad.gamification.controller.dto.UserAchievementsResponse;
 import ru.itmo.saferoad.gamification.controller.dto.UserGameProfileDto;
+import ru.itmo.saferoad.gamification.domain.Avatar;
 import ru.itmo.saferoad.gamification.domain.GameProfile;
 import ru.itmo.saferoad.gamification.domain.repository.LeaderboardProjection;
 import ru.itmo.saferoad.gamification.service.AchievementService;
@@ -198,6 +201,26 @@ public class GamificationController {
 						.build())
 				.currentStreak(gameProfile.getCurrentStreak())
 				.build();
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("me/avatar")
+	public ResponseEntity<AvatarDto> changeMyAvatar(@AuthenticationPrincipal AppUserDetails currentUser,
+													@RequestBody ChangeAvatarRequest request) {
+		Avatar newAvatar = avatarService.existingById(request.getAvatarId());
+		GameProfile gameProfile = gameProfileService.existingByUserId(currentUser.getId());
+
+		if (newAvatar.getMinLevel() > gameProfile.getLevel().getNumber()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
+
+		gameProfile.setAvatar(newAvatar);
+
+		var response = AvatarDto.builder()
+				.id(newAvatar.getId())
+				.url(newAvatar.getUrl())
+				.minLevel(newAvatar.getMinLevel())
+				.isAvailable(true).build();
 		return ResponseEntity.ok(response);
 	}
 

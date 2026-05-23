@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/service_locator.dart'; // Для getIt
 import '../../data/services/notification_service.dart';
@@ -8,12 +9,7 @@ import 'game_profile_provider.dart';
 class NotificationProvider extends ChangeNotifier {
   final NotificationService _service;
   final GlobalKey<NavigatorState> _navigatorKey;
-  final GameProfileProvider _gameProfileProvider = getIt<GameProfileProvider>();
-
-  // Флаг занятости пользователя
-  bool _isBusy = false;
-
-  bool get isBusy => _isBusy;
+  final GameProfileProvider _gameProfileProvider;
 
   // Очередь уведомлений, если пользователь занят
   final List<NotificationEvent> _queue = [];
@@ -22,7 +18,11 @@ class NotificationProvider extends ChangeNotifier {
 
   late final Map<String, Function(BuildContext, NotificationEvent)> _handlers;
 
-  NotificationProvider(this._service, this._navigatorKey) {
+  NotificationProvider(
+    this._service,
+    this._gameProfileProvider,
+    this._navigatorKey,
+  ) {
     _handlers = {'REWARDS_EARNED': NotificationDialogs.showRewardDialog};
 
     _service.events.listen((evt) {
@@ -30,35 +30,52 @@ class NotificationProvider extends ChangeNotifier {
     });
   }
 
-  void setBusy(bool busy) {
-    _isBusy = busy;
-    if (!_isBusy) {
-      _flushQueue(); // Если пользователь больше не занят, обрабатываем очередь
+  void checkAndFlushQueue() {
+    if (_canShowNotifications && _queue.isNotEmpty) {
+      _flushQueue();
     }
-    _safeNotify(); // Уведомляем слушателей об изменении состояния
   }
 
   void _addNotificationToQueueOrHandle(NotificationEvent evt) {
-    if (_isBusy) {
+    if (!_canShowNotifications) {
       _queue.add(evt);
       return;
     }
     _handleEvent(evt);
   }
 
-  void _handleEvent(NotificationEvent evt) {
+  Future<void> _handleEvent(NotificationEvent evt) async {
     final context = _navigatorKey.currentState?.context;
     if (context == null || !context.mounted) return;
 
-    // Специфическая логика для "REWARDS_EARNED" (обновление профиля)
     if (evt.title == 'REWARDS_EARNED') {
       _gameProfileProvider.handleRewardEvent(evt.content);
     }
 
-    // Выбираем и вызываем нужный диалог
     final showDialogAction =
         _handlers[evt.title] ?? NotificationDialogs.showSimpleDialog;
-    showDialogAction(context, evt);
+
+    await showDialogAction(context, evt);
+  }
+
+  bool get _canShowNotifications {
+    final navigatorKey = getIt<GlobalKey<NavigatorState>>();
+    final context = navigatorKey.currentContext;
+
+    if (context == null) {
+      return true;
+    }
+
+    try {
+      final router = GoRouter.of(context);
+      final String location =
+          router.routerDelegate.currentConfiguration.last.matchedLocation;
+
+      return location == '/main';
+    } catch (e) {
+      debugPrint('Ошибка при проверке пути в NotificationProvider: $e');
+      return true; // В случае ошибки разрешаем, чтобы не сломать приложение
+    }
   }
 
   // Обработка очереди уведомлений
