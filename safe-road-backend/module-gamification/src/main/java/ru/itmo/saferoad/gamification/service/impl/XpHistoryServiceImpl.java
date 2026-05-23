@@ -13,7 +13,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -23,20 +22,24 @@ public class XpHistoryServiceImpl implements XpHistoryService {
 
 	@Override
 	public @NonNull List<LeaderboardProjection> getTop10ForCurrentWeek() {
-		LocalDate today = LocalDate.now();
-		LocalDate weekStart = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+		LocalDate weekStart = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 		return repository.findWeekLeaderboardProjection(weekStart, Pageable.ofSize(10));
 	}
 
 	@Override
-	public long getWeeklyRank(int xp) {
-		LocalDate today = LocalDate.now();
-		LocalDate weekStart = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+	public long getWeeklyRank(long xp) {
+		LocalDate weekStart = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 		return repository.countByWeekStartAndXpGreaterThan(weekStart, xp);
 	}
 
 	@Override
-	public XpHistory getXpHistoryByUser(long userId) {
-		return repository.findByUserId(userId).orElse(null);
+	public long getWeekXpByUser(long userId) {
+		LocalDate weekStart = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+		return repository.findByUserIdAndWeekStart(userId, weekStart).map(XpHistory::getXp).orElse(0L);
+	}
+
+	@Override
+	public List<XpHistory> findAllByUserId(@NonNull Long userId) {
+		return repository.findAllByUserId(userId);
 	}
 }

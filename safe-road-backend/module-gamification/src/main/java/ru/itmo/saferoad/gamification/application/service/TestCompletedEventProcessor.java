@@ -54,7 +54,7 @@ public class TestCompletedEventProcessor implements EventProcessor {
 			if (earnedXp > 0) {
 				int previousLevelNumber = profile.getLevel().getNumber();
 
-				int newXp = profile.getCurrentXp() + earnedXp;
+				int newXp = profile.getXp() + earnedXp;
 				Level currentLevel = profile.getLevel();
 
 				while (newXp >= currentLevel.getXpThreshold()) {
@@ -68,7 +68,7 @@ public class TestCompletedEventProcessor implements EventProcessor {
 					}
 				}
 
-				profile.setCurrentXp(newXp);
+				profile.setXp(newXp);
 				profile.setLevel(currentLevel);
 				gameProfileRepository.save(profile);
 

@@ -20,5 +20,5 @@ public interface GameProfileService {
 
 	List<LeaderboardProjection> getTotalTop10();
 
-	long getRank(@NotNull Integer xp);
+	long getRank(@NotNull Long xp);
 }

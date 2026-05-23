@@ -6,7 +6,7 @@ package ru.itmo.saferoad.gamification.domain.repository;
 public interface LeaderboardProjection {
 	Long getUserId();
 
-	Integer getCurrentXp();
+	Long getCurrentXp();
 
 	String getAvatarUrl();
 

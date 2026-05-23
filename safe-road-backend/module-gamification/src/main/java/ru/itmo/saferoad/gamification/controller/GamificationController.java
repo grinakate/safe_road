@@ -1,5 +1,6 @@
 package ru.itmo.saferoad.gamification.controller;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,8 +23,10 @@ import ru.itmo.saferoad.gamification.controller.dto.ChangeAvatarRequest;
 import ru.itmo.saferoad.gamification.controller.dto.LeaderboardEntryDto;
 import ru.itmo.saferoad.gamification.controller.dto.UserAchievementsResponse;
 import ru.itmo.saferoad.gamification.controller.dto.UserGameProfileDto;
+import ru.itmo.saferoad.gamification.controller.dto.XpHistoryDto;
 import ru.itmo.saferoad.gamification.domain.Avatar;
 import ru.itmo.saferoad.gamification.domain.GameProfile;
+import ru.itmo.saferoad.gamification.domain.LeaderboardPeriod;
 import ru.itmo.saferoad.gamification.domain.repository.LeaderboardProjection;
 import ru.itmo.saferoad.gamification.service.AchievementService;
 import ru.itmo.saferoad.gamification.service.AvatarService;
@@ -50,10 +53,11 @@ public class GamificationController {
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<@NonNull List<LeaderboardEntryDto>> getLeaderboard(
 			@AuthenticationPrincipal AppUserDetails currentUser,
-			@RequestParam(name = "timeframe", required = false, defaultValue = "all") String timeframe
-	) {
+			@NotNull @RequestParam(name = "timeframe") String timeframe) {
+		LeaderboardPeriod period = LeaderboardPeriod.valueOf(timeframe.toUpperCase());
+
 		List<LeaderboardProjection> leaders;
-		if ("week".equalsIgnoreCase(timeframe)) {
+		if (LeaderboardPeriod.WEEK.equals(period)) {
 			leaders = xpHistoryService.getTop10ForCurrentWeek();
 		} else {
 			leaders = gameProfileService.getTotalTop10();
@@ -77,18 +81,19 @@ public class GamificationController {
 		}
 
 		if (!currentInTop) {
-			GameProfile currentGameProfile = gameProfileService.findById(currentUser.getId()).orElseThrow();
-			var xpHistoryForWeek = xpHistoryService.getXpHistoryByUser(currentUser.getId());
-			int userXp = Math.toIntExact(!"week".equalsIgnoreCase(timeframe)
-					? currentGameProfile.getCurrentXp()
-					: xpHistoryForWeek != null ? xpHistoryForWeek.getXp() : 0);
-			long userRank = "week".equalsIgnoreCase(timeframe)
+			var userGameProfile = gameProfileService.existingByUserId(currentUser.getId());
+
+			long userXp = LeaderboardPeriod.WEEK.equals(period)
+					? xpHistoryService.getWeekXpByUser(currentUser.getId())
+					: userGameProfile.getXp();
+
+			long userRank = LeaderboardPeriod.WEEK.equals(period)
 					? xpHistoryService.getWeeklyRank(userXp)
 					: gameProfileService.getRank(userXp);
 
 			response.add(LeaderboardEntryDto.builder()
-					.xp(currentGameProfile.getCurrentXp())
-					.avatarUrl(currentGameProfile.getAvatar().getUrl())
+					.xp(userXp)
+					.avatarUrl(userGameProfile.getAvatar().getUrl())
 					.rank(userRank)
 					.isCurrentUser(true)
 					.nickname(currentUser.getNickname()).build());
@@ -97,22 +102,92 @@ public class GamificationController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PatchMapping("/avatars/select")
-	public ResponseEntity<?> selectAvatar() {
-		// TODO: Implement
-		return ResponseEntity.ok().build();
+	@GetMapping("/me")
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<UserGameProfileDto> getMe(
+			@AuthenticationPrincipal AppUserDetails currentUser
+	) {
+		var gameProfile = gameProfileService.findById(currentUser.getId()).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Игровой профиль не найден")
+		);
+
+		var response = UserGameProfileDto.builder()
+				.name(currentUser.getUsername())
+				.level(gameProfile.getLevel().getNumber())
+				.currentXp(gameProfile.getXp())
+				.xpProgress(levelService.getXpProgress(gameProfile.getLevel().getNumber(), gameProfile.getXp()))
+				.avatar(UserGameProfileDto.UserAvatarDto.builder()
+						.id(gameProfile.getAvatar().getId())
+						.url(gameProfile.getAvatar().getUrl())
+						.build())
+				.currentStreak(gameProfile.getCurrentStreak())
+				.build();
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("me/avatar")
+	public ResponseEntity<AvatarDto> changeMyAvatar(@AuthenticationPrincipal AppUserDetails currentUser,
+													@RequestBody ChangeAvatarRequest request) {
+		Avatar newAvatar = avatarService.existingById(request.getAvatarId());
+		GameProfile gameProfile = gameProfileService.existingByUserId(currentUser.getId());
+
+		if (newAvatar.getMinLevel() > gameProfile.getLevel().getNumber()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
+
+		gameProfile.setAvatar(newAvatar);
+
+		var response = AvatarDto.builder()
+				.id(newAvatar.getId())
+				.url(newAvatar.getUrl())
+				.minLevel(newAvatar.getMinLevel())
+				.isAvailable(true).build();
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/me/achievements")
+	public ResponseEntity<List<UserAchievementsResponse>> getMyAchievements(
+			@AuthenticationPrincipal AppUserDetails currentUser) {
+		var achievements = achievementService.getAchievementsForUser(currentUser.getId());
+		return ResponseEntity.ok(achievements);
+	}
+
+	@GetMapping("/avatars")
+	public ResponseEntity<List<AvatarDto>> getAvatars(@AuthenticationPrincipal AppUserDetails currentUser) {
+		var gameProfile = gameProfileService.existingByUserId(currentUser.getId());
+
+		var avatars = avatarService.findAll();
+		var avatarsForUser = avatars.stream()
+				.map(avatar -> AvatarDto.builder()
+						.id(avatar.getId())
+						.url(avatar.getUrl())
+						.minLevel(avatar.getMinLevel())
+						.isAvailable(avatar.getMinLevel() <= gameProfile.getLevel().getNumber()).build())
+				.toList();
+		return ResponseEntity.ok(avatarsForUser);
 	}
 
 	@PatchMapping("/settings/leaderboard")
-	public ResponseEntity<?> toggleLeaderboard() {
-		// TODO: Implement
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<Void> toggleLeaderboard(@AuthenticationPrincipal AppUserDetails currentUser) {
+		var profile = gameProfileService.existingByUserId(currentUser.getId());
+		profile.setIsLeaderboardParticipant(!profile.getIsLeaderboardParticipant());
 		return ResponseEntity.ok().build();
 	}
 
 	@GetMapping("/history")
-	public ResponseEntity<?> getHistory() {
-		// TODO: Implement
-		return ResponseEntity.ok().build();
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<List<XpHistoryDto>> getHistory(@AuthenticationPrincipal AppUserDetails currentUser) {
+		// Получаем историю начисления очков для пользователя
+		var history = xpHistoryService.findAllByUserId(currentUser.getId());
+		var response = history.stream()
+				.map(xpHistory -> XpHistoryDto.builder()
+						.xp(xpHistory.getXp())
+						.weekStart(xpHistory.getWeekStart())
+						.build())
+				.toList();
+
+		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/admin/levels")
@@ -181,70 +256,7 @@ public class GamificationController {
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/me")
-	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<UserGameProfileDto> getMe(
-			@AuthenticationPrincipal AppUserDetails currentUser
-	) {
-		var gameProfile = gameProfileService.findById(currentUser.getId()).orElseThrow(
-				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Игровой профиль не найден")
-		);
 
-		var response = UserGameProfileDto.builder()
-				.name(currentUser.getUsername())
-				.level(gameProfile.getLevel().getNumber())
-				.currentXp(gameProfile.getCurrentXp())
-				.xpProgress(levelService.getXpProgress(gameProfile.getLevel().getNumber(), gameProfile.getCurrentXp()))
-				.avatar(UserGameProfileDto.UserAvatarDto.builder()
-						.id(gameProfile.getAvatar().getId())
-						.url(gameProfile.getAvatar().getUrl())
-						.build())
-				.currentStreak(gameProfile.getCurrentStreak())
-				.build();
-		return ResponseEntity.ok(response);
-	}
-
-	@PostMapping("me/avatar")
-	public ResponseEntity<AvatarDto> changeMyAvatar(@AuthenticationPrincipal AppUserDetails currentUser,
-													@RequestBody ChangeAvatarRequest request) {
-		Avatar newAvatar = avatarService.existingById(request.getAvatarId());
-		GameProfile gameProfile = gameProfileService.existingByUserId(currentUser.getId());
-
-		if (newAvatar.getMinLevel() > gameProfile.getLevel().getNumber()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
-
-		gameProfile.setAvatar(newAvatar);
-
-		var response = AvatarDto.builder()
-				.id(newAvatar.getId())
-				.url(newAvatar.getUrl())
-				.minLevel(newAvatar.getMinLevel())
-				.isAvailable(true).build();
-		return ResponseEntity.ok(response);
-	}
-
-	@GetMapping("/me/achievements")
-	public ResponseEntity<List<UserAchievementsResponse>> getMyAchievements(
-			@AuthenticationPrincipal AppUserDetails currentUser) {
-		var achievements = achievementService.getAchievementsForUser(currentUser.getId());
-		return ResponseEntity.ok(achievements);
-	}
-
-	@GetMapping("/avatars")
-	public ResponseEntity<List<AvatarDto>> getAvatars(@AuthenticationPrincipal AppUserDetails currentUser) {
-		var gameProfile = gameProfileService.existingByUserId(currentUser.getId());
-
-		var avatars = avatarService.findAll();
-		var avatarsForUser = avatars.stream()
-				.map(avatar -> AvatarDto.builder()
-						.id(avatar.getId())
-						.url(avatar.getUrl())
-						.minLevel(avatar.getMinLevel())
-						.isAvailable(avatar.getMinLevel() <= gameProfile.getLevel().getNumber()).build())
-				.toList();
-		return ResponseEntity.ok(avatarsForUser);
-	}
 }
 
 

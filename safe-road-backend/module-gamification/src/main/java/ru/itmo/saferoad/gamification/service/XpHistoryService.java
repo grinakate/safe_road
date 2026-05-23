@@ -11,7 +11,9 @@ public interface XpHistoryService {
 	@NonNull
 	List<LeaderboardProjection> getTop10ForCurrentWeek();
 
-	long getWeeklyRank(int xp);
+	long getWeeklyRank(long xp);
 
-	XpHistory getXpHistoryByUser(long userId);
+	long getWeekXpByUser(long userId);
+
+	List<XpHistory> findAllByUserId(@NonNull Long userId);
 }

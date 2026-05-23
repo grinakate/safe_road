@@ -24,7 +24,6 @@ public interface XpHistoryRepository extends JpaRepository<XpHistory, XpHistoryI
 				   + "ORDER BY x.xp DESC",
 			nativeQuery = true)
 	Optional<LeaderboardProjection> findByUserIdAndWeekStartForLeaderboard(@NonNull Long userId, @NonNull LocalDate weekStart);
-	Optional<XpHistory> findByUserIdAndWeekStart(@NonNull Long userId, @NonNull LocalDate weekStart);
 
 	@NonNull
 	@Query(value = "SELECT x.user_id as userId, x.xp as currentXp, a.url as avatarUrl, u.nickname as nickname "
@@ -41,7 +40,10 @@ public interface XpHistoryRepository extends JpaRepository<XpHistory, XpHistoryI
 	long countByWeekStartAndXpGreaterThan(LocalDate weekStart, long xp);
 
 	@NonNull
-	Optional<XpHistory> findByUserId(@NonNull Long userId);
+	Optional<XpHistory> findByUserIdAndWeekStart(@NonNull Long userId, @NonNull LocalDate weekStart);
+
+	@NonNull
+	List<XpHistory> findAllByUserId(long userId);
 }
 
 

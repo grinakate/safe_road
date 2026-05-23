@@ -43,7 +43,7 @@ public class GameProfileServiceImpl implements GameProfileService {
 		gameProfile.setAvatar(avatarService.existingById(START_AVATAR_ID));
 		gameProfile.setLevel(levelService.existingByNumber(START_LEVEL_NUMBER));
 		gameProfile.setCurrentStreak(0);
-		gameProfile.setCurrentXp(0);
+		gameProfile.setXp(0);
 		gameProfile.setIsLeaderboardParticipant(isLeaderboardParticipant);
 		gameProfile.setTotalActiveDays(0);
 		return repository.save(gameProfile);
@@ -55,8 +55,8 @@ public class GameProfileServiceImpl implements GameProfileService {
 	}
 
 	@Override
-	public long getRank(@NotNull Integer xp) {
-		long higher = repository.countByCurrentXpGreaterThan(xp);
+	public long getRank(@NotNull Long xp) {
+		long higher = repository.countByXpGreaterThan(xp);
 		return higher + 1;
 	}
 }

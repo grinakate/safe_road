@@ -40,7 +40,7 @@ public class GameProfile {
 
 	@NonNull
 	@Column(name = "current_xp", nullable = false)
-	private Integer currentXp;
+	private Integer xp;
 
 	@NonNull
 	@Column(name = "current_streak", nullable = false)

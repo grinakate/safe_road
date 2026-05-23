@@ -18,5 +18,5 @@ public interface GameProfileRepository extends JpaRepository<GameProfile, Long> 
 			nativeQuery = true)
 	List<LeaderboardProjection> findTop10ByOrderByCurrentXpDesc();
 
-	long countByCurrentXpGreaterThan(long xp);
+	long countByXpGreaterThan(long xp);
 }

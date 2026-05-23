@@ -13,7 +13,7 @@ public class LeaderboardEntryDto {
 	private Long rank;
 	private String avatarUrl;
 	private String nickname;
-	private Integer xp;
+	private Long xp;
 	private Boolean isCurrentUser;
 }
 
