@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../theme.dart';
+import '../ui/theme/app_theme.dart';
 
-/// Показывает системный выбор даты с единым приложенным стилем:
-/// - русская локаль
-/// - белый фон диалога
-/// - тёмно-коричневый цвет текста и кнопок (AppColors.darkBrownText)
-/// Возвращает выбранную дату или null.
+/// Показывает системный выбор даты с единым стилем приложения
 Future<DateTime?> showAppDatePicker({
   required BuildContext context,
   required DateTime initialDate,
@@ -20,24 +16,34 @@ Future<DateTime?> showAppDatePicker({
     lastDate: lastDate,
     locale: const Locale('ru', 'RU'),
     builder: (BuildContext context, Widget? child) {
+      final currentTheme = Theme.of(context);
+
       return Theme(
-        data: Theme.of(context).copyWith(
-          // Dialog background (deprecated property but safer across SDK versions)
-          colorScheme: Theme.of(context).colorScheme.copyWith(
-            primary: AppColors.primaryGreen,
-            onSurface: AppColors.darkBrownText,
-          ),
-          // Buttons color
-          textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.darkBrownText,
-            ),
-          ),
-          // DatePicker theme for Material 3
+        data: currentTheme.copyWith(
           datePickerTheme: DatePickerThemeData(
             backgroundColor: AppColors.white,
+            headerBackgroundColor: AppColors.primaryGreen,
+            headerForegroundColor: AppColors.white,
+            dayForegroundColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.selected)) {
+                return AppColors.white; // Цвет выбранного дня
+              }
+              return AppColors.darkBrownText; // Цвет обычных дней
+            }),
+            todayForegroundColor: WidgetStateProperty.all(
+              AppColors.primaryGreen,
+            ),
+            dayOverlayColor: WidgetStateProperty.all(
+              AppColors.primaryGreen.withValues(alpha: 0.1),
+            ),
           ),
-          dialogTheme: DialogThemeData(backgroundColor: AppColors.white),
+          // Темы для кнопок "ОК" и "Отмена"
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.darkBrownText, // Цвет кнопок действий
+            ),
+          ),
+          dialogTheme: const DialogThemeData(backgroundColor: AppColors.white),
         ),
         child: child ?? const SizedBox.shrink(),
       );

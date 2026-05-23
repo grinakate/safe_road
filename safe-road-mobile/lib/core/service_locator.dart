@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:safe_road/services/learning_service.dart';
-import '../services/leaderboard_service.dart';
-import '../services/content_service.dart';
+import 'package:safe_road/data/services/learning_service.dart';
 
-import '../services/api_client.dart';
-import '../services/auth_service.dart';
-import '../services/game_profile_service.dart';
-import '../services/notification_service.dart';
-import '../services/token_storage_service.dart';
-import '../providers/notification_provider.dart';
+import '../data/services/api/api_client_v1.dart';
+import '../data/services/auth_service.dart';
+import '../data/services/content_service.dart';
+import '../data/services/game_profile_service.dart';
+import '../data/services/leaderboard_service.dart';
+import '../data/services/notification_service.dart';
+import '../data/services/storage/token_storage_service.dart';
 
 final getIt = GetIt.instance;
 
@@ -21,36 +20,29 @@ void setupLocator() {
     () => GlobalKey<NavigatorState>(),
   );
 
-  getIt.registerLazySingleton<ApiV1Client>(
-    () => ApiV1Client(getIt<TokenStorageService>()),
+  getIt.registerLazySingleton<ApiClientV1>(
+    () => ApiClientV1(getIt<TokenStorageService>()),
   );
 
   getIt.registerLazySingleton<AuthService>(
-    () => AuthService(getIt<TokenStorageService>(), getIt<ApiV1Client>()),
+    () => AuthService(getIt<TokenStorageService>(), getIt<ApiClientV1>()),
   );
 
   getIt.registerLazySingleton<LearningService>(
-    () => LearningService(getIt<ApiV1Client>()),
+    () => LearningService(getIt<ApiClientV1>()),
   );
 
   getIt.registerLazySingleton<ContentService>(
-    () => ContentService(getIt<ApiV1Client>()),
+    () => ContentService(getIt<ApiClientV1>()),
   );
 
   getIt.registerLazySingleton<GameProfileService>(
-    () => GameProfileService(getIt<ApiV1Client>()),
+    () => GameProfileService(getIt<ApiClientV1>()),
   );
   getIt.registerLazySingleton<LeaderboardService>(
-    () => LeaderboardService(getIt<ApiV1Client>()),
+    () => LeaderboardService(getIt<ApiClientV1>()),
   );
   getIt.registerLazySingleton<NotificationService>(
-    () => NotificationService(
-      getIt<ApiV1Client>(),
-      getIt<GlobalKey<NavigatorState>>(),
-    ),
-  );
-  // NotificationProvider available via service locator so other services/providers can start/stop SSE
-  getIt.registerLazySingleton<NotificationProvider>(
-    () => NotificationProvider(),
+    () => NotificationService(getIt<TokenStorageService>()),
   );
 }

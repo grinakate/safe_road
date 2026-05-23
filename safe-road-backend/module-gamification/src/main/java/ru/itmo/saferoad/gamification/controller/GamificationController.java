@@ -18,8 +18,8 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.itmo.saferoad.core.security.AppUserDetails;
 import ru.itmo.saferoad.gamification.controller.dto.AvatarDto;
 import ru.itmo.saferoad.gamification.controller.dto.LeaderboardEntryDto;
-import ru.itmo.saferoad.gamification.controller.dto.MyGamificationStatsDto;
 import ru.itmo.saferoad.gamification.controller.dto.UserAchievementsResponse;
+import ru.itmo.saferoad.gamification.controller.dto.UserGameProfileDto;
 import ru.itmo.saferoad.gamification.domain.GameProfile;
 import ru.itmo.saferoad.gamification.domain.repository.LeaderboardProjection;
 import ru.itmo.saferoad.gamification.service.AchievementService;
@@ -180,21 +180,24 @@ public class GamificationController {
 
 	@GetMapping("/me")
 	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<MyGamificationStatsDto> getMe(
+	public ResponseEntity<UserGameProfileDto> getMe(
 			@AuthenticationPrincipal AppUserDetails currentUser
 	) {
 		var gameProfile = gameProfileService.findById(currentUser.getId()).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Игровой профиль не найден")
 		);
 
-		var response = new MyGamificationStatsDto(
-				currentUser.getUsername(),
-				gameProfile.getLevel().getNumber(),
-				gameProfile.getCurrentXp(),
-				levelService.getXpProgress(gameProfile.getLevel().getNumber(), gameProfile.getCurrentXp()),
-				gameProfile.getAvatar().getId(),
-				gameProfile.getCurrentStreak()
-		);
+		var response = UserGameProfileDto.builder()
+				.name(currentUser.getUsername())
+				.level(gameProfile.getLevel().getNumber())
+				.currentXp(gameProfile.getCurrentXp())
+				.xpProgress(levelService.getXpProgress(gameProfile.getLevel().getNumber(), gameProfile.getCurrentXp()))
+				.avatar(UserGameProfileDto.UserAvatarDto.builder()
+						.id(gameProfile.getAvatar().getId())
+						.url(gameProfile.getAvatar().getUrl())
+						.build())
+				.currentStreak(gameProfile.getCurrentStreak())
+				.build();
 		return ResponseEntity.ok(response);
 	}
 
