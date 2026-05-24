@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safe_road/data/models/gamification/leaderboard_entry.dart';
+import 'package:safe_road/ui/theme/app_colors.dart';
+import 'package:safe_road/ui/theme/app_theme.dart';
 
-import '../../logic/providers/leaderboard_provider.dart';
-import '../../logic/providers/leaderboard_state.dart';
-
-
+import '../../../logic/providers/leaderboard_provider.dart';
+import '../../../logic/providers/leaderboard_state.dart';
+import '../../widgets/common/secure_network_image.dart';
 
 class LeaderboardScreen extends StatefulWidget {
   const LeaderboardScreen({super.key});
@@ -49,8 +50,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Рейтинг'),
+        backgroundColor: AppColors.white,
         bottom: TabBar(
           controller: _tabController,
+          labelStyle: AppTextStyles.headlineLarge.copyWith(fontSize: 14),
           tabs: LeaderboardPeriod.values
               .map((period) => Tab(text: period.label))
               .toList(),
@@ -126,8 +129,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
             itemCount: state.entries.length,
             separatorBuilder: (_, __) => const SizedBox(height: 8),
             itemBuilder: (context, idx) {
-              final e = state.entries[idx];
-              return _buildRow(e, idx + 1);
+              final leader = state.entries[idx];
+              return _buildRow(leader, idx + 1);
             },
           ),
         );
@@ -135,33 +138,39 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
     );
   }
 
-  Widget _buildRow(LeaderboardEntry entry, int visibleIndex) {
-    final isCurrent = entry.isCurrentUser;
+  Widget _buildRow(LeaderboardEntry leader, int visibleIndex) {
+    final isCurrent = leader.isCurrentUser;
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
       decoration: BoxDecoration(
-        color: isCurrent ? Colors.green[50] : Colors.white,
-        // Сделали чуть мягче зеленый цвет
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
-        ],
+        boxShadow: [if (isCurrent) AppTheme.cardShadow],
       ),
       child: Row(
         children: [
           SizedBox(
             width: 36,
             child: Text(
-              entry.rank > 0 ? entry.rank.toString() : visibleIndex.toString(),
+              leader.rank.toString(),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(width: 12),
-          CircleAvatar(backgroundImage: NetworkImage(entry.avatarUrl)),
+          CircleAvatar(
+            radius: 30,
+            backgroundColor: AppColors.orangeCatAccent.withValues(alpha: 0.2),
+            child: SecureNetworkImage(
+              imageUrl: leader.avatarUrl,
+              fit: BoxFit.fitHeight,
+              width: 60,
+              height: 60,
+            ),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              entry.nickname,
+              leader.nickname,
               style: TextStyle(
                 fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
               ),
@@ -169,7 +178,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
           ),
           const SizedBox(width: 12),
           Text(
-            '${entry.xp} XP',
+            '${leader.xp} XP',
             style: const TextStyle(fontWeight: FontWeight.w600),
           ),
         ],

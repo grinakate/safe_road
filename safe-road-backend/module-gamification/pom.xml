@@ -41,7 +41,13 @@
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
 		</dependency>
-    </dependencies>
+		<dependency>
+			<groupId>ru.itmo</groupId>
+			<artifactId>module-auth</artifactId>
+			<version>1.0.0</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
 
     <build>
         <plugins>

@@ -45,7 +45,7 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: AppColors.blueBackground,
-      fontFamily: 'Montserrat',
+      fontFamily: 'Nunito',
       fontFamilyFallback: const ['Roboto'],
       textTheme: const TextTheme(
         headlineLarge: AppTextStyles.headlineLarge,
@@ -126,4 +126,10 @@ class AppTheme {
   static const TextStyle achievementTitle = AppTextStyles.achievementTitle;
   static const TextStyle achievementXp = AppTextStyles.achievementXp;
   static const TextStyle achievementDesc = AppTextStyles.achievementDesc;
+
+  static final BoxShadow cardShadow = BoxShadow(
+    color: AppColors.brown.withValues(alpha: 0.5),
+    blurRadius: 2,
+    offset: const Offset(0, 2),
+  );
 }

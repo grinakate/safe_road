@@ -21,4 +21,6 @@ public interface GameProfileService {
 	List<LeaderboardProjection> getTotalTop10();
 
 	long getRank(@NotNull Long xp);
+
+	void setLeaderboardEnabled(@NotNull Long userId, boolean enabled);
 }

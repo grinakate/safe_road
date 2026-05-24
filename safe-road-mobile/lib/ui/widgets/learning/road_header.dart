@@ -26,13 +26,7 @@ class RoadHeader extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.white, // Цвет фона самого хедера
         borderRadius: BorderRadius.circular(20), // Закругленные углы
-        boxShadow: [ // Небольшая тень, чтобы приподнять его
-          BoxShadow(
-            color: AppColors.darkBrownText.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
+        boxShadow: [AppTheme.cardShadow],
       ),
       child: Row(
         children: [
@@ -55,7 +49,7 @@ class RoadHeader extends StatelessWidget {
   Widget _buildAvatar(String avatarUrl) {
     return CircleAvatar(
       radius: 30,
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.orangeCatAccent.withValues(alpha: 0.2),
       child: SecureNetworkImage(
         imageUrl: avatarUrl,
         fit: BoxFit.fitHeight,

@@ -20,7 +20,7 @@ import ru.itmo.saferoad.auth.api.dto.RegisterRequest;
 import ru.itmo.saferoad.auth.api.dto.TokenResponse;
 import ru.itmo.saferoad.auth.api.dto.UpdateProfileRequest;
 import ru.itmo.saferoad.auth.api.dto.UserProfileResponse;
-import ru.itmo.saferoad.auth.application.AuthService;
+import ru.itmo.saferoad.auth.application.UserService;
 import ru.itmo.saferoad.auth.domain.Users;
 import ru.itmo.saferoad.auth.infrastructure.mapper.UsersMapper;
 import ru.itmo.saferoad.auth.infrastructure.security.AppUserDetailsImpl;
@@ -39,7 +39,7 @@ import java.util.Objects;
 public class AuthController {
 
 	private final JwtUtils jwtUtils;
-	private final AuthService userService;
+	private final UserService userService;
 	private final UsersMapper usersMapper;
 	private final PasswordEncoder passwordEncoder;
 	private final CreatePendingEventsService createPendingEventsService;

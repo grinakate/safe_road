@@ -75,6 +75,23 @@ class ApiClientV1 {
     }
   }
 
+  /// PATCH запрос
+  Future<Response<dynamic>> patch(
+    String endpoint,
+    dynamic body, {
+    bool requireAuth = true,
+  }) async {
+    try {
+      return await _dio.patch(
+        endpoint,
+        data: body,
+        options: Options(extra: {'requireAuth': requireAuth}),
+      );
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
   /// Конвертация системных ошибок DioException в ApiException и NetworkException
   Exception _handleDioError(DioException e) {
     if (e.type == DioExceptionType.connectionTimeout ||

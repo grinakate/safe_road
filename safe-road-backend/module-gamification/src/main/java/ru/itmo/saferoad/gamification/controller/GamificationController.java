@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,10 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import ru.itmo.saferoad.auth.application.UserService;
 import ru.itmo.saferoad.core.security.AppUserDetails;
 import ru.itmo.saferoad.gamification.controller.dto.AvatarDto;
 import ru.itmo.saferoad.gamification.controller.dto.ChangeAvatarRequest;
 import ru.itmo.saferoad.gamification.controller.dto.LeaderboardEntryDto;
+import ru.itmo.saferoad.gamification.controller.dto.UpdateProfileRequest;
 import ru.itmo.saferoad.gamification.controller.dto.UserAchievementsResponse;
 import ru.itmo.saferoad.gamification.controller.dto.UserGameProfileDto;
 import ru.itmo.saferoad.gamification.controller.dto.XpHistoryDto;
@@ -43,6 +46,7 @@ import java.util.List;
 @RequestMapping("/api/v1/gamification")
 public class GamificationController {
 
+	private final UserService userService;
 	private final LevelService levelService;
 	private final AvatarService avatarService;
 	private final XpHistoryService xpHistoryService;
@@ -112,7 +116,7 @@ public class GamificationController {
 		);
 
 		var response = UserGameProfileDto.builder()
-				.name(currentUser.getUsername())
+				.name(currentUser.getNickname())
 				.level(gameProfile.getLevel().getNumber())
 				.currentXp(gameProfile.getXp())
 				.xpProgress(levelService.getXpProgress(gameProfile.getLevel().getNumber(), gameProfile.getXp()))
@@ -121,6 +125,7 @@ public class GamificationController {
 						.url(gameProfile.getAvatar().getUrl())
 						.build())
 				.currentStreak(gameProfile.getCurrentStreak())
+				.leaderboardEnabled(gameProfile.getIsLeaderboardParticipant())
 				.build();
 		return ResponseEntity.ok(response);
 	}
@@ -197,13 +202,13 @@ public class GamificationController {
 	}
 
 	@PutMapping("/admin/levels/{id}")
-	public ResponseEntity<?> updateLevel(@org.springframework.web.bind.annotation.PathVariable Integer id) {
+	public ResponseEntity<?> updateLevel(@PathVariable Integer id) {
 		// TODO: Implement
 		return ResponseEntity.ok().build();
 	}
 
 	@PatchMapping("/admin/levels/{id}/archive")
-	public ResponseEntity<?> archiveLevel(@org.springframework.web.bind.annotation.PathVariable Integer id) {
+	public ResponseEntity<?> archiveLevel(@PathVariable Integer id) {
 		// TODO: Implement
 		return ResponseEntity.ok().build();
 	}
@@ -215,13 +220,13 @@ public class GamificationController {
 	}
 
 	@PutMapping("/admin/achievements/{id}")
-	public ResponseEntity<?> updateAchievement(@org.springframework.web.bind.annotation.PathVariable Integer id) {
+	public ResponseEntity<?> updateAchievement(@PathVariable Integer id) {
 		// TODO: Implement
 		return ResponseEntity.ok().build();
 	}
 
 	@PatchMapping("/admin/achievements/{id}/archive")
-	public ResponseEntity<?> archiveAchievement(@org.springframework.web.bind.annotation.PathVariable Integer id) {
+	public ResponseEntity<?> archiveAchievement(@PathVariable Integer id) {
 		// TODO: Implement
 		return ResponseEntity.ok().build();
 	}
@@ -233,13 +238,13 @@ public class GamificationController {
 	}
 
 	@PutMapping("/admin/avatars/{id}")
-	public ResponseEntity<?> updateAvatar(@org.springframework.web.bind.annotation.PathVariable Integer id) {
+	public ResponseEntity<?> updateAvatar(@PathVariable Integer id) {
 		// TODO: Implement
 		return ResponseEntity.ok().build();
 	}
 
 	@PatchMapping("/admin/avatars/{id}/archive")
-	public ResponseEntity<?> archiveAvatar(@org.springframework.web.bind.annotation.PathVariable Integer id) {
+	public ResponseEntity<?> archiveAvatar(@PathVariable Integer id) {
 		// TODO: Implement
 		return ResponseEntity.ok().build();
 	}
@@ -253,6 +258,26 @@ public class GamificationController {
 	@PutMapping("/admin/settings")
 	public ResponseEntity<?> updateAdminSettings() {
 		// TODO: Implement
+		return ResponseEntity.ok().build();
+	}
+
+	@PatchMapping("/me/settings")
+	public ResponseEntity<?> updateProfileSettings(@AuthenticationPrincipal AppUserDetails currentUser,
+												   @RequestBody UpdateProfileRequest request) {
+
+		if (request.getNickname() != null || request.getPassword() != null || request.getBirthDate() != null) {
+			userService.update(
+					currentUser.getId(),
+					request.getNickname(),
+					request.getPassword(),
+					request.getBirthDate()
+			);
+		}
+
+		if (request.getLeaderboardEnabled() != null) {
+			gameProfileService.setLeaderboardEnabled(currentUser.getId(), request.getLeaderboardEnabled());
+		}
+
 		return ResponseEntity.ok().build();
 	}
 

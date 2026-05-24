@@ -4,11 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:safe_road/ui/widgets/common/secure_network_image.dart';
 
-import '../../data/models/learning/section.dart';
-import '../../data/models/learning/topic.dart';
-import '../../data/services/learning_service.dart';
-import '../../logic/providers/topic_provider.dart';
-import '../theme/app_theme.dart';
+import '../../../data/models/learning/section.dart';
+import '../../../data/models/learning/topic.dart';
+import '../../../data/services/learning_service.dart';
+import '../../../logic/providers/topic_provider.dart';
+import '../../theme/app_theme.dart';
 
 class TheoryTreeScreen extends StatefulWidget {
   const TheoryTreeScreen({super.key});

@@ -1,5 +1,5 @@
 class GameProfile {
-  final String name;
+  final String nickname;
   final int level;
   final int currentXp;
   final int completedLessons;
@@ -7,9 +7,10 @@ class GameProfile {
   final UserAvatar avatar;
   final int currentStreak;
   final double xpProgress;
+  final bool leaderboardEnabled;
 
   GameProfile({
-    required this.name,
+    required this.nickname,
     required this.level,
     required this.currentXp,
     required this.completedLessons,
@@ -17,10 +18,11 @@ class GameProfile {
     required this.avatar,
     required this.currentStreak,
     required this.xpProgress,
+    required this.leaderboardEnabled,
   });
 
   factory GameProfile.fromJson(Map<String, dynamic> json) => GameProfile(
-    name: json['name'],
+    nickname: json['name'],
     level: json['level'],
     currentXp: json['currentXp'],
     completedLessons: json['completedLessons'] ?? 0,
@@ -28,10 +30,11 @@ class GameProfile {
     avatar: UserAvatar.fromJson(json['avatar']),
     currentStreak: json['currentStreak'],
     xpProgress: json['xpProgress'],
+    leaderboardEnabled: json['leaderboardEnabled'],
   );
 
   GameProfile copyWith({
-    String? name,
+    String? nickname,
     int? level,
     int? currentXp,
     int? completedLessons,
@@ -39,9 +42,10 @@ class GameProfile {
     UserAvatar? avatar,
     int? currentStreak,
     double? xpProgress,
+    bool? leaderboardEnabled,
   }) {
     return GameProfile(
-      name: name ?? this.name,
+      nickname: nickname ?? this.nickname,
       level: level ?? this.level,
       currentXp: currentXp ?? this.currentXp,
       completedLessons: completedLessons ?? this.completedLessons,
@@ -49,6 +53,7 @@ class GameProfile {
       avatar: avatar ?? this.avatar,
       currentStreak: currentStreak ?? this.currentStreak,
       xpProgress: xpProgress ?? this.xpProgress,
+      leaderboardEnabled: leaderboardEnabled ?? this.leaderboardEnabled,
     );
   }
 }

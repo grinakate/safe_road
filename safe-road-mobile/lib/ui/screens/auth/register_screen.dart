@@ -3,9 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../../logic/providers/auth_provider.dart';
-import '../theme/app_theme.dart';
-import '../../utils/date_picker_helper.dart';
+import '../../../logic/providers/auth_provider.dart';
+import '../../theme/app_theme.dart';
+import '../../../utils/date_picker_helper.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});

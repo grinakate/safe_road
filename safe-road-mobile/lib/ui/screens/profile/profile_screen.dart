@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:safe_road/ui/screens/profile/settings_screen.dart';
 
-import '../../data/models/gamification/achievement.dart';
-import '../../data/models/gamification/game_profile.dart';
-import '../../logic/providers/game_profile_provider.dart';
-import '../theme/app_theme.dart';
-import '../widgets/dialogs/achievement_info_dialog.dart';
-import '../widgets/dialogs/avatar_selection_dialog.dart';
-import '../widgets/common/secure_network_image.dart';
+import '../../../data/models/gamification/achievement.dart';
+import '../../../logic/providers/game_profile_provider.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/common/secure_network_image.dart';
+import '../../widgets/dialogs/achievement_info_dialog.dart';
+import '../../widgets/dialogs/avatar_selection_dialog.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -30,11 +30,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.white,
+      appBar: AppBar(
+        title: Consumer<GameProfileProvider>(
+          builder: (context, gp, _) {
+            // Если профиля еще нет, показываем "Загрузка..." или пустую строку
+            final titleText = gp.profile?.nickname ?? 'Профиль';
+            return Text(titleText, style: AppTheme.appBarTitle);
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings, color: AppColors.brownText),
+            onPressed: () {
+              // Переход на экран настроек
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+            },
+          ),
+        ],
+        backgroundColor: AppColors.white,
+        foregroundColor: AppColors.brownText,
+        elevation: 0,
+      ),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SizedBox(height: 30),
             _buildHeader(),
             const SizedBox(height: 10),
             _buildTabs(),
@@ -55,10 +79,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
 
         final user = gp.profile!;
-        final UserAvatar userAvatar = user.avatar;
+        final userAvatar = user.avatar;
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+        return Container(
+          margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+          // Отступы по бокам и сверху
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+          // Внутренний отступ для содержимого
+          decoration: BoxDecoration(
+            color: AppColors.blueBackground,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [AppTheme.cardShadow],
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -66,7 +98,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Expanded(
                 child: GestureDetector(
                   onTap: () {
-                    // Просто вызываем диалог без параметров!
                     showDialog(
                       context: context,
                       builder: (context) => const AvatarSelectionDialog(),
@@ -82,9 +113,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-              Expanded(
-                child: _buildStatItem("Очки", user.currentXp.toString()),
-              ),
+              Expanded(child: _buildStatItem("Очки", '${user.currentXp} XP')),
             ],
           ),
         );
@@ -95,8 +124,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildStatItem(String label, String value) {
     return Column(
       children: [
-        Text(label, style: AppTextStyles.bodyLarge.copyWith(fontSize: 24)),
-        Text(value, style: AppTextStyles.headlineLarge.copyWith(fontSize: 24)),
+        Text(label, style: AppTextStyles.bodyLarge.copyWith(fontSize: 22)),
+        Text(value, style: AppTextStyles.headlineLarge.copyWith(fontSize: 22)),
       ],
     );
   }

@@ -2,6 +2,7 @@ package ru.itmo.saferoad.gamification.service.impl;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import ru.itmo.saferoad.gamification.domain.GameProfile;
 import ru.itmo.saferoad.gamification.domain.repository.GameProfileRepository;
@@ -58,5 +59,11 @@ public class GameProfileServiceImpl implements GameProfileService {
 	public long getRank(@NotNull Long xp) {
 		long higher = repository.countByXpGreaterThan(xp);
 		return higher + 1;
+	}
+
+	@Override
+	public void setLeaderboardEnabled(@NonNull Long userId, boolean enabled) {
+		var profile = existingByUserId(userId);
+		profile.setIsLeaderboardParticipant(enabled);
 	}
 }

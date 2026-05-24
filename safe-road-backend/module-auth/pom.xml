@@ -60,18 +60,6 @@
 			<artifactId>jjwt-jackson</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
-			<groupId>ru.itmo</groupId>
-			<artifactId>module-gamification</artifactId>
-			<version>1.0.0</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>ru.itmo</groupId>
-			<artifactId>module-learning</artifactId>
-			<version>1.0.0</version>
-			<scope>compile</scope>
-		</dependency>
 	</dependencies>
 
 	<build>

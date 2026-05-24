@@ -3,10 +3,10 @@ package ru.itmo.saferoad.auth.application;
 import lombok.NonNull;
 import ru.itmo.saferoad.auth.domain.Users;
 
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Optional;
 
-public interface AuthService {
+public interface UserService {
 
 	@NonNull
 	Users save(@NonNull Users user);
@@ -21,4 +21,6 @@ public interface AuthService {
 
 	@NonNull
 	Users existingByIdAndLock(@NonNull Long id);
+
+	void update(long userId, String nickname, String password, LocalDate birthDate);
 }

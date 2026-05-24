@@ -75,6 +75,9 @@ class GameProfileProvider extends ChangeNotifier {
   /// Сменить аватар: отправляем запрос, и при успехе обновляем локальный профиль
   Future<void> updateAvatar(int avatarId) async {
     try {
+      if (_profile?.avatar.id == avatarId) {
+        return;
+      }
       final updatedAvatar = await _service.updateAvatar(avatarId);
       _profile =
           _profile?.copyWith(
@@ -86,6 +89,48 @@ class GameProfileProvider extends ChangeNotifier {
       debugPrint('Ошибка обновления аватара: $e');
       rethrow;
     }
+  }
+
+  Future<void> updateProfile({
+    required String nickname,
+    String? password,
+    required bool notifications,
+    required bool leaderboard,
+  }) async {
+    if (_profile?.nickname == nickname &&
+        password == null &&
+        _profile?.leaderboardEnabled == leaderboard) {
+      return;
+    }
+
+    // 1. Формируем тело запроса для вашего API
+    final Map<String, dynamic> request = {};
+
+    if (_profile?.nickname != nickname) {
+      request['nickname'] = nickname;
+    }
+
+    if (password != null) {
+      request['password'] = password;
+    }
+
+    if (_profile?.leaderboardEnabled != leaderboard) {
+      request['leaderboardEnabled'] = leaderboard;
+    }
+
+    if (request.isEmpty) {
+      return;
+    }
+
+    // 2. Вызываем сервис
+    await _service.updateProfile(request);
+
+    // 3. Обновляем локальный профиль, чтобы UI сразу обновился
+    _profile = _profile?.copyWith(
+      nickname: nickname,
+      leaderboardEnabled: leaderboard,
+    );
+    notifyListeners();
   }
 
   /// Обработчик входящих уведомлений о награде (SSE)

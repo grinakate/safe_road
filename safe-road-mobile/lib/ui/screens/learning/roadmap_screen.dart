@@ -3,17 +3,17 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../data/models/learning/section.dart';
-import '../../data/models/learning/topic.dart';
-import '../../data/models/learning/topic_status.dart';
-import '../../data/services/learning_service.dart';
-import '../../logic/providers/game_profile_provider.dart';
-import '../../logic/providers/learning_provider.dart';
-import '../../logic/providers/learning_state.dart';
-import '../styles/topic_style.dart';
-import '../theme/app_theme.dart';
-import '../widgets/learning/road_header.dart';
-import '../widgets/learning/section_header.dart';
+import '../../../data/models/learning/section.dart';
+import '../../../data/models/learning/topic.dart';
+import '../../../data/models/learning/topic_status.dart';
+import '../../../data/services/learning_service.dart';
+import '../../../logic/providers/game_profile_provider.dart';
+import '../../../logic/providers/learning_provider.dart';
+import '../../../logic/providers/learning_state.dart';
+import '../../styles/topic_style.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/learning/road_header.dart';
+import '../../widgets/learning/section_header.dart';
 
 class RoadMapScreen extends StatefulWidget {
   const RoadMapScreen({super.key});

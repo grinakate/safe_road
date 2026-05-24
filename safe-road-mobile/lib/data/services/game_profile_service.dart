@@ -30,6 +30,11 @@ class GameProfileService {
     return Avatar.fromJson(response.data);
   }
 
+  Future<void> updateProfile(Map<String, dynamic> data) async {
+    await _apiClient.patch('/gamification/me/settings', data);
+    return;
+  }
+
   Future<List<Avatar>> getAvailableAvatars() async {
     final response = await _apiClient.get('/gamification/avatars');
     return (response.data as List)

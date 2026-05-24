@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../logic/providers/auth_provider.dart';
-import '../theme/app_theme.dart';
+import '../../../logic/providers/auth_provider.dart';
+import '../../theme/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

@@ -10,7 +10,7 @@ class AppColors {
   static const Color darkBrownText = Color(0xFF551913);
   static const Color darkBrown = Color(0xFF514538);
   static const Color brown = Color(0xFF766451);
-  static const Color lightOrange = Color(0xFFF4E2D8);
+  static const Color lightOrange = Color(0xFFF6AE6F);
   //static const Color orangeCatAccent = Color(0xFFFAB66E);
   static const Color orangeCatAccent = Color(0xFFFAAA56);
   static const Color errorRed = Color(0xFFE35151);

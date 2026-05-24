@@ -19,7 +19,6 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
   final GameProfileService _profileService = getIt<GameProfileService>();
 
   List<Avatar>? _avatars;
-  int? _currentAvatarId;
   int? _selectedAvatarId;
   bool _isLoading = true;
   String? _errorMessage;
@@ -31,8 +30,7 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
 
     // Получаем текущий аватар из провайдера при инициализации
     final profileProvider = context.read<GameProfileProvider>();
-    _currentAvatarId = profileProvider.profile?.avatar.id;
-    _selectedAvatarId = _currentAvatarId;
+    _selectedAvatarId = profileProvider.profile?.avatar.id;
   }
 
   Future<void> _loadAvatars() async {
@@ -74,7 +72,11 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
       surfaceTintColor: Colors.transparent,
       // Чтобы не было лишних оттенков
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: const Text('Выбрать аватар', textAlign: TextAlign.center),
+      title: const Text(
+        'Выбрать аватар',
+        textAlign: TextAlign.center,
+        style: AppTheme.appBarTitle,
+      ),
 
       content: _buildContent(context),
 
@@ -88,8 +90,7 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
           ),
           onPressed: isSelectedAvailable
               ? () async {
-                  if (_selectedAvatarId != null &&
-                      _selectedAvatarId != _currentAvatarId) {
+                  if (_selectedAvatarId != null) {
                     await profileProvider.updateAvatar(_selectedAvatarId!);
                     if (context.mounted) {
                       Navigator.of(context).pop();
@@ -129,7 +130,7 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
       children: [
         const Text(
           'Листайте вправо, чтобы увидеть всех',
-          style: TextStyle(fontSize: 10, color: Colors.grey),
+          style: AppTheme.bodySmall,
         ),
         const SizedBox(height: 10),
         SizedBox(

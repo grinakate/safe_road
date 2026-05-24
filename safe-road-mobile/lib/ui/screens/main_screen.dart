@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:safe_road/ui/screens/profile_screen.dart';
-import 'package:safe_road/ui/screens/theory_tree_screen.dart';
+import 'package:safe_road/ui/screens/profile/profile_screen.dart';
+import 'package:safe_road/ui/screens/learning/theory_tree_screen.dart';
 
 import '../theme/app_theme.dart';
-import 'leaderboard_screen.dart';
-import 'roadmap_screen.dart';
+import 'leaderboard/leaderboard_screen.dart';
+import 'learning/roadmap_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../data/models/learning/question_error.dart';
-import '../../logic/providers/learning_state.dart';
-import '../../logic/providers/learning_provider.dart';
-import '../theme/app_theme.dart';
+import '../../../data/models/learning/question_error.dart';
+import '../../../logic/providers/learning_state.dart';
+import '../../../logic/providers/learning_provider.dart';
+import '../../theme/app_theme.dart';
 
 class ResultScreen extends StatelessWidget {
   const ResultScreen({super.key});

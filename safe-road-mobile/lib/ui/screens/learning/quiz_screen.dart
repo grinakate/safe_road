@@ -3,12 +3,12 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../data/models/learning/question.dart';
-import '../../data/services/learning_service.dart';
-import '../../logic/providers/learning_provider.dart';
-import '../../logic/providers/learning_state.dart';
-import '../theme/app_theme.dart';
-import '../widgets/learning/answer_option_tile.dart';
+import '../../../data/models/learning/question.dart';
+import '../../../data/services/learning_service.dart';
+import '../../../logic/providers/learning_provider.dart';
+import '../../../logic/providers/learning_state.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/learning/answer_option_tile.dart';
 
 class QuizScreen extends StatefulWidget {
   final String sessionId;

@@ -1,6 +1,7 @@
 package ru.itmo.saferoad.auth.infrastructure.security;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -16,6 +17,7 @@ import java.util.Collection;
  * для аутентификации и авторизации.
  * Дополнительно содержит ID пользователя для удобства использования в бизнес-логике и выражениях SpEL.
  */
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AppUserDetailsImpl implements AppUserDetails {
