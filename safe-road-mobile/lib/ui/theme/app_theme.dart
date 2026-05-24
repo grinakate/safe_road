@@ -44,7 +44,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: AppColors.lightBlueBackground,
+      scaffoldBackgroundColor: AppColors.blueBackground,
       fontFamily: 'Montserrat',
       fontFamilyFallback: const ['Roboto'],
       textTheme: const TextTheme(
@@ -87,7 +87,7 @@ class AppTheme {
         ),
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.lightBlueBackground,
+        backgroundColor: AppColors.blueBackground,
         foregroundColor: AppColors.darkBrownText,
         elevation: 0,
         centerTitle: true,

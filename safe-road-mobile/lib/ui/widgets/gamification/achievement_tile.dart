@@ -24,7 +24,7 @@ class AchievementTile extends StatelessWidget {
           height: iconSize,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: AppColors.lightBlueBackground,
+            color: AppColors.blueBackground,
             boxShadow: [
               if (achievement.isUnlocked)
                 BoxShadow(

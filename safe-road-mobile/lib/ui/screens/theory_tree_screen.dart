@@ -38,10 +38,6 @@ class _TheoryTreeScreenState extends State<TheoryTreeScreen> {
       final sections = await service.getRoadMap();
       if (mounted) {
         setState(() {
-          /*          // Сортируем топики внутри каждой секции по полю 'order'
-          for (var section in sections) {
-            section.topics.sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
-          }*/
           _sections = sections;
         });
       }
@@ -72,7 +68,7 @@ class _TheoryTreeScreenState extends State<TheoryTreeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Карта обучения'),
+        title: const Text('Теория', style: AppTheme.appBarTitle,),
         backgroundColor: AppColors.white,
         foregroundColor: AppColors.brownText,
         elevation: 0,
@@ -141,19 +137,45 @@ class _TheoryTreeScreenState extends State<TheoryTreeScreen> {
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ExpansionTile(
+        collapsedBackgroundColor: AppColors.white,
+        backgroundColor: AppColors.white,
+        splashColor: AppColors.white,
         initiallyExpanded: false,
         collapsedShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        //tilePadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-        leading: SecureNetworkImage(
-          imageUrl: section.url,
-          width: 80,
-          height: 80,
+        tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        collapsedIconColor: AppColors.brownText,
+        title: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 14.0),
+                child: SecureNetworkImage(
+                  imageUrl: section.url,
+                  width: 70, // Фиксированная ширина для картинки
+                  fit: BoxFit.fitWidth,
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      section.title,
+                      style: AppTextStyles.headlineLarge.copyWith(fontSize: 18),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(section.description, style: AppTextStyles.bodyMedium.copyWith(fontSize: 12)),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-        title: Text(section.title, style: AppTextStyles.headlineLarge.copyWith(fontSize: 18)),
-        subtitle: Text(section.description, style: AppTextStyles.bodyMedium),
         children: section.topics
             .map((topic) => _buildTopicListTile(topic))
             .toList(),
@@ -163,13 +185,13 @@ class _TheoryTreeScreenState extends State<TheoryTreeScreen> {
 
   Widget _buildTopicListTile(Topic topic) {
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 4),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 0),
       leading: const Icon(
         Icons.arrow_forward_rounded,
         color: AppColors.primaryGreen,
         size: 16,
       ),
-      title: Text(topic.title, style: AppTextStyles.bodyMedium),
+      title: Text(topic.title, style: AppTextStyles.sectionHeaderText.copyWith(fontSize: 14)),
       onTap: () {
         // Переходим на экран с теорией по выбранному топику
         _openTheory(topic.id);

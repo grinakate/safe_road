@@ -10,7 +10,6 @@ import '../../data/services/learning_service.dart';
 import '../../logic/providers/game_profile_provider.dart';
 import '../../logic/providers/learning_provider.dart';
 import '../../logic/providers/learning_state.dart';
-import '../../logic/providers/topic_provider.dart';
 import '../styles/topic_style.dart';
 import '../theme/app_theme.dart';
 import '../widgets/learning/road_header.dart';
@@ -82,52 +81,88 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
     bool isFinalAvailable,
   ) async {
     final bool isSectionTest = (topic.id == 0);
-    _startQuiz(
-      topicId: isSectionTest ? null : topic.id,
-      sectionId: sectionId,
-    );
+    _startQuiz(topicId: isSectionTest ? null : topic.id, sectionId: sectionId);
   }
 
   /// --- UI BUILDING ---
   @override
   Widget build(BuildContext context) {
-    final profile = context.select<GameProfileProvider, bool>(
-      (p) => p.profile != null,
-    );
+    final gameProfileProvider = context.watch<GameProfileProvider>();
     final learningState = context.select<LearningProvider, LearningState>(
       (p) => p.state,
     );
 
-    if (!profile || learningState.status == LearningStatus.loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    // Проверяем, загружен ли профиль и карта обучения
+    if (gameProfileProvider.profile == null ||
+        learningState.status == LearningStatus.loading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primaryGreen),
+        ),
+      );
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Безопасная дорога"), elevation: 0),
-      body: RefreshIndicator(
-        onRefresh: () =>
-            context.read<LearningProvider>().loadRoadMap(forceRefresh: true),
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            children: [
-              const RoadHeader(),
-              Stack(
-                children: [
-                  Positioned(
-                    child: Image.asset(
-                      "assets/images/plant5.png",
-                      opacity: const AlwaysStoppedAnimation(.8),
-                    ),
-                  ),
-                  Column(
-                    children: _buildRoadmapContent(learningState.sections),
-                  ),
-                ],
-              ),
-            ],
+      appBar: AppBar(
+        title: const Text("Безопасная дорога"),
+        elevation: 0,
+        backgroundColor: AppColors.white,
+        foregroundColor: AppColors.brownText,
+      ),
+      body: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 120,
+            child: Container(
+              color: AppColors.blueBackground,
+            ),
           ),
-        ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: RefreshIndicator(
+              onRefresh: () => context.read<LearningProvider>().loadRoadMap(
+                forceRefresh: true,
+              ),
+              color: AppColors.primaryGreen,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 100,
+                    ),
+                    Stack(
+                      children: [
+                        Positioned(
+                          child: Image.asset(
+                            "assets/images/plant5.png",
+                            opacity: const AlwaysStoppedAnimation(.9),
+                          ),
+                        ),
+                        Column(
+                          children: _buildRoadmapContent(learningState.sections),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // 3. RoadHeader, который будет всегда прикреплен к верху, поверх всего.
+          const Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: RoadHeader(),
+          ),
+        ],
       ),
     );
   }
@@ -160,7 +195,6 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
           _buildSnakeRow(rows[i], section.id, i % 2 == 0, isFinalAvailable),
         );
       }
-      content.add(const SizedBox(height: 30));
     }
     return content;
   }
@@ -208,7 +242,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
             ),
             const SizedBox(height: 5),
             SizedBox(
-              height: AppTextStyles.topicName.fontSize! * 2,
+              height: AppTextStyles.topicName.fontSize! * 4,
               child: Text(
                 topic.title,
                 textAlign: TextAlign.center,
@@ -234,16 +268,28 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
           color: topicStyle.borderColor,
           width: topicStyle.borderWidth,
         ),
-        boxShadow: topicStyle.showShadow
-            ? [BoxShadow(color: topicStyle.shadowColor, blurRadius: 9)]
-            : [],
+        /*boxShadow: topicStyle.showShadow
+            ? [
+                BoxShadow(
+                  color: AppColors.darkBrownText.withOpacity(0.5),
+                  blurRadius: 3,
+                  offset: const Offset(1, 2),
+                ),
+              ]
+            : [
+                BoxShadow(
+                  color: AppColors.darkBrownText.withOpacity(0.5),
+                  blurRadius: 3,
+                  offset: const Offset(1, 2),
+                ),
+              ],*/
       ),
       child: Stack(
         alignment: AlignmentDirectional.center,
         children: [
           if (topicStyle.showOrderIndex)
             Text(topic.orderIndex.toString(), style: AppTextStyles.topicNumber),
-          ?topicStyle.content,
+          if (topicStyle.content != null) topicStyle.content!,
         ],
       ),
     );
@@ -271,5 +317,4 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
 
   void _showSnackBar(String msg) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-
 }

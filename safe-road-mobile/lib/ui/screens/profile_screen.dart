@@ -74,7 +74,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                   child: CircleAvatar(
                     radius: 60,
-                    backgroundColor: AppColors.lightBlueBackground,
+                    backgroundColor: AppColors.white,
                     child: SecureNetworkImage(
                       imageUrl: userAvatar.url,
                       fit: BoxFit.cover,

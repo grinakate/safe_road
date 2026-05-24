@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:safe_road/core/service_locator.dart';
 import 'package:safe_road/data/models/gamification/achievement.dart';
 import 'package:safe_road/data/models/gamification/game_profile.dart';
 import 'package:safe_road/data/models/gamification/reward_notification.dart';

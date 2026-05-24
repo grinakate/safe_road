@@ -12,16 +12,17 @@ class SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 60),
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 56),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
       decoration: BoxDecoration(
         color: AppColors.lightGreenBackground,
         borderRadius: BorderRadius.circular(20),
+        //border: Border.all(color: AppColors.brown),
         boxShadow: [
           BoxShadow(
-            color: AppColors.darkBrownText.withValues(alpha: 0.18),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: AppColors.brown.withValues(alpha: 0.3),
+            blurRadius: 4,
+            offset: const Offset(0, 0),
           ),
         ],
       ),

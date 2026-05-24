@@ -13,11 +13,11 @@ class Topic {
     required this.status,
   });
 
-  factory Topic.fromJson(Map<String, dynamic> json) {
+  factory Topic.fromJson(Map<String, dynamic> json, int orderIndex) {
     return Topic(
       id: json['id'],
       title: json['title'],
-      orderIndex: json['orderIndex'],
+      orderIndex: orderIndex,
       status: TopicStatus.fromString(json['status']),
     );
   }

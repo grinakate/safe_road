@@ -19,6 +19,7 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
   final GameProfileService _profileService = getIt<GameProfileService>();
 
   List<Avatar>? _avatars;
+  int? _currentAvatarId;
   int? _selectedAvatarId;
   bool _isLoading = true;
   String? _errorMessage;
@@ -30,7 +31,8 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
 
     // Получаем текущий аватар из провайдера при инициализации
     final profileProvider = context.read<GameProfileProvider>();
-    _selectedAvatarId = profileProvider.profile?.avatar.id;
+    _currentAvatarId = profileProvider.profile?.avatar.id;
+    _selectedAvatarId = _currentAvatarId;
   }
 
   Future<void> _loadAvatars() async {
@@ -74,18 +76,9 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: const Text('Выбрать аватар', textAlign: TextAlign.center),
 
-      // ГЛАВНОЕ: Только список аватаров в контенте
       content: _buildContent(context),
 
-      // ГЛАВНОЕ: Кнопки выносим в actions
       actions: [
-        // TextButton(
-        //   onPressed: () => Navigator.of(context).pop(),
-        //   child: const Text(
-        //     'Отмена',
-        //     style: TextStyle(color: AppColors.brownText),
-        //   ),
-        // ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: isSelectedAvailable
@@ -95,14 +88,10 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
           ),
           onPressed: isSelectedAvailable
               ? () async {
-                  if (_selectedAvatarId != null) {
+                  if (_selectedAvatarId != null &&
+                      _selectedAvatarId != _currentAvatarId) {
                     await profileProvider.updateAvatar(_selectedAvatarId!);
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Аватар успешно обновлен!'),
-                        ),
-                      );
                       Navigator.of(context).pop();
                     }
                   }
@@ -186,7 +175,7 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
               opacity: isAvailable ? 1.0 : 0.4,
               child: CircleAvatar(
                 radius: 60,
-                backgroundColor: AppColors.lightBlueBackground,
+                backgroundColor: AppColors.blueBackground,
                 child: SecureNetworkImage(
                   imageUrl: avatar.url,
                   fit: BoxFit.cover,

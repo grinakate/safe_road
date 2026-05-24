@@ -32,7 +32,7 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) => setState(() => _selectedIndex = index),
-        selectedItemColor: AppColors.primaryGreen,
+        selectedItemColor: AppColors.darkBrownText,
         unselectedItemColor: AppColors.brownText.withValues(alpha: 0.6),
         type: BottomNavigationBarType.fixed,
         items: [

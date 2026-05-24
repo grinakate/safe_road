@@ -18,15 +18,19 @@ class Section {
   });
 
   factory Section.fromJson(Map<String, dynamic> json) {
+    var topicJsons = json['topics'] as List;
+    List<Topic> topics = List.empty(growable: true);
+    for (int i = 0; i < topicJsons.length; i++) {
+      topics.add(Topic.fromJson(topicJsons[i], i + 1));
+    }
+
     return Section(
       id: json['id'],
       title: json['title'],
       description: json['description'],
       url: json['url'],
       progressPercent: json['progressPercent'] ?? 0,
-      topics: (json['topics'] as List)
-          .map((topicJson) => Topic.fromJson(topicJson))
-          .toList(),
+      topics: topics,
     );
   }
 }

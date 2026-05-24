@@ -34,7 +34,7 @@ class AnswerOptionTile extends StatelessWidget {
     if (isEnabled) {
       // Состояние ДО выбора ответа
       if (isSelected) {
-        backgroundColor = AppColors.lightBlueBackground;
+        backgroundColor = AppColors.blueBackground;
         borderColor = AppColors.primaryGreen;
         textColor = AppColors.primaryGreen;
       }
