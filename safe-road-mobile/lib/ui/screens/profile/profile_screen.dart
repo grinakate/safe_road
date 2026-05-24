@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:safe_road/logic/providers/learning_provider.dart';
 import 'package:safe_road/ui/screens/profile/settings_screen.dart';
+import 'package:safe_road/ui/widgets/profile/profile_header.dart';
 
 import '../../../data/models/gamification/achievement.dart';
 import '../../../logic/providers/game_profile_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common/secure_network_image.dart';
 import '../../widgets/dialogs/achievement_info_dialog.dart';
-import '../../widgets/dialogs/avatar_selection_dialog.dart';
+import '../../widgets/learning/multi_color_progress_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -16,7 +18,10 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<ProfileScreen>
+    with TickerProviderStateMixin {
+  late int _currentIndex = 0;
+
   @override
   void initState() {
     super.initState();
@@ -24,121 +29,154 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final gp = context.read<GameProfileProvider>();
       gp.loadProfile();
       gp.loadAchievements();
+
+      final learningProvider = context.read<LearningProvider>();
+      learningProvider.loadSectionStatistics();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.blueBackground,
       appBar: AppBar(
         title: Consumer<GameProfileProvider>(
-          builder: (context, gp, _) {
-            // Если профиля еще нет, показываем "Загрузка..." или пустую строку
-            final titleText = gp.profile?.nickname ?? 'Профиль';
-            return Text(titleText, style: AppTheme.appBarTitle);
-          },
+          builder: (context, gp, _) => Text(
+            gp.profile?.nickname ?? 'Профиль',
+            style: AppTheme.appBarTitle,
+          ),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings, color: AppColors.brownText),
-            onPressed: () {
-              // Переход на экран настроек
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
-              );
-            },
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
+            ),
           ),
         ],
         backgroundColor: AppColors.white,
-        foregroundColor: AppColors.brownText,
         elevation: 0,
       ),
       body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            _buildHeader(),
-            const SizedBox(height: 10),
-            _buildTabs(),
-            const SizedBox(height: 10),
-            _buildAchievementsGrid(),
+            // Верхняя часть: Уровень, Аватар, Очки
+            const ProfileHeader(),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 8.0,
+                horizontal: 16,
+              ),
+              child: Row(
+                children: [
+                  Expanded(child: _buildChoiceChip(0, 'Значки')),
+                  const SizedBox(width: 10),
+                  Expanded(child: _buildChoiceChip(1, 'Статистика')),
+                ],
+              ),
+            ),
+            Expanded(
+              child: IndexedStack(
+                index: _currentIndex,
+                children: [_buildAchievementsGrid(), _buildStatisticsContent()],
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  // Верхняя часть: Уровень, Аватар, Очки
-  Widget _buildHeader() {
-    return Consumer<GameProfileProvider>(
-      builder: (context, gp, child) {
-        if (gp.profile == null) {
+  // Метод для создания однотипных кнопок
+  Widget _buildChoiceChip(int index, String label) {
+    return ChoiceChip(
+      label: SizedBox(
+        width: double.infinity,
+        child: Center(child: Text(label)),
+      ),
+      selected: _currentIndex == index,
+      onSelected: (bool selected) {
+        if (selected) setState(() => _currentIndex = index);
+      },
+      showCheckmark: false,
+      selectedColor: AppColors.primaryGreen,
+      backgroundColor: AppColors.white,
+      labelStyle: AppTextStyles.buttonText.copyWith(
+        color: _currentIndex == index
+            ? AppColors.white
+            : AppColors.primaryGreen,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    );
+  }
+
+  Widget _buildStatisticsContent() {
+    return Consumer<LearningProvider>(
+      builder: (context, lp, _) {
+        if (lp.loadingSectionStat && lp.sectionStats.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final user = gp.profile!;
-        final userAvatar = user.avatar;
+        final statistics = lp.sectionStats;
 
-        return Container(
-          margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-          // Отступы по бокам и сверху
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
-          // Внутренний отступ для содержимого
-          decoration: BoxDecoration(
-            color: AppColors.blueBackground,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [AppTheme.cardShadow],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(child: _buildStatItem("Уровень", user.level.toString())),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => const AvatarSelectionDialog(),
-                    );
-                  },
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundColor: AppColors.white,
-                    child: SecureNetworkImage(
-                      imageUrl: userAvatar.url,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
+        return ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: statistics.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 8),
+          itemBuilder: (context, index) {
+            final section = statistics[index];
+            final progress = section.totalTopics > 0
+                ? section.completedTopics / section.totalTopics
+                : 0.0;
+            return Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-              Expanded(child: _buildStatItem("Очки", '${user.currentXp} XP')),
-            ],
-          ),
+              child: ExpansionTile(
+                initiallyExpanded: true,
+                collapsedShape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+                title: Text(
+                  section.title,
+                  style: AppTextStyles.headlineLarge.copyWith(fontSize: 18),
+                ),
+                children: section.topicStatistics.map((topic) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(child: Text(topic.title, style: AppTheme.body14)),
+                            Text('${topic.correctAnswers}/${topic.totalQuestions}',
+                                style: AppTheme.body14),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        MultiColorProgressBar(
+                          correct: topic.correctAnswers,
+                          wrong: topic.wrongAnswers,
+                          notShown: topic.notShown,
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            );
+          },
         );
       },
-    );
-  }
-
-  Widget _buildStatItem(String label, String value) {
-    return Column(
-      children: [
-        Text(label, style: AppTextStyles.bodyLarge.copyWith(fontSize: 22)),
-        Text(value, style: AppTextStyles.headlineLarge.copyWith(fontSize: 22)),
-      ],
-    );
-  }
-
-  // Переключатель вкладок
-  Widget _buildTabs() {
-    return const Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _TabButton("Значки", isActive: true),
-        _TabButton("Статистика"),
-        _TabButton("Рейтинг"),
-      ],
     );
   }
 
@@ -156,80 +194,78 @@ class _ProfileScreenState extends State<ProfileScreen> {
           return const Center(child: Text('Нет достижений'));
         }
 
-        return Expanded(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              const double listPadding = 20.0;
-              const double itemMargin = 4.0;
-              double availableWidth = constraints.maxWidth - listPadding;
-              double itemWidth = (availableWidth - 2 * itemMargin) / 3;
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            const double listPadding = 20.0;
+            const double itemMargin = 4.0;
+            double availableWidth = constraints.maxWidth - listPadding;
+            double itemWidth = (availableWidth - 2 * itemMargin) / 3;
 
-              double fontSize = itemWidth * 0.12;
-              double textHeight = fontSize * 1.2 * 2.5;
+            double fontSize = itemWidth * 0.12;
+            double textHeight = fontSize * 1.2 * 2.5;
 
-              final rows = _chunkAchievements(achievements);
-              return ListView.builder(
-                itemCount: rows.length,
-                itemBuilder: (context, rowIndex) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: rows[rowIndex].map((item) {
-                      return GestureDetector(
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AchievementInfoDialog(
-                              achievement: item,
-                              imageSize: itemWidth,
-                            ),
-                          );
-                        },
-                        child: Container(
-                          width: itemWidth,
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: itemMargin,
+            final rows = _chunkAchievements(achievements);
+            return ListView.builder(
+              itemCount: rows.length,
+              itemBuilder: (context, rowIndex) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: rows[rowIndex].map((item) {
+                    return GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AchievementInfoDialog(
+                            achievement: item,
+                            imageSize: itemWidth,
                           ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Opacity(
-                                opacity: item.isUnlocked ? 1.0 : 0.4,
-                                child: SecureNetworkImage(
-                                  imageUrl: item.iconUrl,
-                                  width: itemWidth,
-                                  height: itemWidth,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              SizedBox(
-                                height: textHeight,
-                                child: Text(
-                                  item.title,
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: AppTheme.topicName.copyWith(
-                                    fontSize: fontSize,
-                                    fontWeight: FontWeight.w600,
-                                    height: 1.0,
-                                    color: item.isUnlocked
-                                        ? AppColors.darkBrownText
-                                        : AppColors.brownText,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                        );
+                      },
+                      child: Container(
+                        width: itemWidth,
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: itemMargin,
                         ),
-                      );
-                    }).toList(),
-                  );
-                },
-              );
-            },
-          ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Opacity(
+                              opacity: item.isUnlocked ? 1.0 : 0.4,
+                              child: SecureNetworkImage(
+                                imageUrl: item.iconUrl,
+                                width: itemWidth,
+                                height: itemWidth,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            SizedBox(
+                              height: textHeight,
+                              child: Text(
+                                item.title,
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTheme.topicName.copyWith(
+                                  fontSize: fontSize,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.0,
+                                  color: item.isUnlocked
+                                      ? AppColors.darkBrownText
+                                      : AppColors.brownText,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+            );
+          },
         );
       },
     );
@@ -250,31 +286,5 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isThree = !isThree;
     }
     return rows;
-  }
-}
-
-class _TabButton extends StatelessWidget {
-  final String text;
-  final bool isActive;
-
-  const _TabButton(this.text, {this.isActive = false});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        color: isActive ? AppColors.lightGreenBackground : Colors.transparent,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Text(
-        text,
-        style: AppTextStyles.bodyLarge.copyWith(
-          fontSize: 18,
-          color: isActive ? AppColors.primaryGreen : AppColors.brownText,
-          fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-        ),
-      ),
-    );
   }
 }

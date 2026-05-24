@@ -1,3 +1,5 @@
+import 'package:safe_road/data/models/learning/section_statistics.dart';
+
 import '../models/learning/question.dart';
 import '../models/learning/section.dart';
 import 'api/api_client_v1.dart';
@@ -53,5 +55,13 @@ class LearningService {
       body,
     );
     return TestSessionSubmitResult.fromJson(response.data);
+  }
+
+  /// Получение статистики ответов на вопросы по разделам и топикам
+  Future<List<SectionStat>> getSectionStatistics() async {
+    final response = await _apiClient.get('/learning/me/statistics');
+    return (response.data as List)
+        .map((e) => SectionStat.fromJson(e))
+        .toList();
   }
 }

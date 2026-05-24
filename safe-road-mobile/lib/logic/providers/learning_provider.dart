@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:safe_road/data/models/learning/section_statistics.dart';
 import 'package:safe_road/data/services/learning_service.dart';
 
 import '../../core/service_locator.dart';
@@ -10,6 +11,11 @@ class LearningProvider extends ChangeNotifier {
   LearningState _state = LearningState();
 
   LearningState get state => _state;
+
+  List<SectionStat> _sectionStats = [];
+  List<SectionStat> get sectionStats => _sectionStats;
+  bool _loadingSectionStat = false;
+  bool get loadingSectionStat => _loadingSectionStat;
 
   /// Загрузка карты курса (Roadmap) с умным кэшированием и обработкой ошибок
   Future<void> loadRoadMap({bool forceRefresh = false}) async {
@@ -91,6 +97,21 @@ class LearningProvider extends ChangeNotifier {
       );
       rethrow;
     } finally {
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadSectionStatistics({bool forceRefresh = false}) async {
+    if (_loadingSectionStat && !forceRefresh) return;
+    _loadingSectionStat = true;
+    notifyListeners();
+    try {
+      _sectionStats = await _service.getSectionStatistics();
+    } catch (e) {
+      print('Error loading section statistics: $e');
+      _sectionStats = [];
+    } finally {
+      _loadingSectionStat = false;
       notifyListeners();
     }
   }
