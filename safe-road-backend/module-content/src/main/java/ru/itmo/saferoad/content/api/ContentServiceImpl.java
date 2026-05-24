@@ -23,17 +23,20 @@ public class ContentServiceImpl implements ContentService {
 	public List<SectionTreeDto> getSectionTree() {
 		List<Section> sections = sectionRepository.findAllWithTopics();
 
-		return sections.stream().map(s -> new SectionTreeDto(
-				s.getId(),
-				s.getTitle(),
-				s.getOrderIndex(),
-				s.getTopics().stream()
-						.map(t -> new TopicBriefDto(
-								t.getId(),
-								t.getTitle(),
-								t.getContent(),
-								t.getOrderIndex()))
-						.toList()
-		)).toList();
+		return sections.stream().map(s -> SectionTreeDto.builder()
+						.id(s.getId())
+						.title(s.getTitle())
+						.description(s.getDescription())
+						.url(s.getUrl())
+						.orderIndex(s.getOrderIndex())
+						.topics(s.getTopics().stream()
+								.map(t -> new TopicBriefDto(
+										t.getId(),
+										t.getTitle(),
+										t.getContent(),
+										t.getOrderIndex()))
+								.toList()
+						).build())
+				.toList();
 	}
 }

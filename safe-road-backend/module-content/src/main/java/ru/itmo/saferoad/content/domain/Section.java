@@ -35,6 +35,14 @@ public class Section {
 	private String title;
 
 	@NonNull
+	@Column(name = "description", nullable = false)
+	private String description;
+
+	@NonNull
+	@Column(name = "url", nullable = false)
+	private String url;
+
+	@NonNull
 	@Column(name = "order_index", nullable = false, unique = true)
 	private Integer orderIndex;
 

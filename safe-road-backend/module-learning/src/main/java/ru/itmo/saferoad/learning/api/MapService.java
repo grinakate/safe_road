@@ -57,6 +57,8 @@ public class MapService {
 		return UserSectionResponse.builder()
 				.id(section.getId())
 				.title(section.getTitle())
+				.description(section.getDescription())
+				.url(section.getUrl())
 				.progressPercent(progressPercent)
 				.topics(topicResponses)
 				.build();

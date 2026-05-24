@@ -17,6 +17,12 @@ public class UserSectionResponse {
 	private Integer id;
 
 	@NotNull
+	private String description;
+
+	@NotNull
+	private String url;
+
+	@NotNull
 	private String title;
 
 	@NotNull

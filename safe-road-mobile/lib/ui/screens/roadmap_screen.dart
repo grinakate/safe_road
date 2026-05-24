@@ -75,79 +75,17 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
     }
   }
 
-  // --- ЛОГИКА ТЕОРИИ ---
-  Future<void> _openTheory(Topic topic) async {
-    if (_isActionInProgress) {
-      return;
-    }
-    setState(() => _isActionInProgress = true);
-
-    final topicProv = context.read<TopicProvider>();
-
-    try {
-      if (topicProv.getCached(topic.id) == null) {
-        _showLoadingDialog(); // Показываем лоадер, если темы нет в кэше
-        await topicProv.getTopic(topic.id);
-        if (mounted) {
-          Navigator.of(context).pop(); // Убираем лоадер
-        }
-      }
-      if (mounted) {
-        context.push('/topic/${topic.id}');
-      }
-    } catch (e) {
-      if (mounted && Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
-      }
-      _showSnackBar('Не удалось загрузить теорию');
-    } finally {
-      if (mounted) {
-        setState(() => _isActionInProgress = false);
-      }
-    }
-  }
-
   /// --- ОБРАБОТКА НАЖАТИЯ НА ТОПИК ---
   Future<void> _handleTopicTap(
     Topic topic,
     int sectionId,
     bool isFinalAvailable,
   ) async {
-    // Проверяем, является ли этот топик "Финальным тестом"
     final bool isSectionTest = (topic.id == 0);
-
-    final choice = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(topic.title),
-        content: Text(
-          isSectionTest
-              ? 'Начать итоговое тестирование по разделу?'
-              : 'Выберите действие',
-        ),
-        actions: [
-          if (!isSectionTest)
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, 'theory'),
-              child: const Text('Теория'),
-            ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, 'test'),
-            child: const Text('Тест'),
-          ),
-        ],
-      ),
+    _startQuiz(
+      topicId: isSectionTest ? null : topic.id,
+      sectionId: sectionId,
     );
-
-    if (choice == 'test') {
-      // Вызываем унифицированный метод
-      _startQuiz(
-        topicId: isSectionTest ? null : topic.id,
-        sectionId: sectionId,
-      );
-    } else if (choice == 'theory') {
-      _openTheory(topic);
-    }
   }
 
   /// --- UI BUILDING ---
@@ -222,7 +160,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
           _buildSnakeRow(rows[i], section.id, i % 2 == 0, isFinalAvailable),
         );
       }
-      //content.add(const SizedBox(height: 30));
+      content.add(const SizedBox(height: 30));
     }
     return content;
   }
@@ -270,7 +208,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
             ),
             const SizedBox(height: 5),
             SizedBox(
-              height: AppTextStyles.topicName.fontSize! * 4,
+              height: AppTextStyles.topicName.fontSize! * 2,
               child: Text(
                 topic.title,
                 textAlign: TextAlign.center,
@@ -334,11 +272,4 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
   void _showSnackBar(String msg) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
 
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => const Center(child: CircularProgressIndicator()),
-    );
-  }
 }

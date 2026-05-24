@@ -1,5 +1,6 @@
 package ru.itmo.saferoad.content.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,11 +11,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TopicBriefDto {
-	private Integer id;
-	private String title;
-	private String content;
-	private Integer orderIndex;
 
-	// Lombok-generated getters (getId/getTitle/getOrderIndex/getContent) are used
+	@NotNull
+	private Integer id;
+
+	@NotNull
+	private String title;
+
+	@NotNull
+	private String content;
+
+	@NotNull
+	private Integer orderIndex;
 }
 

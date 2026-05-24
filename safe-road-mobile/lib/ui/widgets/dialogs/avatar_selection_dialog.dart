@@ -144,7 +144,7 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
         ),
         const SizedBox(height: 10),
         SizedBox(
-          height: 120, // Фиксированная высота для горизонтального списка
+          height: 160, // Фиксированная высота для горизонтального списка
           width: double.maxFinite, // Занимаем всю ширину диалога
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
@@ -185,15 +185,11 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
             child: Opacity(
               opacity: isAvailable ? 1.0 : 0.4,
               child: CircleAvatar(
-                radius: 45,
+                radius: 60,
                 backgroundColor: AppColors.lightBlueBackground,
-                child: ClipOval(
-                  child: SecureNetworkImage(
-                    imageUrl: avatar.url,
-                    fit: BoxFit.cover,
-                    width: 90,
-                    height: 90,
-                  ),
+                child: SecureNetworkImage(
+                  imageUrl: avatar.url,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:safe_road/ui/screens/profile_screen.dart';
+import 'package:safe_road/ui/screens/theory_tree_screen.dart';
 
 import '../theme/app_theme.dart';
 import 'leaderboard_screen.dart';
@@ -17,6 +18,7 @@ class _MainScreenState extends State<MainScreen> {
 
   static const List<Widget> _screens = [
     RoadMapScreen(),
+    TheoryTreeScreen(),
     LeaderboardScreen(),
     ProfileScreen(),
   ];
@@ -37,6 +39,10 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Image.asset("assets/icons/road.png", height: 24),
             label: 'Дорога',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset("assets/icons/book.png", height: 24),
+            label: 'Теория',
           ),
           BottomNavigationBarItem(
             icon: Image.asset("assets/icons/leader_board.png", height: 24),

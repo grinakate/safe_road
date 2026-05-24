@@ -24,6 +24,7 @@ import ru.itmo.saferoad.content.service.QuestionService;
 import ru.itmo.saferoad.content.service.SectionService;
 import ru.itmo.saferoad.content.service.TopicService;
 import ru.itmo.saferoad.core.security.AppUserDetails;
+
 import java.util.List;
 
 @Transactional
@@ -41,7 +42,7 @@ public class ContentController {
 						topic.getTitle(),
 						topic.getContent(),
 						topic.getOrderIndex()
-					))
+				))
 				.toList();
 		return ResponseEntity.ok(topics);
 	}
@@ -112,7 +113,13 @@ public class ContentController {
 									topic.getOrderIndex()
 							))
 							.toList();
-					return new SectionTreeDto(section.getId(), section.getTitle(), section.getOrderIndex(), topics);
+					return SectionTreeDto.builder()
+							.id(section.getId())
+							.title(section.getTitle())
+							.description(section.getDescription())
+							.url(section.getUrl())
+							.orderIndex(section.getOrderIndex())
+							.topics(topics).build();
 				})
 				.toList();
 		return ResponseEntity.ok(response);
@@ -145,7 +152,13 @@ public class ContentController {
 			@AuthenticationPrincipal AppUserDetails currentUser
 	) {
 		var section = sectionService.create(request.getName(), request.getOrderIndex());
-		var response = new SectionTreeDto(section.getId(), section.getTitle(), section.getOrderIndex(), List.of());
+		var response = SectionTreeDto.builder()
+				.id(section.getId())
+				.title(section.getTitle())
+				.description(section.getDescription())
+				.url(section.getUrl())
+				.orderIndex(section.getOrderIndex())
+				.topics(List.of()).build();
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
