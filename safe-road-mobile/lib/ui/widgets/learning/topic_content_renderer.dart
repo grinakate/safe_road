@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:safe_road/ui/widgets/common/secure_network_image.dart';
 
 import '../../../data/models/learning/topic_content.dart';
 import '../../theme/app_theme.dart';
@@ -110,14 +111,9 @@ class _ImageBlock extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              url ?? '',
+            child: SecureNetworkImage(
+              imageUrl: url ?? "error",
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                height: 150,
-                color: Colors.grey[200],
-                child: const Icon(Icons.broken_image, color: Colors.grey),
-              ),
             ),
           ),
           if (caption != null && caption!.isNotEmpty)

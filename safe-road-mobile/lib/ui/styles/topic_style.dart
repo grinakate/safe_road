@@ -5,57 +5,91 @@ import '../theme/app_theme.dart';
 
 class TopicStyle {
   final Color circleColor;
-  final Color shadowColor;
   final bool isTapEnabled;
   final bool showOrderIndex;
   final bool showShadow;
-  final Color borderColor;
+  final Color shadowColor;
   final double borderWidth;
-  final IconData? centerIcon;
-  final IconData? badgeIcon;
+  final Color borderColor;
+  final Widget? content;
+
+  static final Widget lockIcon = Positioned(
+    top: 0,
+    right: 0,
+    child: Icon(Icons.lock, color: AppColors.darkBrownIcon, size: 24),
+  );
 
   const TopicStyle({
     required this.circleColor,
-    required this.shadowColor,
     required this.isTapEnabled,
     required this.showOrderIndex,
+    required this.shadowColor,
     this.showShadow = true,
-    this.borderColor = Colors.transparent,
     this.borderWidth = 0.0,
-    this.centerIcon,
-    this.badgeIcon,
+    this.borderColor = Colors.transparent,
+    this.content,
   });
 
-  factory TopicStyle.locked() => const TopicStyle(
+  factory TopicStyle.locked() => TopicStyle(
     circleColor: AppColors.greyBorder,
-    shadowColor: AppColors.darkBrownText,
     isTapEnabled: false,
     showOrderIndex: true,
     showShadow: false,
+    shadowColor: AppColors.darkBrownText,
     borderColor: AppColors.greyIcon,
     borderWidth: 1,
-    badgeIcon: Icons.lock,
+    content: lockIcon,
   );
 
   factory TopicStyle.unlocked() => const TopicStyle(
     circleColor: AppColors.primaryGreen,
-    shadowColor: AppColors.green,
     isTapEnabled: true,
     showOrderIndex: true,
     showShadow: true,
+    shadowColor: AppColors.green,
     borderColor: AppColors.darkGreen,
     borderWidth: 1.5,
   );
 
   factory TopicStyle.completed() => const TopicStyle(
     circleColor: AppColors.primaryGreen,
-    shadowColor: AppColors.white,
     isTapEnabled: true,
+    shadowColor: AppColors.white,
     showOrderIndex: false,
     showShadow: false,
     borderColor: AppColors.darkGreen,
     borderWidth: 0.5,
-    centerIcon: Icons.check,
+    content: Icon(Icons.check, color: AppColors.white, size: 28),
+  );
+
+  factory TopicStyle.finalUnlockTest() => const TopicStyle(
+    circleColor: AppColors.primaryGreen,
+    isTapEnabled: true,
+    shadowColor: AppColors.green,
+    showOrderIndex: false,
+    showShadow: true,
+    borderColor: AppColors.darkGreen,
+    borderWidth: 1.5,
+    content: Icon(Icons.emoji_events, color: AppColors.white, size: 28),
+  );
+
+  factory TopicStyle.finalLockTest() => TopicStyle(
+    circleColor: AppColors.greyBorder,
+    isTapEnabled: false,
+    shadowColor: AppColors.green,
+    showOrderIndex: false,
+    showShadow: false,
+    borderColor: AppColors.greyIcon,
+    borderWidth: 0.5,
+    content: SizedBox.expand(
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          const Icon(Icons.emoji_events, color: AppColors.white, size: 28),
+          lockIcon
+        ],
+      ),
+    ),
   );
 
   static TopicStyle resolve({
@@ -65,15 +99,8 @@ class TopicStyle {
   }) {
     if (isFinalTest) {
       return isFinalTestAvailable
-          ? const TopicStyle(
-              circleColor: AppColors.primaryGreen,
-              shadowColor: AppColors.white,
-              isTapEnabled: true,
-              showOrderIndex: false,
-              showShadow: true,
-              centerIcon: Icons.emoji_events,
-            )
-          : TopicStyle.locked();
+          ? TopicStyle.finalUnlockTest()
+          : TopicStyle.finalLockTest();
     }
 
     return switch (status) {

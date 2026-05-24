@@ -11,7 +11,7 @@ import ru.itmo.saferoad.content.domain.repository.QuestionRepository;
 import ru.itmo.saferoad.content.service.TopicService;
 import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 import ru.itmo.saferoad.core.event.CreatePendingEventsService;
-// ...existing imports...
+import ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent;
 import ru.itmo.saferoad.learning.config.LearningProperties;
 import ru.itmo.saferoad.learning.domain.TestMode;
 import ru.itmo.saferoad.learning.domain.TestSession;
@@ -225,7 +225,7 @@ public class TestSessionServiceImpl implements TestSessionService {
 
 		int correctAnswers = 0;
 		List<TestErrorResponse> errors = new ArrayList<>();
-		List<ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent.QuestionDetail> details = new ArrayList<>();
+		List<TestSessionCompletedEvent.QuestionDetail> details = new ArrayList<>();
 
 		if (request.getAnswers() != null) {
 			for (var entry : request.getAnswers().entrySet()) {
@@ -237,13 +237,13 @@ public class TestSessionServiceImpl implements TestSessionService {
 
 				if (response.isCorrect()) {
 					correctAnswers++;
-					details.add(ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent.QuestionDetail.builder()
+					details.add(TestSessionCompletedEvent.QuestionDetail.builder()
 							.type(q.getType().name())
 							.difficulty(q.getDifficultyLevel())
 							.isCorrect(true)
 							.build());
 				} else {
-					details.add(ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent.QuestionDetail.builder()
+					details.add(TestSessionCompletedEvent.QuestionDetail.builder()
 							.type(q.getType().name())
 							.difficulty(q.getDifficultyLevel())
 							.isCorrect(false)
@@ -273,7 +273,7 @@ public class TestSessionServiceImpl implements TestSessionService {
 		session.setFinishedAt(LocalDateTime.now());
 		testSessionRepository.save(session);
 
-		ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent eventPayload = ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent.builder()
+		TestSessionCompletedEvent eventPayload = TestSessionCompletedEvent.builder()
 				.userId(userId)
 				.topicId(session.getTopicId())
 				.totalQuestions(session.getTotalQuestions())

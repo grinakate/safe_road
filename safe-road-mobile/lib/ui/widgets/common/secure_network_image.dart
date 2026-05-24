@@ -55,6 +55,6 @@ class SecureNetworkImage extends StatelessWidget {
   Widget _buildError() => SizedBox(
     width: width,
     height: height,
-    child: const Icon(Icons.emoji_events, size: 40),
+    child: const Icon(Icons.warning, size: 40),
   );
 }

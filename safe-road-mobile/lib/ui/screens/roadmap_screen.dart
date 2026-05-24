@@ -51,32 +51,35 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
         startResp.sessionId,
       );
 
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
       if (questions.isEmpty) {
         _showSnackBar('Вопросы для данного теста не найдены');
       } else {
-        // Сохраняем контекст в провайдер (теперь передаем и то, и другое)
         context.read<LearningProvider>().setLastResult(
           correct: 0,
           total: 0,
           experience: 0,
           topicId: topicId,
-          // Если в модели LearningProvider добавишь sectionId, будет еще лучше
         );
         context.push('/quiz/${startResp.sessionId}');
       }
     } catch (e) {
       _showSnackBar('Ошибка запуска: $e');
     } finally {
-      if (mounted) setState(() => _isActionInProgress = false);
+      if (mounted) {
+        setState(() => _isActionInProgress = false);
+      }
     }
   }
 
   // --- ЛОГИКА ТЕОРИИ ---
-
   Future<void> _openTheory(Topic topic) async {
-    if (_isActionInProgress) return;
+    if (_isActionInProgress) {
+      return;
+    }
     setState(() => _isActionInProgress = true);
 
     final topicProv = context.read<TopicProvider>();
@@ -85,16 +88,22 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
       if (topicProv.getCached(topic.id) == null) {
         _showLoadingDialog(); // Показываем лоадер, если темы нет в кэше
         await topicProv.getTopic(topic.id);
-        if (mounted) Navigator.of(context).pop(); // Убираем лоадер
+        if (mounted) {
+          Navigator.of(context).pop(); // Убираем лоадер
+        }
       }
-      if (mounted) context.push('/topic/${topic.id}');
+      if (mounted) {
+        context.push('/topic/${topic.id}');
+      }
     } catch (e) {
       if (mounted && Navigator.of(context).canPop()) {
         Navigator.of(context).pop();
       }
       _showSnackBar('Не удалось загрузить теорию');
     } finally {
-      if (mounted) setState(() => _isActionInProgress = false);
+      if (mounted) {
+        setState(() => _isActionInProgress = false);
+      }
     }
   }
 
@@ -105,7 +114,6 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
     bool isFinalAvailable,
   ) async {
     // Проверяем, является ли этот топик "Финальным тестом"
-    // (например, по ID == 0 или по заголовку, если ID заняты)
     final bool isSectionTest = (topic.id == 0);
 
     final choice = await showDialog<String>(
@@ -134,7 +142,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
     if (choice == 'test') {
       // Вызываем унифицированный метод
       _startQuiz(
-        topicId: isSectionTest ? null : topic.id, // null для теста секции
+        topicId: isSectionTest ? null : topic.id,
         sectionId: sectionId,
       );
     } else if (choice == 'theory') {
@@ -171,7 +179,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
                   Positioned(
                     child: Image.asset(
                       "assets/images/plant5.png",
-                      opacity: const AlwaysStoppedAnimation(.3),
+                      opacity: const AlwaysStoppedAnimation(.8),
                     ),
                   ),
                   Column(
@@ -199,10 +207,9 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
       // Создаем список для отображения
       List<Topic> displayTopics = List<Topic>.from(section.topics);
 
-      // Добавляем финальный тест как объект с null ID
+      // Добавляем финальный тест
       final finalTest = Topic(
         id: 0,
-        // Или null, если позволяет модель. Если id обязателен, используем 0 как константу
         title: 'Итоговый тест',
         orderIndex: displayTopics.length + 1,
         status: isFinalAvailable ? TopicStatus.UNLOCKED : TopicStatus.LOCKED,
@@ -215,7 +222,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
           _buildSnakeRow(rows[i], section.id, i % 2 == 0, isFinalAvailable),
         );
       }
-      content.add(const SizedBox(height: 30));
+      //content.add(const SizedBox(height: 30));
     }
     return content;
   }
@@ -227,14 +234,14 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
     bool isFinalAvailable,
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-      child: Row(
-        mainAxisAlignment: isLTR
-            ? MainAxisAlignment.start
-            : MainAxisAlignment.end,
-        children: (isLTR ? topics : topics.reversed).map((topic) {
-          return _buildTopicItem(topic, sectionId, isFinalAvailable);
-        }).toList(),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: isLTR ? 32 : 78),
+        child: Row(
+          children: (isLTR ? topics : topics.reversed).map((topic) {
+            return _buildTopicItem(topic, sectionId, isFinalAvailable);
+          }).toList(),
+        ),
       ),
     );
   }
@@ -248,60 +255,73 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
       isFinalTestAvailable: isFinalAvailable,
     );
 
+    return Expanded(
+      child: Container(
+        width: 120,
+        margin: const EdgeInsets.symmetric(horizontal: 2),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            GestureDetector(
+              onTap: (statusUi.isTapEnabled && !_isActionInProgress)
+                  ? () => _handleTopicTap(topic, sectionId, isFinalAvailable)
+                  : null,
+              child: _buildTopicCircle(topic, statusUi),
+            ),
+            const SizedBox(height: 5),
+            SizedBox(
+              height: AppTextStyles.topicName.fontSize! * 4,
+              child: Text(
+                topic.title,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.topicName,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTopicCircle(Topic topic, TopicStyle topicStyle) {
     return Container(
-      width: 90,
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      child: Column(
+      width: 64,
+      height: 64,
+      decoration: BoxDecoration(
+        color: topicStyle.circleColor,
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: topicStyle.borderColor,
+          width: topicStyle.borderWidth,
+        ),
+        boxShadow: topicStyle.showShadow
+            ? [BoxShadow(color: topicStyle.shadowColor, blurRadius: 9)]
+            : [],
+      ),
+      child: Stack(
+        alignment: AlignmentDirectional.center,
         children: [
-          GestureDetector(
-            onTap: (statusUi.isTapEnabled && !_isActionInProgress)
-                ? () => _handleTopicTap(topic, sectionId, isFinalAvailable)
-                : null,
-            child: _buildTopicCircle(topic, statusUi),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            topic.title,
-            textAlign: TextAlign.center,
-            style: AppTextStyles.topicName.copyWith(fontSize: 12),
-            maxLines: 2,
-          ),
+          if (topicStyle.showOrderIndex)
+            Text(topic.orderIndex.toString(), style: AppTextStyles.topicNumber),
+          ?topicStyle.content,
         ],
       ),
     );
   }
 
-  Widget _buildTopicCircle(Topic topic, TopicStyle ui) {
-    return Container(
-      width: 60,
-      height: 60,
-      decoration: BoxDecoration(
-        color: ui.circleColor,
-        shape: BoxShape.circle,
-        border: Border.all(color: ui.borderColor, width: ui.borderWidth),
-        boxShadow: ui.showShadow
-            ? [
-                BoxShadow(
-                  color: ui.shadowColor.withValues(alpha: 0.3),
-                  blurRadius: 8,
-                ),
-              ]
-            : [],
-      ),
-      child: Icon(
-        ui.centerIcon ?? (ui.showOrderIndex ? null : Icons.book),
-        color: Colors.white,
-      ),
-    );
-  }
-
   /// --- УТИЛИТЫ ---
-  List<List<Topic>> _chunkTopics(List<Topic> data, int first, int second) {
+  List<List<Topic>> _chunkTopics(
+    List<Topic> data,
+    int firstRowSize,
+    int secondRowSize,
+  ) {
     List<List<Topic>> chunks = [];
     int i = 0;
     bool isFirst = true;
     while (i < data.length) {
-      int size = isFirst ? first : second;
+      int size = isFirst ? firstRowSize : secondRowSize;
       chunks.add(
         data.sublist(i, (i + size > data.length) ? data.length : i + size),
       );

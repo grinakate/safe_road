@@ -42,11 +42,14 @@ public class UserTopicProgressServiceImpl implements UserTopicProgressService {
 
 	@Override
 	public void unlockTopic(@NonNull Long userId, @NonNull Topic topic) {
-		var userTopicProgress = new UserTopicProgress();
-		userTopicProgress.setUserId(userId);
-		userTopicProgress.setTopicId(topic.getId());
-		userTopicProgress.setStatus(ProgressStatus.UNLOCKED);
-		repository.save(userTopicProgress);
+		UserTopicProgress progress = repository.findById(new UserTopicProgressId(userId, topic.getId()))
+				.orElseGet(UserTopicProgress::new);
+		progress.setUserId(userId);
+		progress.setTopicId(topic.getId());
+		if (progress.getStatus() == null || progress.getStatus().equals(ProgressStatus.LOCKED)) {
+			progress.setStatus(ProgressStatus.UNLOCKED);
+		}
+		repository.save(progress);
 	}
 
 	@Override
