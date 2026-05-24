@@ -174,4 +174,12 @@ class GameProfileProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  void clear() {
+    _achievements = [];
+    _profile = null;
+    _loadingProfile = false;
+    _loadingAchievements = false;
+    notifyListeners();
+  }
 }

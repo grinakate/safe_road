@@ -38,9 +38,9 @@ class SafeRoadApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => getIt<AuthProvider>()),
         ChangeNotifierProvider(create: (_) => getIt<GameProfileProvider>()),
-        ChangeNotifierProvider(create: (_) => LearningProvider()),
-        ChangeNotifierProvider(create: (_) => LeaderboardProvider()),
-        ChangeNotifierProvider(create: (_) => TopicProvider()),
+        ChangeNotifierProvider(create: (_) => getIt<LearningProvider>()),
+        ChangeNotifierProvider(create: (_) => getIt<LeaderboardProvider>()),
+        ChangeNotifierProvider(create: (_) => getIt<TopicProvider>()),
         ChangeNotifierProvider(create: (_) => getIt<NotificationProvider>()),
       ],
       child: Builder(

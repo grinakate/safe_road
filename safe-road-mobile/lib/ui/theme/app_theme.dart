@@ -90,6 +90,8 @@ class AppTheme {
         backgroundColor: AppColors.blueBackground,
         foregroundColor: AppColors.darkBrownText,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: AppColors.white,
         centerTitle: true,
         titleTextStyle: AppTextStyles.appBarTitle,
         iconTheme: IconThemeData(color: AppColors.darkBrownText),
@@ -130,6 +132,6 @@ class AppTheme {
   static final BoxShadow cardShadow = BoxShadow(
     color: AppColors.brown.withValues(alpha: 0.5),
     blurRadius: 2,
-    offset: const Offset(0, 2),
+    offset: const Offset(0, 1),
   );
 }

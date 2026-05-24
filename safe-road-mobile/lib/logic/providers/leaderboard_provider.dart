@@ -1,16 +1,17 @@
 import 'package:flutter/cupertino.dart';
-import 'package:get_it/get_it.dart';
 
 import '../../data/services/leaderboard_service.dart';
 import 'leaderboard_state.dart';
 
 class LeaderboardProvider extends ChangeNotifier {
-  final LeaderboardService _service = GetIt.instance<LeaderboardService>();
+  final LeaderboardService _service;
 
   // Карта состояний для каждого периода
   final Map<LeaderboardPeriod, LeaderboardState> _states = {
     for (var period in LeaderboardPeriod.values) period: LeaderboardState(),
   };
+
+  LeaderboardProvider(this._service);
 
   // Геттер для получения состояния конкретного периода
   LeaderboardState getState(LeaderboardPeriod period) => _states[period]!;
@@ -44,5 +45,12 @@ class LeaderboardProvider extends ChangeNotifier {
     } finally {
       notifyListeners();
     }
+  }
+
+  void clear() {
+    for (var state in _states.values) {
+      state.entries.clear();
+    }
+    notifyListeners();
   }
 }

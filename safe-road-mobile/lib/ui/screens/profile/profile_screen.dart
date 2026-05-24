@@ -5,6 +5,7 @@ import 'package:safe_road/ui/screens/profile/settings_screen.dart';
 import 'package:safe_road/ui/widgets/profile/profile_header.dart';
 
 import '../../../data/models/gamification/achievement.dart';
+import '../../../logic/providers/auth_provider.dart';
 import '../../../logic/providers/game_profile_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common/secure_network_image.dart';
@@ -40,6 +41,13 @@ class _ProfileScreenState extends State<ProfileScreen>
     return Scaffold(
       backgroundColor: AppColors.blueBackground,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.settings, color: AppColors.darkBrownText),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SettingsScreen()),
+          ),
+        ),
         title: Consumer<GameProfileProvider>(
           builder: (context, gp, _) => Text(
             gp.profile?.nickname ?? 'Профиль',
@@ -48,11 +56,10 @@ class _ProfileScreenState extends State<ProfileScreen>
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings, color: AppColors.brownText),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SettingsScreen()),
-            ),
+            icon: const Icon(Icons.exit_to_app, color: AppColors.darkBrownText),
+            onPressed: () {
+              context.read<AuthProvider>().logout();
+            },
           ),
         ],
         backgroundColor: AppColors.white,
@@ -64,10 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             // Верхняя часть: Уровень, Аватар, Очки
             const ProfileHeader(),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 8.0,
-                horizontal: 16,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               child: Row(
                 children: [
                   Expanded(child: _buildChoiceChip(0, 'Значки')),
@@ -107,9 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             ? AppColors.white
             : AppColors.primaryGreen,
       ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     );
   }
 
@@ -123,14 +125,11 @@ class _ProfileScreenState extends State<ProfileScreen>
         final statistics = lp.sectionStats;
 
         return ListView.separated(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.only(left: 6, right: 6),
           itemCount: statistics.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 8),
+          separatorBuilder: (_, _) => const SizedBox(height: 0),
           itemBuilder: (context, index) {
             final section = statistics[index];
-            final progress = section.totalTopics > 0
-                ? section.completedTopics / section.totalTopics
-                : 0.0;
             return Card(
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -141,7 +140,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                 collapsedShape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 tilePadding: const EdgeInsets.symmetric(horizontal: 16),
                 title: Text(
                   section.title,
@@ -149,19 +150,26 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
                 children: section.topicStatistics.map((topic) {
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 4,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Expanded(child: Text(topic.title, style: AppTheme.body14)),
-                            Text('${topic.correctAnswers}/${topic.totalQuestions}',
-                                style: AppTheme.body14),
+                            Expanded(
+                              child: Text(topic.title, style: AppTheme.body14),
+                            ),
+                            Text(
+                              '${topic.correctAnswers}/${topic.totalQuestions}',
+                              style: AppTheme.body14,
+                            ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 4),
                         MultiColorProgressBar(
                           correct: topic.correctAnswers,
                           wrong: topic.wrongAnswers,
@@ -194,78 +202,87 @@ class _ProfileScreenState extends State<ProfileScreen>
           return const Center(child: Text('Нет достижений'));
         }
 
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            const double listPadding = 20.0;
-            const double itemMargin = 4.0;
-            double availableWidth = constraints.maxWidth - listPadding;
-            double itemWidth = (availableWidth - 2 * itemMargin) / 3;
+        return Container(
+          margin: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [AppTheme.cardShadow],
+          ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              const double listPadding = 20.0;
+              const double itemMargin = 4.0;
+              double availableWidth = constraints.maxWidth - listPadding;
+              double itemWidth = (availableWidth - 2 * itemMargin) / 3;
 
-            double fontSize = itemWidth * 0.12;
-            double textHeight = fontSize * 1.2 * 2.5;
+              double fontSize = itemWidth * 0.12;
+              double textHeight = fontSize * 1.2 * 2.5;
 
-            final rows = _chunkAchievements(achievements);
-            return ListView.builder(
-              itemCount: rows.length,
-              itemBuilder: (context, rowIndex) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: rows[rowIndex].map((item) {
-                    return GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AchievementInfoDialog(
-                            achievement: item,
-                            imageSize: itemWidth,
-                          ),
-                        );
-                      },
-                      child: Container(
-                        width: itemWidth,
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: itemMargin,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Opacity(
-                              opacity: item.isUnlocked ? 1.0 : 0.4,
-                              child: SecureNetworkImage(
-                                imageUrl: item.iconUrl,
-                                width: itemWidth,
-                                height: itemWidth,
-                                fit: BoxFit.cover,
-                              ),
+              final rows = _chunkAchievements(achievements);
+              return ListView.builder(
+                itemCount: rows.length,
+                itemBuilder: (context, rowIndex) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: rows[rowIndex].map((item) {
+                      return GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AchievementInfoDialog(
+                              achievement: item,
+                              imageSize: itemWidth,
                             ),
-                            const SizedBox(height: 8),
-                            SizedBox(
-                              height: textHeight,
-                              child: Text(
-                                item.title,
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: AppTheme.topicName.copyWith(
-                                  fontSize: fontSize,
-                                  fontWeight: FontWeight.w600,
-                                  height: 1.0,
-                                  color: item.isUnlocked
-                                      ? AppColors.darkBrownText
-                                      : AppColors.brownText,
+                          );
+                        },
+                        child: Container(
+                          width: itemWidth,
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: itemMargin,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Opacity(
+                                opacity: item.isUnlocked ? 1.0 : 0.4,
+                                child: SecureNetworkImage(
+                                  imageUrl: item.iconUrl,
+                                  width: itemWidth,
+                                  height: itemWidth,
+                                  fit: BoxFit.cover,
                                 ),
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 0),
+                              SizedBox(
+                                height: textHeight,
+                                child: Text(
+                                  item.title,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTheme.topicName.copyWith(
+                                    fontSize: fontSize,
+                                    fontWeight: FontWeight.w600,
+                                    height: 1.0,
+                                    color: item.isUnlocked
+                                        ? AppColors.darkBrownText
+                                        : AppColors.brownText,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
-            );
-          },
+                      );
+                    }).toList(),
+                  );
+                },
+              );
+            },
+          ),
         );
       },
     );
@@ -275,15 +292,16 @@ class _ProfileScreenState extends State<ProfileScreen>
   List<List<Achievement>> _chunkAchievements(List<Achievement> data) {
     List<List<Achievement>> rows = [];
     int i = 0;
-    bool isThree = true;
+    int itemInRow = 3;
 
     while (i < data.length) {
-      int count = isThree ? 3 : 2;
       rows.add(
-        data.sublist(i, (i + count > data.length) ? data.length : i + count),
+        data.sublist(
+          i,
+          (i + itemInRow > data.length) ? data.length : i + itemInRow,
+        ),
       );
-      i += count;
-      isThree = !isThree;
+      i += itemInRow;
     }
     return rows;
   }

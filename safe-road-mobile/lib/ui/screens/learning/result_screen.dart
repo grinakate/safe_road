@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../data/models/learning/question_error.dart';
-import '../../../logic/providers/learning_state.dart';
 import '../../../logic/providers/learning_provider.dart';
+import '../../../logic/providers/learning_state.dart';
 import '../../theme/app_theme.dart';
 
 class ResultScreen extends StatelessWidget {
@@ -70,18 +70,6 @@ class ResultScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 Expanded(child: _buildErrorsList(errors)),
               ] else ...[
-                // Если ошибок нет — поздравляем и пушим картинку успеха во весь экран
-                const Spacer(),
-                const Center(
-                  child: Text(
-                    '🎉 Идеально! Ни одной ошибки!',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryGreen,
-                    ),
-                  ),
-                ),
                 const Spacer(),
               ],
 
@@ -104,10 +92,12 @@ class ResultScreen extends StatelessWidget {
         child: Column(
           children: [
             Image.asset(
-              'assets/images/test_result_600.png',
+              wrong > 0
+                  ? 'assets/images/test_result_600.png'
+                  : 'assets/images/congrats_600.png',
               width: 150,
               height: 150,
-              errorBuilder: (_, __, ___) => const SizedBox(height: 10),
+              errorBuilder: (_, _, _) => const SizedBox(height: 10),
             ),
             const SizedBox(height: 12),
             Row(
@@ -259,7 +249,12 @@ class ResultScreen extends StatelessWidget {
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                child: const Text('К теории', style: AppTextStyles.buttonText),
+                child: Text(
+                  'К теории',
+                  style: AppTextStyles.buttonText.copyWith(
+                    color: AppColors.primaryGreen,
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 12),

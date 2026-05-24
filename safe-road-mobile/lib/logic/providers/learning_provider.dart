@@ -2,19 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:safe_road/data/models/learning/section_statistics.dart';
 import 'package:safe_road/data/services/learning_service.dart';
 
-import '../../core/service_locator.dart';
 import 'learning_state.dart';
 
 class LearningProvider extends ChangeNotifier {
-  final LearningService _service = getIt<LearningService>();
+  final LearningService _service;
 
   LearningState _state = LearningState();
 
   LearningState get state => _state;
 
   List<SectionStat> _sectionStats = [];
+
   List<SectionStat> get sectionStats => _sectionStats;
   bool _loadingSectionStat = false;
+
+  LearningProvider(this._service);
+
   bool get loadingSectionStat => _loadingSectionStat;
 
   /// Загрузка карты курса (Roadmap) с умным кэшированием и обработкой ошибок
@@ -114,5 +117,12 @@ class LearningProvider extends ChangeNotifier {
       _loadingSectionStat = false;
       notifyListeners();
     }
+  }
+
+  void clear() {
+    _sectionStats = [];
+    _state = LearningState();
+    _loadingSectionStat = false;
+    notifyListeners();
   }
 }

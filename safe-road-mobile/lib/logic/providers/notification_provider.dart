@@ -99,4 +99,9 @@ class NotificationProvider extends ChangeNotifier {
     _isDisposed = true;
     super.dispose();
   }
+
+  void clear() {
+    _queue.clear();
+    _safeNotify();
+  }
 }

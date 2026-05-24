@@ -143,9 +143,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isCurrent ? AppColors.lightGreenBackground : AppColors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [if (isCurrent) AppTheme.cardShadow],
+        boxShadow: [AppTheme.cardShadow],
       ),
       child: Row(
         children: [
@@ -159,7 +159,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
           const SizedBox(width: 12),
           CircleAvatar(
             radius: 30,
-            backgroundColor: AppColors.orangeCatAccent.withValues(alpha: 0.2),
+            backgroundColor: Colors.transparent,
             child: SecureNetworkImage(
               imageUrl: leader.avatarUrl,
               fit: BoxFit.fitHeight,
@@ -167,7 +167,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
               height: 60,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 18),
           Expanded(
             child: Text(
               leader.nickname,

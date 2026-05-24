@@ -101,7 +101,7 @@ class _AvatarSelectionDialogState extends State<AvatarSelectionDialog> {
           child: Text(
             isSelectedAvailable
                 ? 'Выбрать'
-                : 'Доступно с ${activeAvatar?.minLevel ?? 0} ур.',
+                : 'Доступно с ${activeAvatar?.minLevel ?? 0} уровня',
           ),
         ),
       ],

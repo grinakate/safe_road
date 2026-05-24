@@ -5,7 +5,7 @@ import 'package:safe_road/data/services/content_service.dart';
 import '../../core/service_locator.dart';
 
 class TopicProvider extends ChangeNotifier {
-  final ContentService _service = getIt<ContentService>();
+  final ContentService _service;
 
   final Map<int, TopicContent> _cache = {};
   final Map<int, Future<TopicContent>> _inflight = {};
@@ -47,13 +47,15 @@ class TopicProvider extends ChangeNotifier {
     return getTopic(id);
   }
 
-  void clearCache() {
+  void clear() {
     _cache.clear();
     _inflight.clear();
     _safeNotify();
   }
 
   bool _isDisposed = false;
+
+  TopicProvider(this._service);
 
   @override
   void dispose() {

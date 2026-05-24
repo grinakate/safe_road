@@ -148,35 +148,8 @@ class _TopicScreenState extends State<TopicScreen> {
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TopicContentRenderer(blocks: topic.blocks),
-
-                    const SizedBox(height: 24),
-
-                    ElevatedButton(
-                      onPressed: _isQuizStarting ? null : _startQuiz,
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      child: _isQuizStarting
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : const Text(
-                              'Перейти к тестированию',
-                              style: AppTextStyles.buttonText,
-                            ),
-                    ),
-                  ],
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [TopicContentRenderer(blocks: topic.blocks)],
                 ),
               ),
             ),

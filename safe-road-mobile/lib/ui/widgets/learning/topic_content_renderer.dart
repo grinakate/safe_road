@@ -14,7 +14,6 @@ class TopicContentRenderer extends StatelessWidget {
     final List<Widget> widgets = [];
     List<ContentBlock> listBuffer = [];
 
-    // Вспомогательная функция для отрисовки накопленного списка
     void flushBuffer() {
       if (listBuffer.isEmpty) return;
       widgets.add(_BulletedList(items: listBuffer));
@@ -63,7 +62,7 @@ class _Heading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 20.0, bottom: 8.0),
+      padding: const EdgeInsets.only(bottom: 8.0),
       child: Text(
         text,
         style: Theme.of(context).textTheme.titleLarge?.copyWith(

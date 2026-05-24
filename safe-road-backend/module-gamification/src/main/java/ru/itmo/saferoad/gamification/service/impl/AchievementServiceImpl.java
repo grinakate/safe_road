@@ -48,7 +48,7 @@ public class AchievementServiceImpl implements AchievementService {
 						userAchievementIds.contains(a.getId()),
 						a.getRewardXp()
 				))
-				.sorted(Comparator.comparing(UserAchievementsResponse::isUnlocked).reversed())
+				//.sorted(Comparator.comparing(UserAchievementsResponse::isUnlocked).reversed())
 				.toList();
 	}
 }

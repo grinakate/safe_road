@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:safe_road/data/services/learning_service.dart';
 import 'package:safe_road/logic/providers/auth_provider.dart';
+import 'package:safe_road/logic/providers/leaderboard_provider.dart';
+import 'package:safe_road/logic/providers/learning_provider.dart';
 import 'package:safe_road/logic/providers/notification_provider.dart';
+import 'package:safe_road/logic/providers/topic_provider.dart';
 
 import '../data/services/api/api_client_v1.dart';
 import '../data/services/auth_service.dart';
@@ -30,15 +33,21 @@ void setupLocator() {
     () => AuthService(getIt<TokenStorageService>(), getIt<ApiClientV1>()),
   );
   getIt.registerLazySingleton<AuthProvider>(
-        () => AuthProvider(getIt<AuthService>()),
+    () => AuthProvider(getIt<AuthService>()),
   );
 
   getIt.registerLazySingleton<LearningService>(
     () => LearningService(getIt<ApiClientV1>()),
   );
+  getIt.registerLazySingleton<LearningProvider>(
+    () => LearningProvider(getIt<LearningService>()),
+  );
 
   getIt.registerLazySingleton<ContentService>(
     () => ContentService(getIt<ApiClientV1>()),
+  );
+  getIt.registerLazySingleton<TopicProvider>(
+        () => TopicProvider(getIt<ContentService>()),
   );
 
   getIt.registerLazySingleton<GameProfileService>(
@@ -46,10 +55,6 @@ void setupLocator() {
   );
   getIt.registerLazySingleton<GameProfileProvider>(
     () => GameProfileProvider(getIt<GameProfileService>()),
-  );
-
-  getIt.registerLazySingleton<LeaderboardService>(
-    () => LeaderboardService(getIt<ApiClientV1>()),
   );
 
   getIt.registerLazySingleton<NotificationService>(
@@ -61,5 +66,11 @@ void setupLocator() {
       getIt<GameProfileProvider>(),
       getIt<GlobalKey<NavigatorState>>(),
     ),
+  );
+  getIt.registerLazySingleton<LeaderboardService>(
+    () => LeaderboardService(getIt<ApiClientV1>()),
+  );
+  getIt.registerLazySingleton<LeaderboardProvider>(
+    () => LeaderboardProvider(getIt<LeaderboardService>()),
   );
 }

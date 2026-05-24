@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:safe_road/data/services/auth_service.dart';
+import 'package:safe_road/logic/providers/topic_provider.dart';
 
 import '../../core/service_locator.dart';
 import '../../data/models/auth/auth_models.dart';
 import '../../data/services/notification_service.dart';
 import 'auth_state.dart';
+import 'game_profile_provider.dart';
+import 'leaderboard_provider.dart';
+import 'learning_provider.dart';
+import 'notification_provider.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService;
@@ -138,6 +143,12 @@ class AuthProvider extends ChangeNotifier {
   Future<void> logout() async {
     _state = _state.copyWith(status: AuthStatus.loading);
     notifyListeners();
+
+    getIt<GameProfileProvider>().clear();
+    getIt<LearningProvider>().clear();
+    getIt<LeaderboardProvider>().clear();
+    getIt<TopicProvider>().clear();
+    getIt<NotificationProvider>().clear();
 
     try {
       await _authService.logout();

@@ -23,12 +23,12 @@ class ProfileHeader extends StatelessWidget {
         final userAvatar = user.avatar;
 
         return Container(
-          margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+          margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10, top: 10),
           // Отступы по бокам и сверху
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           // Внутренний отступ для содержимого
           decoration: BoxDecoration(
-            color: AppColors.blueBackground,
+            color: AppColors.white,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [AppTheme.cardShadow],
           ),
@@ -46,7 +46,7 @@ class ProfileHeader extends StatelessWidget {
                   },
                   child: CircleAvatar(
                     radius: 60,
-                    backgroundColor: AppColors.white,
+                    backgroundColor: AppColors.lightOrange.withValues(alpha: 0.2),
                     child: SecureNetworkImage(
                       imageUrl: userAvatar.url,
                       fit: BoxFit.cover,
