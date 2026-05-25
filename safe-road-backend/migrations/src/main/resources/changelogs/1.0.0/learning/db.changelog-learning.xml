@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+	<changeSet id="learning-create-enum-progress_status" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">SELECT COUNT(1)
+										 FROM pg_type
+										 WHERE typname = 'progress_status'</sqlCheck>
+		</preConditions>
+		<sql>
+			CREATE TYPE progress_status AS ENUM ('LOCKED', 'UNLOCKED', 'COMPLETED');
+		</sql>
+	</changeSet>
+	<changeSet id="learning-create-enum-test_mode" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">SELECT COUNT(1)
+										 FROM pg_type
+										 WHERE typname = 'test_mode'</sqlCheck>
+		</preConditions>
+		<sql>
+			CREATE TYPE test_mode AS ENUM ('PRACTICE', 'EXAM', 'TOPIC', 'SECTION');
+		</sql>
+	</changeSet>
+	<changeSet id="learning-create_user_topic_progress" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<not>
+				<tableExists tableName="user_topic_progress"/>
+			</not>
+		</preConditions>
+		<createTable tableName="user_topic_progress">
+			<column name="user_id" type="BIGINT" autoIncrement="true">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+			<column name="topic_id" type="INTEGER">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+			<column name="status" type="VARCHAR(255)">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+		</createTable>
+		<addPrimaryKey columnNames="user_id, topic_id" constraintName="user_topic_progress_pkey"
+					   tableName="user_topic_progress"/>
+		<addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_topic_progress"
+								 constraintName="fk_user_topic_progress_user_id" referencedColumnNames="id"
+								 referencedTableName="users"/>
+		<addForeignKeyConstraint baseColumnNames="topic_id" baseTableName="user_topic_progress"
+								 constraintName="fk_user_topic_progress_topic_id" referencedColumnNames="id"
+								 referencedTableName="topics"/>
+	</changeSet>
+	<changeSet id="learning-create_UserQuestionStats" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<not>
+				<tableExists tableName="user_question_stats"/>
+			</not>
+		</preConditions>
+		<createTable tableName="user_question_stats">
+			<column name="user_id" type="BIGINT" autoIncrement="true">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+			<column name="question_id" type="BIGINT">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+			<column name="topic_id" type="INTEGER">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+			<column name="success_streak" type="INTEGER">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+			<column name="last_result_correct" type="BOOLEAN">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+			<column name="next_review_at" type="TIMESTAMP">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+		</createTable>
+		<addPrimaryKey columnNames="user_id, question_id" constraintName="user_question_stats_pkey"
+					   tableName="user_question_stats"/>
+		<addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_question_stats"
+								 constraintName="fk_user_question_stats_user_id" referencedColumnNames="id"
+								 referencedTableName="users"/>
+		<addForeignKeyConstraint baseColumnNames="question_id" baseTableName="user_question_stats"
+								 constraintName="fk_user_question_stats_question_id" referencedColumnNames="id"
+								 referencedTableName="questions"/>
+		<addForeignKeyConstraint baseColumnNames="topic_id" baseTableName="user_question_stats"
+								 constraintName="fk_user_question_stats_topic_id" referencedColumnNames="id"
+								 referencedTableName="topics"/>
+	</changeSet>
+	<changeSet id="learning-create_ReviewIntervals" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<not>
+				<tableExists tableName="review_intervals"/>
+			</not>
+		</preConditions>
+		<createTable tableName="review_intervals">
+			<column name="streak_level" type="INTEGER" autoIncrement="true">
+				<constraints primaryKey="true"
+							 primaryKeyName="review_intervals_pkey"
+							 nullable="false"
+				/>
+			</column>
+			<column name="interval_hours" type="INTEGER">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet id="learning-create_user_section_progress" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<not>
+				<tableExists tableName="user_section_progress"/>
+			</not>
+		</preConditions>
+		<createTable tableName="user_section_progress">
+			<column name="user_id" type="BIGINT" autoIncrement="true">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+			<column name="section_id" type="INTEGER">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+			<column name="status" type="VARCHAR(255)">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+		</createTable>
+		<addPrimaryKey columnNames="user_id, section_id" constraintName="user_section_progress_pkey"
+					   tableName="user_section_progress"/>
+		<addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_section_progress"
+								 constraintName="fk_user_section_progress_user_id" referencedColumnNames="id"
+								 referencedTableName="users"/>
+		<addForeignKeyConstraint baseColumnNames="section_id" baseTableName="user_section_progress"
+								 constraintName="fk_user_section_progress_section_id" referencedColumnNames="id"
+								 referencedTableName="sections"/>
+	</changeSet>
+	<changeSet id="learning-create_test_sessions" author="safe-road">
+		<preConditions onFail="CONTINUE">
+			<not>
+				<tableExists tableName="test_sessions"/>
+			</not>
+		</preConditions>
+		<createTable tableName="test_sessions">
+			<column name="id" type="BIGINT" autoIncrement="true">
+				<constraints primaryKey="true"
+							 primaryKeyName="test_sessions_pkey"
+							 nullable="false"
+				/>
+			</column>
+			<column name="user_id" type="BIGINT">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+			<column name="topic_id" type="INTEGER">
+			</column>
+			<column name="section_id" type="INTEGER">
+			</column>
+			<column name="mode" type="VARCHAR(255)">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+			<column name="status" type="VARCHAR(255)">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+			<column name="questions_data" type="JSONB">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+			<column name="total_questions" type="INTEGER">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+			<column name="correct_count" type="INTEGER">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+			<column name="created_at" type="TIMESTAMP">
+				<constraints
+						nullable="false"
+				/>
+			</column>
+			<column name="finished_at" type="TIMESTAMP">
+			</column>
+		</createTable>
+		<addForeignKeyConstraint baseColumnNames="user_id" baseTableName="test_sessions"
+								 constraintName="fk_test_sessions_user_id" referencedColumnNames="id"
+								 referencedTableName="users"/>
+		<addForeignKeyConstraint baseColumnNames="topic_id" baseTableName="test_sessions"
+								 constraintName="fk_test_sessions_topic_id" referencedColumnNames="id"
+								 referencedTableName="topics"/>
+		<addForeignKeyConstraint baseColumnNames="section_id" baseTableName="test_sessions"
+								 constraintName="fk_test_sessions_section_id" referencedColumnNames="id"
+								 referencedTableName="sections"/>
+	</changeSet>
+</databaseChangeLog>

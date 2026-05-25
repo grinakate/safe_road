@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+	<changeSet id="notifications-create_notifications" author="safe-road">
+				<preConditions onFail="CONTINUE">
+					<not>
+						<tableExists tableName="notifications"/>
+					</not>
+				</preConditions>
+		<createTable tableName="notifications">
+			<column name="id" type="BIGINT" autoIncrement="true">
+				<constraints primaryKey="true"
+							 primaryKeyName="notifications_pkey"
+							 nullable="false"/>
+			</column>
+			<column name="user_id" type="BIGINT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="title" type="TEXT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="content" type="JSONB">
+				<constraints nullable="false"/>
+			</column>
+			<column name="created_at" type="TIMESTAMP">
+				<constraints nullable="false"/>
+			</column>
+			<column name="is_read" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint baseColumnNames="user_id" baseTableName="notifications"
+								 constraintName="fk_notifications_user_id" referencedColumnNames="id"
+								 referencedTableName="users"/>
+	</changeSet>
+</databaseChangeLog>

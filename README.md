@@ -1,36 +1,63 @@
-# safe_road
+# SafeRoad (Безопасная дорога)
 
-A new Flutter project.
+Мобильное приложение для обучения школьников правилам дорожного движения с использованием игровых механик.
 
-## Getting Started
+## Описание проекта
+Приложение разработано в рамках выпускной квалификационной работы. Основная цель — повышение вовлеченности школьников в изучение ПДД через микрообучение, систему достижений, уровней и рейтингов.
 
-This project is a starting point for a Flutter application.
+## Основные возможности
+- Микрообучение: Короткие уроки с теорией и примерами.
+- Тестирование: адаптивный подбор вопросов и мгновенная обратная связь
+- Статистика успеваемости
 
-A few resources to get you started if this is your first Flutter project:
+![learning.png](docs/learning.png)
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+- Геймификация: Начисление очков опыта (XP), система уровней, достижения и еженедельные рейтинги.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![gamification.png](docs/gamification.png)
 
-**Запуск инфраструктуры для локальной разработки:** <br>
 
-```shell
-docker-compose up -d
+## Стек технологий
+- Backend: Java 25, Spring Boot 4, PostgreSQL.
+- Frontend: Flutter (Dart).
+- API: RESTful API, SSE (Server-Sent Events).
+- Безопасность: JWT (JSON Web Tokens), Spring Security.
+
+## Структура проекта
+
+Проект разделен на две основные части: серверную (`safe-road-backend`) и клиентскую (`safe-road-mobile`).
+
+### Backend (Модульный монолит)
+```
+safe-road-backend/
+├── app-main/               # Точка входа и глобальная конфигурация
+├── core/                   # Общие DTO, исключения и утилиты
+├── migrations/             # Миграции БД (Liquibase)
+├── module-auth/            # Модуль авторизации и управления пользователями
+├── module-content/         # Управление учебным контентом
+├── module-gamification/    # Логика уровней, XP и достижений
+├── module-learning/        # Адаптивное обучение и тесты
+└── module-notifications/   # Система уведомлений
 ```
 
-**Запуск миграций на локальной БД:**
-
-```shell
-cd ./backend/migrations 
-mvn process-resources liquibase:update@migrate-backend "-Ddb.url=jdbc:postgresql://localhost:5432/safe_road?currentSchema=safe_road" "-Ddb.username=safe_road" "-Ddb.password=safe_road" "-DskipTests=true"
+### Mobile (Flutter)
+```
+safe-road-mobile/
+└── lib/
+├── core/           # Общие конфигурации и константы
+├── data/           # Слой данных
+│   ├── models/     # Модели данных (DTO)
+│   └── services/   # Сервисы для работы с API (Dio)
+├── logic/          # Слой бизнес-логики
+│   └── providers/  # Управление состоянием (Provider)
+├── ui/             # Слой представления (UI)
+│   ├── screens/    # Экраны приложения
+│   ├── styles/     # Стили элементов
+│   ├── theme/      # Тема приложения (цветовая палитра)
+│   └── widgets/    # Переиспользуемые компоненты
+├── utils/          # Вспомогательные утилиты
+└── main.dart       # Точка входа в приложени
 ```
 
-**Удаление инфраструктуры для локальной разработки:** <br>
-
-```shell
-docker-compose down
-```
+Интерактивная документация API доступна через **Swagger (OpenAPI)** по адресу
+http://localhost:8080/swagger-ui/index.html при локальном запуске.
