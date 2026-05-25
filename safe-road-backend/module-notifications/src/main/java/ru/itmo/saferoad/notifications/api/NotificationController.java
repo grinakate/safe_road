@@ -22,7 +22,6 @@ import ru.itmo.saferoad.notifications.service.NotificationService;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,13 +35,14 @@ public class NotificationController {
 	private final NotificationService notificationService;
 	private final NotificationsProperties notificationsProperties;
 
-	public NotificationController(SseNotificationManager sseNotificationManager,
+	public NotificationController(ExecutorService executorService,
+								  SseNotificationManager sseNotificationManager,
 								  NotificationService notificationService,
 								  NotificationsProperties notificationsProperties) {
+		this.executorService = executorService;
 		this.sseNotificationManager = sseNotificationManager;
 		this.notificationService = notificationService;
 		this.notificationsProperties = notificationsProperties;
-		this.executorService = Executors.newFixedThreadPool(notificationsProperties.getSchedulerSendingThreadsCount());
 	}
 
 	@GetMapping("/subscribe")

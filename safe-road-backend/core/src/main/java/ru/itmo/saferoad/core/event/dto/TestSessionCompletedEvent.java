@@ -18,8 +18,6 @@ public class TestSessionCompletedEvent {
     private Integer correctAnswers;
     private List<QuestionDetail> details;
 
-    // Lombok-generated getters (getUserId/getTopicId/getTotalQuestions/getCorrectAnswers/getDetails) are used
-
     @Getter
     @Builder
     @NoArgsConstructor
@@ -28,7 +26,5 @@ public class TestSessionCompletedEvent {
         private String type;
         private Integer difficulty;
         private Boolean isCorrect;
-
-        // Lombok-generated getters (getType/getDifficulty/getIsCorrect) are used
     }
 }

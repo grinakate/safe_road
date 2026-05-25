@@ -8,10 +8,9 @@ import ru.itmo.saferoad.content.domain.Question;
 import ru.itmo.saferoad.content.domain.QuestionContent;
 import ru.itmo.saferoad.content.domain.repository.QuestionRepository;
 import ru.itmo.saferoad.core.time.CurrentTime;
-import ru.itmo.saferoad.learning.domain.ReviewInterval;
 import ru.itmo.saferoad.learning.domain.UserQuestionStats;
 import ru.itmo.saferoad.learning.domain.UserQuestionStatsId;
-import ru.itmo.saferoad.learning.domain.repository.ReviewIntervalRepository;
+// ...existing imports...
 import ru.itmo.saferoad.learning.domain.repository.UserQuestionStatsRepository;
 import ru.itmo.saferoad.learning.dto.SubmitAnswerResponse;
 import ru.itmo.saferoad.learning.service.UserQuestionStatsService;
@@ -23,7 +22,7 @@ import java.util.Optional;
 public class UserQuestionStatsServiceImpl implements UserQuestionStatsService {
 
 	private final UserQuestionStatsRepository userQuestionStatsRepository;
-	private final ReviewIntervalRepository reviewIntervalRepository;
+	private final ReviewScheduler reviewScheduler;
 	private final QuestionRepository questionRepository;
 	private final CurrentTime currentTime;
 
@@ -58,14 +57,7 @@ public class UserQuestionStatsServiceImpl implements UserQuestionStatsService {
 		int newStreak = isCorrect ? stats.getSuccessStreak() + 1 : 0;
 		stats.setSuccessStreak(newStreak);
 
-		Optional<ReviewInterval> intervalOpt = reviewIntervalRepository.findById(newStreak);
-		int hours = intervalOpt.map(ReviewInterval::getIntervalHours).orElse(24);
-
-		if (!isCorrect) {
-			hours = reviewIntervalRepository.findById(0)
-					.map(ReviewInterval::getIntervalHours).orElse(0);
-		}
-
+		int hours = reviewScheduler.getHoursForStreak(newStreak, isCorrect);
 		stats.setNextReviewAt(currentTime.nowDateTime().plusHours(hours));
 		userQuestionStatsRepository.save(stats);
 

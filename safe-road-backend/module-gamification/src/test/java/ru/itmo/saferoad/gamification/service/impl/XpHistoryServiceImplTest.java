@@ -41,7 +41,7 @@ class XpHistoryServiceImplTest {
 		// Given
 		LocalDate weekStart = LocalDate.of(2024, 12, 1);
 		when(currentTime.weekStart()).thenReturn(weekStart);
-		LeaderboardProjection p = Instancio.create(LeaderboardProjection.class);
+		LeaderboardProjection p = org.mockito.Mockito.mock(LeaderboardProjection.class);
 		when(repository.findWeekLeaderboardProjection(eq(weekStart), any())).thenReturn(List.of(p));
 
 		// When
@@ -49,6 +49,7 @@ class XpHistoryServiceImplTest {
 
 		// Then
 		assertEquals(1, res.size());
+		assertEquals(p, res.get(0));
 		verify(currentTime, times(1)).weekStart();
 		verify(repository, times(1)).findWeekLeaderboardProjection(eq(weekStart), any());
 	}

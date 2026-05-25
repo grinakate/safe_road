@@ -27,6 +27,7 @@ import ru.itmo.saferoad.gamification.api.dto.UpdateProfileRequest;
 import ru.itmo.saferoad.gamification.api.dto.UserAchievementsResponse;
 import ru.itmo.saferoad.gamification.api.dto.UserGameProfileDto;
 import ru.itmo.saferoad.gamification.api.dto.XpHistoryDto;
+import ru.itmo.saferoad.gamification.api.mapper.LeaderboardMapper;
 import ru.itmo.saferoad.gamification.domain.Avatar;
 import ru.itmo.saferoad.gamification.domain.GameProfile;
 import ru.itmo.saferoad.gamification.domain.LeaderboardPeriod;
@@ -34,10 +35,10 @@ import ru.itmo.saferoad.gamification.domain.repository.LeaderboardProjection;
 import ru.itmo.saferoad.gamification.service.AchievementService;
 import ru.itmo.saferoad.gamification.service.AvatarService;
 import ru.itmo.saferoad.gamification.service.GameProfileService;
+import ru.itmo.saferoad.gamification.service.LeaderboardService;
 import ru.itmo.saferoad.gamification.service.LevelService;
 import ru.itmo.saferoad.gamification.service.XpHistoryService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Transactional
@@ -52,6 +53,8 @@ public class GamificationController {
 	private final XpHistoryService xpHistoryService;
 	private final GameProfileService gameProfileService;
 	private final AchievementService achievementService;
+	private final LeaderboardMapper leaderboardMapper;
+	private final LeaderboardService leaderboardService;
 
 	@GetMapping("/leaderboard")
 	@PreAuthorize("isAuthenticated()")
@@ -67,40 +70,11 @@ public class GamificationController {
 			leaders = gameProfileService.getTotalTop10();
 		}
 
-		boolean currentInTop = false;
-		List<LeaderboardEntryDto> response = new ArrayList<>(11);
-		for (int i = 0; i < leaders.size(); i++) {
-			var h = leaders.get(i);
-			var isCurrentUser = h.getUserId().equals(currentUser.getId());
-			response.add(new LeaderboardEntryDto(
-					i + 1L,
-					h.getAvatarUrl(),
-					h.getNickname(),
-					h.getCurrentXp(),
-					isCurrentUser
-			));
-			if (isCurrentUser) {
-				currentInTop = true;
-			}
-		}
+		List<LeaderboardEntryDto> response = leaderboardMapper.toDtoList(leaders, currentUser);
 
+		boolean currentInTop = response.stream().anyMatch(LeaderboardEntryDto::getIsCurrentUser);
 		if (!currentInTop) {
-			var userGameProfile = gameProfileService.existingByUserId(currentUser.getId());
-
-			long userXp = LeaderboardPeriod.WEEK.equals(period)
-					? xpHistoryService.getWeekXpByUser(currentUser.getId())
-					: userGameProfile.getXp();
-
-			long userRank = LeaderboardPeriod.WEEK.equals(period)
-					? xpHistoryService.getWeeklyRank(userXp)
-					: gameProfileService.getRank(userXp);
-
-			response.add(LeaderboardEntryDto.builder()
-					.xp(userXp)
-					.avatarUrl(userGameProfile.getAvatar().getUrl())
-					.rank(userRank)
-					.isCurrentUser(true)
-					.nickname(currentUser.getNickname()).build());
+			response.add(leaderboardService.buildCurrentUserEntry(currentUser, period));
 		}
 
 		return ResponseEntity.ok(response);

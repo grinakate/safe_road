@@ -22,7 +22,7 @@ import ru.itmo.saferoad.learning.domain.repository.UserQuestionStatsRepository;
 import ru.itmo.saferoad.learning.dto.StartTestRequest;
 import ru.itmo.saferoad.learning.dto.StartTestResponse;
 import ru.itmo.saferoad.learning.dto.SubmitSessionAnswerRequest;
-import ru.itmo.saferoad.learning.dto.TestAnswerOptionResponse;
+// ...existing imports...
 import ru.itmo.saferoad.learning.dto.TestErrorResponse;
 import ru.itmo.saferoad.learning.dto.TestQuestionResponse;
 import ru.itmo.saferoad.learning.dto.TestResultResponse;
@@ -30,6 +30,7 @@ import ru.itmo.saferoad.learning.dto.TestSessionSubmitResponse;
 import ru.itmo.saferoad.learning.service.TestSessionService;
 import ru.itmo.saferoad.learning.service.UserQuestionStatsService;
 import ru.itmo.saferoad.learning.service.UserTopicProgressService;
+import ru.itmo.saferoad.learning.api.QuestionMapper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -52,7 +53,9 @@ public class TestSessionServiceImpl implements TestSessionService {
 	private final LearningProperties learningProperties;
 	private final TopicService topicService;
 	private final UserTopicProgressService userTopicProgressService;
+	private final QuestionMapper questionMapper;
 	private final CurrentTime currentTime;
+	private final QuestionSelector questionSelector;
 
 	@Override
 	@Transactional
@@ -99,31 +102,7 @@ public class TestSessionServiceImpl implements TestSessionService {
 		}
 
 		List<Question> questions = questionRepository.findAllById(questionIds);
-
-		return questions.stream().map(q -> {
-			Integer correctAnswerNumber = q.getContent().getOptions().stream()
-					.filter(ru.itmo.saferoad.content.domain.QuestionContent.AnswerOption::getIsCorrect)
-					.findFirst()
-					.map(ru.itmo.saferoad.content.domain.QuestionContent.AnswerOption::getNumber)
-					.orElse(null);
-
-			List<TestAnswerOptionResponse> options = q.getContent().getOptions().stream()
-					.map(o -> new TestAnswerOptionResponse(
-							o.getNumber(),
-							o.getText(),
-							o.getFeedback(),
-							o.getIsCorrect()))
-					.toList();
-
-			return new TestQuestionResponse(
-					q.getId(),
-					q.getType(),
-					q.getContent().getQuestionText(),
-					q.getContent().getImageUrlPlaceholder(),
-					options,
-					correctAnswerNumber
-			);
-		}).toList();
+		return questionMapper.toTestQuestionResponseList(questions);
 	}
 
 	@NotNull
@@ -131,7 +110,7 @@ public class TestSessionServiceImpl implements TestSessionService {
 		List<Question> allQuestions = questionRepository.findByTopicId(topicId);
 		List<UserQuestionStats> userStats = userQuestionStatsRepository.findByUserIdAndTopicId(userId, topicId);
 		int targetCount = 10;
-		return selectQuestionsAdaptively(allQuestions, userStats, targetCount);
+		return questionSelector.selectQuestionsAdaptively(allQuestions, userStats, targetCount);
 	}
 
 	@NotNull
@@ -139,75 +118,10 @@ public class TestSessionServiceImpl implements TestSessionService {
 		List<Question> allQuestions = questionRepository.findByTopicSectionId(sectionId);
 		List<UserQuestionStats> userStats = userQuestionStatsRepository.findByUserIdAndSectionId(userId, sectionId);
 		int targetCount = 20;
-		return selectQuestionsAdaptively(allQuestions, userStats, targetCount);
+		return questionSelector.selectQuestionsAdaptively(allQuestions, userStats, targetCount);
 	}
 
-	@NotNull
-	private List<Question> selectQuestionsAdaptively(@NotNull List<Question> allQuestions,
-													 @NotNull List<UserQuestionStats> userStats,
-													 int targetCount) {
-		LocalDateTime now = currentTime.nowDateTime();
-
-		Map<Long, UserQuestionStats> statsMap = new HashMap<>();
-		for (UserQuestionStats stat : userStats) {
-			statsMap.put(stat.getQuestionId(), stat);
-		}
-
-		List<Question> needsReview = new ArrayList<>();
-		List<Question> newQuestions = new ArrayList<>();
-		List<Question> knownQuestions = new ArrayList<>();
-
-		for (Question q : allQuestions) {
-			UserQuestionStats stat = statsMap.get(q.getId());
-			if (stat == null) {
-				newQuestions.add(q);
-			} else if (!stat.getNextReviewAt().isAfter(now)) {
-				needsReview.add(q);
-			} else {
-				knownQuestions.add(q);
-			}
-		}
-
-		needsReview.sort(Comparator.comparing(q -> statsMap.get(q.getId()).getNextReviewAt()));
-		Collections.shuffle(newQuestions);
-		Collections.shuffle(knownQuestions);
-
-		int maxReview = (int) Math.floor(targetCount * learningProperties.getReviewRatio());
-		int maxNew = (int) Math.floor(targetCount * learningProperties.getNewRatio());
-		int maxKnown = targetCount - (maxReview + maxNew);
-
-		// 1) 60% Review
-		int actualReview = Math.min(maxReview, needsReview.size());
-		List<Question> selected = new ArrayList<>(needsReview.subList(0, actualReview));
-		int shortageReview = maxReview - actualReview;
-
-		// 2) 30% (+ Review shortage) New
-		int targetNew = maxNew + shortageReview;
-		int actualNew = Math.min(targetNew, newQuestions.size());
-		selected.addAll(newQuestions.subList(0, actualNew));
-		int shortageNew = targetNew - actualNew;
-
-		// 3) 10% (+ New shortage) Known
-		int targetKnown = maxKnown + shortageNew;
-		int actualKnown = Math.min(targetKnown, knownQuestions.size());
-		selected.addAll(knownQuestions.subList(0, actualKnown));
-		int shortageKnown = targetKnown - actualKnown;
-
-		// 4) If still short, try going back and pulling from what's left
-		if (shortageKnown > 0) {
-			int remainingReviewTarget = shortageKnown;
-			int remainingReviewActual = Math.min(remainingReviewTarget, needsReview.size() - actualReview);
-			selected.addAll(needsReview.subList(actualReview, actualReview + remainingReviewActual));
-			shortageKnown -= remainingReviewActual;
-
-			if (shortageKnown > 0) {
-				int remainingNewActual = Math.min(shortageKnown, newQuestions.size() - actualNew);
-				selected.addAll(newQuestions.subList(actualNew, actualNew + remainingNewActual));
-			}
-		}
-
-		return selected;
-	}
+	// selection logic moved to QuestionSelector component
 
 	@Override
 	@Transactional

@@ -24,6 +24,7 @@ import ru.itmo.saferoad.auth.infrastructure.security.JwtUtils;
 import ru.itmo.saferoad.core.event.CreatePendingEventsService;
 import ru.itmo.saferoad.core.event.dto.CreateGameProfileEvent;
 import ru.itmo.saferoad.core.event.dto.UnlockFirstTopicEvent;
+import ru.itmo.saferoad.core.time.CurrentTime;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -61,6 +62,9 @@ class AuthControllerTest {
 
 	@Mock
 	private CreatePendingEventsService createPendingEventsService;
+
+	@Mock
+	private CurrentTime currentTime;
 
 	@InjectMocks
 	private AuthController authController;
@@ -134,6 +138,9 @@ class AuthControllerTest {
 		when(userService.existingById(userId)).thenReturn(user);
 		when(usersMapper.mapToProfileResponse(any())).thenReturn(profile);
 
+		LocalDateTime now = LocalDateTime.now();
+		when(currentTime.nowDateTime()).thenReturn(now);
+
 		// When
 		ResponseEntity<UserProfileResponse> resp = authController.updateProfile(userDetails, request);
 
@@ -202,6 +209,9 @@ class AuthControllerTest {
 		when(passwordEncoder.matches(request.getOldPassword(), user.getPasswordHash())).thenReturn(true);
 		String encoded = "encoded-" + request.getNewPassword();
 		when(passwordEncoder.encode(request.getNewPassword())).thenReturn(encoded);
+
+		LocalDateTime now = LocalDateTime.now();
+		when(currentTime.nowDateTime()).thenReturn(now);
 
 		// When
 		ResponseEntity<?> resp = authController.updatePassword(userDetails, request);

@@ -20,6 +20,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -153,17 +154,7 @@ class UserMetricServiceImplTest {
 	void addXp_withNegativeDelta_shouldNotModifyXpHistory() {
 		// Given
 		Long userId = 57L;
-		when(userMetricRepository.findByUserIdAndMetricCode(userId, "xp")).thenReturn(Optional.empty());
-		LocalDate weekStart = LocalDate.of(2024, 12, 9);
-		when(currentTime.weekStart()).thenReturn(weekStart);
-		when(currentTime.nowDateTime()).thenReturn(LocalDateTime.of(2024, 12, 10, 12, 0));
-		// xpHistory present
-		XpHistory existing = new XpHistory();
-		existing.setUserId(userId);
-		existing.setWeekStart(weekStart);
-		existing.setXp(20L);
-		when(xpHistoryRepository.findByUserIdAndWeekStart(userId, weekStart)).thenReturn(Optional.of(existing));
-
+		
 		// When
 		service.addXp(userId, -5);
 
