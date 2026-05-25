@@ -23,7 +23,7 @@ public class LevelServiceImpl implements LevelService {
 			return 1.0;
 		}
 
-		return (double) (currentLevel.getXpThreshold() - currentXp)
+		return (double) (currentXp - previosLevel.getXpThreshold())
 			   / (double) (currentLevel.getXpThreshold() - previosLevel.getXpThreshold());
 	}
 
