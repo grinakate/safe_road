@@ -74,7 +74,6 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
     }
   }
 
-  /// --- ОБРАБОТКА НАЖАТИЯ НА ТОПИК ---
   Future<void> _handleTopicTap(
     Topic topic,
     int sectionId,
@@ -84,7 +83,6 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
     _startQuiz(topicId: isSectionTest ? null : topic.id, sectionId: sectionId);
   }
 
-  /// --- UI BUILDING ---
   @override
   Widget build(BuildContext context) {
     final gameProfileProvider = context.watch<GameProfileProvider>();
@@ -155,7 +153,7 @@ class _RoadMapScreenState extends State<RoadMapScreen> {
               ),
             ),
           ),
-          // 3. RoadHeader, который будет всегда прикреплен к верху, поверх всего.
+          // 3. RoadHeader будет всегда прикреплен к верху и поверх всего.
           const Positioned(
             top: 0,
             left: 0,

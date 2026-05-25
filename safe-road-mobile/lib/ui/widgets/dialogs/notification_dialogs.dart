@@ -49,7 +49,6 @@ class NotificationDialogs {
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildRewardImage(),
-              const SizedBox(height: 12),
               Text(
                 levelUp ? 'Новый уровень!' : 'Поздравляем!',
                 style: AppTextStyles.achievementTitle,
@@ -101,9 +100,9 @@ class NotificationDialogs {
 
   static Widget _buildRewardImage() {
     return Image.asset(
-      'assets/images/congratulations.png',
-      width: 96,
-      height: 96,
+      'assets/images/congrats_600.png',
+      /*width: 96,
+      height: 96,*/
       errorBuilder: (c, e, s) => const Icon(
         Icons.card_giftcard,
         size: 64,

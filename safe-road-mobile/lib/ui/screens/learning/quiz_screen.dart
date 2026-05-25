@@ -158,6 +158,7 @@ class _QuizScreenState extends State<QuizScreen> {
       title: Text(
         'Вопрос ${_currentQuestionIndex + 1} из ${_questions.length}',
       ),
+      backgroundColor: AppColors.white,
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(4),
         child: LinearProgressIndicator(
@@ -219,7 +220,7 @@ class _QuizScreenState extends State<QuizScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            isCorrect ? '✨ Отлично!' : '😔 Увы, неправильно',
+            isCorrect ? 'Отлично!' : 'Увы, неправильно',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,

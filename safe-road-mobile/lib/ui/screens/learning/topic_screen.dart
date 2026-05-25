@@ -81,36 +81,6 @@ class _TopicScreenState extends State<TopicScreen> {
     }
   }
 
-  /// Метод запуска тестирования по текущей теме
-  Future<void> _startQuiz() async {
-    if (_isQuizStarting) return;
-    setState(() => _isQuizStarting = true);
-
-    try {
-      final service = GetIt.I<LearningService>();
-      final startResp = await service.startTest(widget.topicId);
-      final sessionId = startResp.sessionId;
-
-      if (!mounted) return;
-
-      context.read<LearningProvider>().setLastResult(
-        correct: 0,
-        total: 0,
-        experience: 0,
-        topicId: widget.topicId,
-      );
-
-      // Переходим на экран квиза
-      context.push('/quiz/$sessionId');
-    } catch (e) {
-      _showSnackBar('Ошибка запуска теста: ${e.toString()}');
-    } finally {
-      if (mounted) {
-        setState(() => _isQuizStarting = false);
-      }
-    }
-  }
-
   void _showSnackBar(String text) {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
@@ -134,7 +104,10 @@ class _TopicScreenState extends State<TopicScreen> {
 
     final topic = _topic!;
     return Scaffold(
-      appBar: AppBar(title: Text(topic.title)),
+      appBar: AppBar(
+        title: Text(topic.title),
+        backgroundColor: AppColors.white,
+      ),
       body: SafeArea(
         child: Column(
           children: [

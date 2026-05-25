@@ -12,15 +12,16 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Точечно слушаем только результат последнего теста
     final result = context.select<LearningProvider, TestResult?>(
       (p) => p.state.lastTestResult,
     );
 
-    // Защита: если экран открыли по ошибке, а результатов нет
     if (result == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Результаты')),
+        appBar: AppBar(
+          title: const Text('Результаты'),
+          backgroundColor: AppColors.white,
+        ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -47,6 +48,7 @@ class ResultScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Результаты теста'),
         automaticallyImplyLeading: false,
+        backgroundColor: AppColors.white,
       ),
       body: SafeArea(
         child: Padding(
@@ -82,7 +84,6 @@ class ResultScreen extends StatelessWidget {
     );
   }
 
-  // --- Вспомогательные UI методы ---
   Widget _buildScoreCard(int correct, int wrong, double percent) {
     return Card(
       elevation: 2,
