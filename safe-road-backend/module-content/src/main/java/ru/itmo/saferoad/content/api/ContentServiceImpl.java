@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.itmo.saferoad.content.domain.Section;
 import ru.itmo.saferoad.content.domain.repository.SectionRepository;
 import ru.itmo.saferoad.content.dto.SectionTreeDto;
-import ru.itmo.saferoad.content.dto.TopicBriefDto;
 
 import java.util.List;
 
@@ -16,27 +15,13 @@ import java.util.List;
 public class ContentServiceImpl implements ContentService {
 
 	private final SectionRepository sectionRepository;
+	private final ContentMapper contentMapper;
 
 	@NotNull
 	@Override
 	@Cacheable("courseStructure")
 	public List<SectionTreeDto> getSectionTree() {
 		List<Section> sections = sectionRepository.findAllWithTopics();
-
-		return sections.stream().map(s -> SectionTreeDto.builder()
-						.id(s.getId())
-						.title(s.getTitle())
-						.description(s.getDescription())
-						.url(s.getUrl())
-						.orderIndex(s.getOrderIndex())
-						.topics(s.getTopics().stream()
-								.map(t -> new TopicBriefDto(
-										t.getId(),
-										t.getTitle(),
-										t.getContent(),
-										t.getOrderIndex()))
-								.toList()
-						).build())
-				.toList();
+		return contentMapper.toSectionTreeDtoList(sections);
 	}
 }

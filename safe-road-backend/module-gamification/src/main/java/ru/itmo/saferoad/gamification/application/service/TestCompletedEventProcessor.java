@@ -95,7 +95,7 @@ public class TestCompletedEventProcessor implements EventProcessor {
 		}
 	}
 
-	private int getEarnedXp(TestSessionCompletedEvent payload) {
+	protected int getEarnedXp(TestSessionCompletedEvent payload) {
 		int earnedXp = 0;
 		if (payload.getDetails() != null) {
 			int baseXp = gamificationProperties.getBaseXpPerQuestion();

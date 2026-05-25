@@ -1,4 +1,4 @@
-package ru.itmo.saferoad.gamification.controller;
+package ru.itmo.saferoad.gamification.api;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import ru.itmo.saferoad.auth.application.UserService;
 import ru.itmo.saferoad.core.security.AppUserDetails;
-import ru.itmo.saferoad.gamification.controller.dto.AvatarDto;
-import ru.itmo.saferoad.gamification.controller.dto.ChangeAvatarRequest;
-import ru.itmo.saferoad.gamification.controller.dto.LeaderboardEntryDto;
-import ru.itmo.saferoad.gamification.controller.dto.UpdateProfileRequest;
-import ru.itmo.saferoad.gamification.controller.dto.UserAchievementsResponse;
-import ru.itmo.saferoad.gamification.controller.dto.UserGameProfileDto;
-import ru.itmo.saferoad.gamification.controller.dto.XpHistoryDto;
+import ru.itmo.saferoad.gamification.api.dto.AvatarDto;
+import ru.itmo.saferoad.gamification.api.dto.ChangeAvatarRequest;
+import ru.itmo.saferoad.gamification.api.dto.LeaderboardEntryDto;
+import ru.itmo.saferoad.gamification.api.dto.UpdateProfileRequest;
+import ru.itmo.saferoad.gamification.api.dto.UserAchievementsResponse;
+import ru.itmo.saferoad.gamification.api.dto.UserGameProfileDto;
+import ru.itmo.saferoad.gamification.api.dto.XpHistoryDto;
 import ru.itmo.saferoad.gamification.domain.Avatar;
 import ru.itmo.saferoad.gamification.domain.GameProfile;
 import ru.itmo.saferoad.gamification.domain.LeaderboardPeriod;

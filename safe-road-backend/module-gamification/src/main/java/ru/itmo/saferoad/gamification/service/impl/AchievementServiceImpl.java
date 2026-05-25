@@ -3,13 +3,12 @@ package ru.itmo.saferoad.gamification.service.impl;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.itmo.saferoad.gamification.controller.dto.UserAchievementsResponse;
+import ru.itmo.saferoad.gamification.api.dto.UserAchievementsResponse;
 import ru.itmo.saferoad.gamification.domain.Achievement;
 import ru.itmo.saferoad.gamification.domain.repository.AchievementRepository;
 import ru.itmo.saferoad.gamification.service.AchievementService;
 import ru.itmo.saferoad.gamification.service.UserAchievementService;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,7 +47,6 @@ public class AchievementServiceImpl implements AchievementService {
 						userAchievementIds.contains(a.getId()),
 						a.getRewardXp()
 				))
-				//.sorted(Comparator.comparing(UserAchievementsResponse::isUnlocked).reversed())
 				.toList();
 	}
 }

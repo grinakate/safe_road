@@ -1,4 +1,4 @@
-package ru.itmo.saferoad.gamification.controller.dto.admin;
+package ru.itmo.saferoad.gamification.api.dto.admin;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

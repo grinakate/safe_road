@@ -1,7 +1,7 @@
 package ru.itmo.saferoad.gamification.service;
 
 import lombok.NonNull;
-import ru.itmo.saferoad.gamification.controller.dto.UserAchievementsResponse;
+import ru.itmo.saferoad.gamification.api.dto.UserAchievementsResponse;
 import ru.itmo.saferoad.gamification.domain.Achievement;
 
 import java.util.List;

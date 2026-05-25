@@ -1,4 +1,4 @@
-package ru.itmo.saferoad.gamification.controller.dto;
+package ru.itmo.saferoad.gamification.api.dto;
 
 import lombok.Builder;
 import lombok.Data;

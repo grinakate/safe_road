@@ -11,9 +11,8 @@ import ru.itmo.saferoad.core.event.dto.CreateGameProfileEvent;
 import ru.itmo.saferoad.core.event.dto.NotificationEvent;
 import ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent;
 import ru.itmo.saferoad.core.event.dto.UnlockFirstTopicEvent;
+import ru.itmo.saferoad.core.time.CurrentTime;
 import tools.jackson.databind.json.JsonMapper;
-
-import java.time.LocalDateTime;
 
 @Service
 @AllArgsConstructor
@@ -21,6 +20,7 @@ public class CreatePendingEventsService {
 
 	private final JsonMapper jsonMapper;
 	private final PendingEventsRepository repository;
+	private final CurrentTime currentTime;
 
 	public void publishCreateGameProfileEvent(@NonNull CreateGameProfileEvent content) {
 		publishEvent(EventType.CREATE_GAME_PROFILE, content);
@@ -43,7 +43,7 @@ public class CreatePendingEventsService {
 		event.setContent(content != null ? jsonMapper.writeValueAsString(content) : null);
 		event.setType(eventType);
 		event.setStatus(ProgressStatus.PENDING);
-		event.setCreatedAt(LocalDateTime.now());
+		event.setCreatedAt(currentTime.nowDateTime());
 		repository.save(event);
 	}
 }

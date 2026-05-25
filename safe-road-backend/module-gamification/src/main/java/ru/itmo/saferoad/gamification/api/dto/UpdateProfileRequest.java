@@ -1,4 +1,4 @@
-package ru.itmo.saferoad.gamification.controller.dto;
+package ru.itmo.saferoad.gamification.api.dto;
 
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;

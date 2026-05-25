@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface UserMetricService {
 
-	int addXp(@NonNull Long userId, int deltaXp);
+	void addXp(@NonNull Long userId, int deltaXp);
 
 	@NonNull
 	List<UserMetric> getUserMetrics(@NonNull Long userId);

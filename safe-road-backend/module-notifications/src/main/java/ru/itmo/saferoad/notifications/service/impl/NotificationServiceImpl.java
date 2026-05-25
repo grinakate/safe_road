@@ -4,11 +4,11 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itmo.saferoad.core.event.dto.notifications.NotificationType;
+import ru.itmo.saferoad.core.time.CurrentTime;
 import ru.itmo.saferoad.notifications.domain.Notification;
 import ru.itmo.saferoad.notifications.domain.repository.NotificationRepository;
 import ru.itmo.saferoad.notifications.service.NotificationService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +17,7 @@ import java.util.Set;
 public class NotificationServiceImpl implements NotificationService {
 
 	private final NotificationRepository notificationRepository;
+	private final CurrentTime currentTime;
 
 	@Override
 	public @NonNull List<Notification> getByUserId(@NonNull Long userId) {
@@ -45,7 +46,7 @@ public class NotificationServiceImpl implements NotificationService {
 		notification.setUserId(userId);
 		notification.setType(type.name());
 		notification.setContent(content);
-		notification.setCreatedAt(LocalDateTime.now());
+		notification.setCreatedAt(currentTime.nowDateTime());
 		notification.setIsRead(false);
 
 		return notificationRepository.save(notification);

@@ -36,28 +36,14 @@ public class ContentController {
 	@GetMapping("/sections/{id}/topics")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<@NonNull List<TopicBriefDto>> getTopicsForSection(@PathVariable Integer id) {
-		List<TopicBriefDto> topics = topicService.getBySectionId(id).stream()
-				.map(topic -> new TopicBriefDto(
-						topic.getId(),
-						topic.getTitle(),
-						topic.getContent(),
-						topic.getOrderIndex()
-				))
-				.toList();
-		return ResponseEntity.ok(topics);
+		return ResponseEntity.ok(contentMapper.toTopicBriefDtoList(topicService.getBySectionId(id)));
 	}
 
 	@GetMapping("/topics/{id}")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<@NonNull TopicBriefDto> getTopic(@PathVariable Integer id) {
 		var topic = topicService.existingById(id);
-		var dto = new TopicBriefDto(
-				topic.getId(),
-				topic.getTitle(),
-				topic.getContent(),
-				topic.getOrderIndex()
-		);
-		return ResponseEntity.ok(dto);
+		return ResponseEntity.ok(contentMapper.toTopicBriefDto(topic));
 	}
 
 	@PutMapping("/admin/sections/{id}")
@@ -99,30 +85,12 @@ public class ContentController {
 	private final SectionService sectionService;
 	private final TopicService topicService;
 	private final QuestionService questionService;
+	private final ContentMapper contentMapper;
 
 	@GetMapping("/sections")
 	@PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
 	public ResponseEntity<@NonNull List<SectionTreeDto>> getSectionTree(@AuthenticationPrincipal AppUserDetails currentUser) {
-		List<SectionTreeDto> response = sectionService.getAllOrdered().stream()
-				.map(section -> {
-					List<TopicBriefDto> topics = topicService.getBySectionId(section.getId()).stream()
-							.map(topic -> new TopicBriefDto(
-									topic.getId(),
-									topic.getTitle(),
-									topic.getContent(),
-									topic.getOrderIndex()
-							))
-							.toList();
-					return SectionTreeDto.builder()
-							.id(section.getId())
-							.title(section.getTitle())
-							.description(section.getDescription())
-							.url(section.getUrl())
-							.orderIndex(section.getOrderIndex())
-							.topics(topics).build();
-				})
-				.toList();
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(contentMapper.toSectionTreeDtoList(sectionService.getAllOrdered()));
 	}
 
 /*	@GetMapping("/topics/{topicId}/questions")
@@ -152,13 +120,7 @@ public class ContentController {
 			@AuthenticationPrincipal AppUserDetails currentUser
 	) {
 		var section = sectionService.create(request.getName(), request.getOrderIndex());
-		var response = SectionTreeDto.builder()
-				.id(section.getId())
-				.title(section.getTitle())
-				.description(section.getDescription())
-				.url(section.getUrl())
-				.orderIndex(section.getOrderIndex())
-				.topics(List.of()).build();
+		var response = contentMapper.toSectionTreeDto(section);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
@@ -175,47 +137,6 @@ public class ContentController {
 				request.getOrderIndex(),
 				request.getXpReward()
 		);
-		var response = new TopicBriefDto(
-				topic.getId(),
-				topic.getTitle(),
-				topic.getContent(),
-				topic.getOrderIndex()
-		);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+		return ResponseEntity.status(HttpStatus.CREATED).body(contentMapper.toTopicBriefDto(topic));
 	}
-
-/*	@PostMapping("/admin/questions")
-	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<QuestionWithAnswersDto> createQuestion(
-			@Valid @RequestBody CreateQuestionRequest request,
-			@AuthenticationPrincipal AppUserDetails currentUser
-	) {
-		QuestionType type = QuestionType.valueOf(request.type().toUpperCase());
-		Question created = questionService.create(
-				request.topicId(),
-				type,
-				request.difficultyLevel(),
-				request.content()
-		);
-
-		var answers = request.answers().stream()
-				.map(answerRequest -> answerService.create(
-						created,
-						answerRequest.text(),
-						answerRequest.isCorrect(),
-						answerRequest.feedback()
-				))
-				.toList();
-
-		var response = new QuestionWithAnswersDto(
-				created.getId(),
-				created.getType().title(),
-				created.getDifficultyLevel(),
-				created.getContent(),
-				answers.stream()
-						.map(answer -> new AnswerDto(answer.getId(), answer.getText(), answer.getFeedback()))
-						.collect(Collectors.toList())
-		);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
-	}*/
 }

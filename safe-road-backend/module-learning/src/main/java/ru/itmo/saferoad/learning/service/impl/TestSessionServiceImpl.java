@@ -12,6 +12,7 @@ import ru.itmo.saferoad.content.service.TopicService;
 import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 import ru.itmo.saferoad.core.event.CreatePendingEventsService;
 import ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent;
+import ru.itmo.saferoad.core.time.CurrentTime;
 import ru.itmo.saferoad.learning.config.LearningProperties;
 import ru.itmo.saferoad.learning.domain.TestMode;
 import ru.itmo.saferoad.learning.domain.TestSession;
@@ -51,6 +52,7 @@ public class TestSessionServiceImpl implements TestSessionService {
 	private final LearningProperties learningProperties;
 	private final TopicService topicService;
 	private final UserTopicProgressService userTopicProgressService;
+	private final CurrentTime currentTime;
 
 	@Override
 	@Transactional
@@ -76,7 +78,7 @@ public class TestSessionServiceImpl implements TestSessionService {
 
 		session.setTotalQuestions(totalQuestions);
 		session.setCorrectCount(0);
-		session.setCreatedAt(LocalDateTime.now());
+		session.setCreatedAt(currentTime.nowDateTime());
 
 		Map<String, Object> qData = new HashMap<>();
 		qData.put("questionIds", selectedQuestions.stream().map(Question::getId).toList());
@@ -144,7 +146,7 @@ public class TestSessionServiceImpl implements TestSessionService {
 	private List<Question> selectQuestionsAdaptively(@NotNull List<Question> allQuestions,
 													 @NotNull List<UserQuestionStats> userStats,
 													 int targetCount) {
-		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime now = currentTime.nowDateTime();
 
 		Map<Long, UserQuestionStats> statsMap = new HashMap<>();
 		for (UserQuestionStats stat : userStats) {
@@ -270,7 +272,7 @@ public class TestSessionServiceImpl implements TestSessionService {
 
 		session.setCorrectCount(correctAnswers);
 		session.setStatus(ProgressStatus.COMPLETED);
-		session.setFinishedAt(LocalDateTime.now());
+		session.setFinishedAt(currentTime.nowDateTime());
 		testSessionRepository.save(session);
 
 		TestSessionCompletedEvent eventPayload = TestSessionCompletedEvent.builder()
@@ -300,7 +302,7 @@ public class TestSessionServiceImpl implements TestSessionService {
 		return new TestResultResponse(
 				session.getCorrectCount(),
 				session.getTotalQuestions(),
-				Collections.emptyList() // explanations
+				Collections.emptyList()
 		);
 	}
 }

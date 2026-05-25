@@ -28,8 +28,8 @@ import ru.itmo.saferoad.auth.infrastructure.security.JwtUtils;
 import ru.itmo.saferoad.core.event.CreatePendingEventsService;
 import ru.itmo.saferoad.core.event.dto.CreateGameProfileEvent;
 import ru.itmo.saferoad.core.event.dto.UnlockFirstTopicEvent;
+import ru.itmo.saferoad.core.time.CurrentTime;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Transactional
@@ -43,6 +43,7 @@ public class AuthController {
 	private final UsersMapper usersMapper;
 	private final PasswordEncoder passwordEncoder;
 	private final CreatePendingEventsService createPendingEventsService;
+	private final CurrentTime currentTime;
 
 	@PostMapping("/logout")
 	public ResponseEntity<?> logout() {
@@ -63,7 +64,7 @@ public class AuthController {
 		if (request.getBirthDate() != null) {
 			user.setBirthDate(request.getBirthDate().atStartOfDay());
 		}
-		user.setUpdatedAt(LocalDateTime.now());
+		user.setUpdatedAt(currentTime.nowDateTime());
 		userService.save(user);
 
 		return ResponseEntity.ok(usersMapper.mapToProfileResponse(user));
@@ -77,7 +78,7 @@ public class AuthController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Неверный старый пароль");
 		}
 		user.setPasswordHash(Objects.requireNonNull(passwordEncoder.encode(request.getNewPassword())));
-		user.setUpdatedAt(LocalDateTime.now());
+		user.setUpdatedAt(currentTime.nowDateTime());
 		userService.save(user);
 		return ResponseEntity.ok().build();
 	}

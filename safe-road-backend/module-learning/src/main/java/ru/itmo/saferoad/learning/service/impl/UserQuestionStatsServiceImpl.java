@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.saferoad.content.domain.Question;
 import ru.itmo.saferoad.content.domain.QuestionContent;
 import ru.itmo.saferoad.content.domain.repository.QuestionRepository;
+import ru.itmo.saferoad.core.time.CurrentTime;
 import ru.itmo.saferoad.learning.domain.ReviewInterval;
 import ru.itmo.saferoad.learning.domain.UserQuestionStats;
 import ru.itmo.saferoad.learning.domain.UserQuestionStatsId;
@@ -15,7 +16,6 @@ import ru.itmo.saferoad.learning.domain.repository.UserQuestionStatsRepository;
 import ru.itmo.saferoad.learning.dto.SubmitAnswerResponse;
 import ru.itmo.saferoad.learning.service.UserQuestionStatsService;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -25,6 +25,7 @@ public class UserQuestionStatsServiceImpl implements UserQuestionStatsService {
 	private final UserQuestionStatsRepository userQuestionStatsRepository;
 	private final ReviewIntervalRepository reviewIntervalRepository;
 	private final QuestionRepository questionRepository;
+	private final CurrentTime currentTime;
 
 	@Override
 	@Transactional
@@ -65,7 +66,7 @@ public class UserQuestionStatsServiceImpl implements UserQuestionStatsService {
 					.map(ReviewInterval::getIntervalHours).orElse(0);
 		}
 
-		stats.setNextReviewAt(LocalDateTime.now().plusHours(hours));
+		stats.setNextReviewAt(currentTime.nowDateTime().plusHours(hours));
 		userQuestionStatsRepository.save(stats);
 
 		return new SubmitAnswerResponse(isCorrect, isCorrect ? 10 : 0);
