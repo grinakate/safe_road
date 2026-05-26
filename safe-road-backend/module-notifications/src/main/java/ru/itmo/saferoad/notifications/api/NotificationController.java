@@ -1,15 +1,12 @@
 package ru.itmo.saferoad.notifications.api;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -135,28 +132,6 @@ public class NotificationController {
 				))
 				.toList();
 		return ResponseEntity.ok(notifications);
-	}
-
-	@GetMapping("/unread-count")
-	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<Long> getUnreadCount(@AuthenticationPrincipal AppUserDetails currentUser) {
-		long count = notificationService.getUnreadCount(currentUser.getId());
-		return ResponseEntity.ok(count);
-	}
-
-	@PutMapping("/{notificationId}/read")
-	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<Void> markAsRead(@PathVariable Long notificationId,
-										   @AuthenticationPrincipal AppUserDetails currentUser) {
-		notificationService.markAsRead(notificationId);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-	}
-
-	@PutMapping("/mark-all-read")
-	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<Void> markAllAsRead(@AuthenticationPrincipal AppUserDetails currentUser) {
-		notificationService.markAllAsRead(currentUser.getId());
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }
 

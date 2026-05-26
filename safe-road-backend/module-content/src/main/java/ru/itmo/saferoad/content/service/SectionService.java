@@ -21,4 +21,10 @@ public interface SectionService {
 	Section getFirstSection();
 
 	Optional<Section> getNextSection(@NonNull Integer currentSectionNumber);
+
+	@NonNull
+	Section save(@NonNull Section section);
+
+	@NonNull
+	Section updateSection(@NonNull Integer id, String name, Integer orderIndex, Boolean isActive);
 }

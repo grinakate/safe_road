@@ -25,4 +25,12 @@ public interface TopicService {
 	Topic existingById(@NonNull Integer id);
 
 	Optional<Topic> getNextTopic(@NonNull Topic currentTopic);
+
+	@NonNull
+	Topic save(@NonNull Topic topic);
+
+	@NonNull
+	Topic updateTopic(@NonNull Integer id, String name, String content, Integer orderIndex, Boolean isActive);
+
+	void archiveTopic(@NonNull Integer id);
 }

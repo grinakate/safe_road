@@ -38,6 +38,20 @@ public class SectionServiceImpl implements SectionService {
 				.orElseThrow(() -> new IllegalArgumentException("Section with id " + id + " does not exist"));
 	}
 
+	@Override
+	public @NonNull Section save(@NonNull Section section) {
+		return sectionRepository.save(section);
+	}
+
+	@Override
+	public @NonNull Section updateSection(@NonNull Integer id, String name, Integer orderIndex, Boolean isActive) {
+		Section s = existingById(id);
+		if (name != null) s.setTitle(name);
+		if (orderIndex != null) s.setOrderIndex(orderIndex);
+		if (isActive != null) s.setIsActive(isActive);
+		return sectionRepository.save(s);
+	}
+
 	@NonNull
 	@Override
 	public Section getFirstSection() {

@@ -56,6 +56,28 @@ public class TopicServiceImpl implements TopicService {
 	}
 
 	@Override
+	public @NonNull Topic save(@NonNull Topic topic) {
+		return topicRepository.save(topic);
+	}
+
+	@Override
+	public @NonNull Topic updateTopic(@NonNull Integer id, String name, String content, Integer orderIndex, Boolean isActive) {
+		Topic t = existingById(id);
+		if (name != null) t.setTitle(name);
+		if (content != null) t.setContent(content);
+		if (orderIndex != null) t.setOrderIndex(orderIndex);
+		if (isActive != null) t.setIsActive(isActive);
+		return topicRepository.save(t);
+	}
+
+	@Override
+	public void archiveTopic(@NonNull Integer id) {
+		Topic t = existingById(id);
+		t.setIsActive(false);
+		topicRepository.save(t);
+	}
+
+	@Override
 	public Optional<Topic> getNextTopic(@NonNull Topic currentTopic) {
 		var nextTopicInSameSection = topicRepository.findFirstBySectionIdAndOrderIndexGreaterThanOrderByOrderIndexAsc(
 				currentTopic.getSection().getId(), currentTopic.getOrderIndex());

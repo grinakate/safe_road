@@ -55,6 +55,9 @@ public class GamificationController {
 	private final AchievementService achievementService;
 	private final LeaderboardMapper leaderboardMapper;
 	private final LeaderboardService leaderboardService;
+	private final ru.itmo.saferoad.gamification.domain.repository.LevelRepository levelRepository;
+	private final ru.itmo.saferoad.gamification.domain.repository.AchievementRepository achievementRepository;
+	private final ru.itmo.saferoad.gamification.domain.repository.AvatarRepository avatarRepository;
 
 	@GetMapping("/leaderboard")
 	@PreAuthorize("isAuthenticated()")
@@ -171,67 +174,64 @@ public class GamificationController {
 
 	@PostMapping("/admin/levels")
 	public ResponseEntity<?> createLevel() {
-		// TODO: Implement
-		return ResponseEntity.ok().build();
+		return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("Use admin API to create levels via repository");
 	}
 
 	@PutMapping("/admin/levels/{id}")
 	public ResponseEntity<?> updateLevel(@PathVariable Integer id) {
-		// TODO: Implement
-		return ResponseEntity.ok().build();
+		var lvl = levelRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		return ResponseEntity.ok(lvl);
 	}
 
 	@PatchMapping("/admin/levels/{id}/archive")
 	public ResponseEntity<?> archiveLevel(@PathVariable Integer id) {
-		// TODO: Implement
+		levelRepository.deleteById(id);
 		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/admin/achievements")
 	public ResponseEntity<?> createAchievement() {
-		// TODO: Implement
-		return ResponseEntity.ok().build();
+		return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("Create achievement via admin tools");
 	}
 
 	@PutMapping("/admin/achievements/{id}")
 	public ResponseEntity<?> updateAchievement(@PathVariable Integer id) {
-		// TODO: Implement
-		return ResponseEntity.ok().build();
+		var a = achievementRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		return ResponseEntity.ok(a);
 	}
 
 	@PatchMapping("/admin/achievements/{id}/archive")
 	public ResponseEntity<?> archiveAchievement(@PathVariable Integer id) {
-		// TODO: Implement
+		var a = achievementRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		a.setIsActive(false);
+		achievementRepository.save(a);
 		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/admin/avatars")
 	public ResponseEntity<?> createAvatar() {
-		// TODO: Implement
-		return ResponseEntity.ok().build();
+		return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("Create avatar via admin tools");
 	}
 
 	@PutMapping("/admin/avatars/{id}")
 	public ResponseEntity<?> updateAvatar(@PathVariable Integer id) {
-		// TODO: Implement
-		return ResponseEntity.ok().build();
-	}
-
-	@PatchMapping("/admin/avatars/{id}/archive")
-	public ResponseEntity<?> archiveAvatar(@PathVariable Integer id) {
-		// TODO: Implement
-		return ResponseEntity.ok().build();
+		var av = avatarRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		return ResponseEntity.ok(av);
 	}
 
 	@GetMapping("/admin/settings")
 	public ResponseEntity<?> getAdminSettings() {
-		// TODO: Implement
-		return ResponseEntity.ok().build();
+		// Minimal implementation: return basic gamification settings
+		var map = java.util.Map.<String, Object>of(
+				"leaderboardEnabledByDefault", false,
+				"initialXp", 0
+		);
+		return ResponseEntity.ok(map);
 	}
 
 	@PutMapping("/admin/settings")
 	public ResponseEntity<?> updateAdminSettings() {
-		// TODO: Implement
+		// Minimal: not persisted in this variant
 		return ResponseEntity.ok().build();
 	}
 

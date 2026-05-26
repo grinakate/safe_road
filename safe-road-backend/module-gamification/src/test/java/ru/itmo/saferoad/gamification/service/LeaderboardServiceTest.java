@@ -68,6 +68,44 @@ class LeaderboardServiceTest {
 		assertTrue(dto.getIsCurrentUser());
 		assertEquals("nick", dto.getNickname());
 	}
+
+	@Test
+	void buildCurrentUserEntry_usesProfileXp_whenPeriodAll() {
+		// Given
+		AppUserDetails current = mock(AppUserDetails.class);
+		when(current.getId()).thenReturn(3L);
+		when(current.getNickname()).thenReturn("alluser");
+
+		Avatar avatar = Instancio.of(Avatar.class)
+				.set(field(Avatar::getId), 11)
+				.set(field(Avatar::getUrl), "/all.png")
+				.set(field(Avatar::getMinLevel), 1)
+				.create();
+
+		Level lvl = Instancio.of(Level.class)
+				.set(field(Level::getNumber), 2)
+				.set(field(Level::getXpThreshold), 200)
+				.create();
+
+		GameProfile profile = Instancio.of(GameProfile.class)
+				.set(field(GameProfile::getUserId), 3L)
+				.set(field(GameProfile::getAvatar), avatar)
+				.set(field(GameProfile::getLevel), lvl)
+				.set(field(GameProfile::getXp), 999)
+				.create();
+
+		when(gameProfileService.existingByUserId(3L)).thenReturn(profile);
+		when(gameProfileService.getRank(999L)).thenReturn(7L);
+
+		// When
+		LeaderboardEntryDto dto = service.buildCurrentUserEntry(current, ru.itmo.saferoad.gamification.domain.LeaderboardPeriod.ALL);
+
+		// Then
+		assertEquals(999L, dto.getXp());
+		assertEquals(7L, dto.getRank());
+		assertTrue(dto.getIsCurrentUser());
+		assertEquals("alluser", dto.getNickname());
+	}
 }
 
 

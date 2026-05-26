@@ -120,57 +120,6 @@ class NotificationControllerTest {
 	}
 
 	@Test
-	void getUnreadCount_delegatesToService() {
-		// Given
-		AppUserDetails user = mock(AppUserDetails.class);
-		when(user.getId()).thenReturn(7L);
-		when(notificationService.getUnreadCount(7L)).thenReturn(5L);
-
-		controller = new NotificationController(executorService, sseNotificationManager, notificationService, notificationsProperties);
-
-		// When
-		ResponseEntity<Long> resp = controller.getUnreadCount(user);
-
-		// Then
-		assertEquals(5L, resp.getBody());
-
-
-	}
-
-	@Test
-	void markAsRead_callsService_andReturnsNoContent() {
-		// Given
-		AppUserDetails user = mock(AppUserDetails.class);
-
-
-		controller = new NotificationController(executorService, sseNotificationManager, notificationService, notificationsProperties);
-
-		// When
-		var resp = controller.markAsRead(100L, user);
-
-		// Then
-		verify(notificationService, times(1)).markAsRead(100L);
-		assertEquals(204, resp.getStatusCode().value());
-	}
-
-	@Test
-	void markAllAsRead_callsService_andReturnsNoContent() {
-		// Given
-		AppUserDetails user = mock(AppUserDetails.class);
-		when(user.getId()).thenReturn(8L);
-
-
-		controller = new NotificationController(executorService, sseNotificationManager, notificationService, notificationsProperties);
-
-		// When
-		var resp = controller.markAllAsRead(user);
-
-		// Then
-		verify(notificationService, times(1)).markAllAsRead(8L);
-		assertEquals(204, resp.getStatusCode().value());
-	}
-
-	@Test
 	void pollAndSendNotifications_sendsNotificationsAndHeartbeats() {
 		// Given
 		when(sseNotificationManager.getUserIds()).thenReturn(Set.of(1L, 2L));

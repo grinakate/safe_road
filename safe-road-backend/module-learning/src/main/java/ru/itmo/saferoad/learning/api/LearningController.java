@@ -39,14 +39,16 @@ public class LearningController {
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<StartTestResponse> startTest(@RequestBody StartTestRequest request,
 													   @AuthenticationPrincipal AppUserDetails user) {
-		return ResponseEntity.ok(testSessionService.startTest(request, user.getId()));
+		var response = testSessionService.startTest(request, user.getId());
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/test/{sessionId}/questions")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<List<TestQuestionResponse>> getTestQuestions(@PathVariable Long sessionId,
 																	   @AuthenticationPrincipal AppUserDetails user) {
-		return ResponseEntity.ok(testSessionService.getTestQuestions(sessionId, user.getId()));
+		var response = testSessionService.getTestQuestions(sessionId, user.getId());
+		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/test/{sessionId}/submit-answer")
@@ -54,26 +56,29 @@ public class LearningController {
 			@PathVariable Long sessionId,
 			@RequestBody SubmitSessionAnswerRequest request,
 			@AuthenticationPrincipal AppUserDetails user) {
-		return ResponseEntity.ok(testSessionService.submitSessionAnswer(sessionId, request, user.getId()));
+		var response = testSessionService.submitSessionAnswer(sessionId, request, user.getId());
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/test/{sessionId}/result")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<TestResultResponse> getTestResult(@PathVariable Long sessionId,
 															@AuthenticationPrincipal AppUserDetails user) {
-		return ResponseEntity.ok(testSessionService.getTestResult(sessionId, user.getId()));
+		var response = testSessionService.getTestResult(sessionId, user.getId());
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/me/statistics")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<List<SectionStatisticsResponse>> getStatistics(@AuthenticationPrincipal AppUserDetails user) {
-		var userId = user.getId();
-		return ResponseEntity.ok(statisticsService.getStatisticsForUser(userId));
+		var response = statisticsService.getStatisticsForUser(user.getId());
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/roadmap")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<List<UserSectionResponse>> getRoadMap(@AuthenticationPrincipal AppUserDetails user) {
-		return ResponseEntity.ok(mapService.getMapForUser(user.getId()));
+		var response = mapService.getMapForUser(user.getId());
+		return ResponseEntity.ok(response);
 	}
 }

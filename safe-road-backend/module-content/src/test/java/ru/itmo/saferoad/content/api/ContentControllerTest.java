@@ -8,19 +8,25 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import ru.itmo.saferoad.content.domain.Question;
+import ru.itmo.saferoad.content.domain.QuestionContent;
 import ru.itmo.saferoad.content.dto.CreateSectionRequest;
 import ru.itmo.saferoad.content.dto.CreateTopicRequest;
 import ru.itmo.saferoad.content.dto.SectionTreeDto;
 import ru.itmo.saferoad.content.dto.TopicBriefDto;
+import ru.itmo.saferoad.content.dto.UpdateQuestionRequest;
+import ru.itmo.saferoad.content.dto.UpdateSectionRequest;
+import ru.itmo.saferoad.content.dto.UpdateTopicRequest;
 import ru.itmo.saferoad.content.service.QuestionService;
 import ru.itmo.saferoad.content.service.SectionService;
 import ru.itmo.saferoad.content.service.TopicService;
-import ru.itmo.saferoad.core.security.AppUserDetails;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 
 import static org.instancio.Select.field;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
@@ -42,6 +48,9 @@ class ContentControllerTest {
 	@Mock
 	private ContentMapper contentMapper;
 
+	@Mock
+	private JsonMapper jsonMapper;
+
 	@InjectMocks
 	private ContentController controller;
 
@@ -49,7 +58,6 @@ class ContentControllerTest {
 	void getTopicsForSection_shouldReturnMappedDtos() {
 		// Given
 		Integer sectionId = Instancio.create(Integer.class);
-		var topic = Instancio.create(Object.class); // placeholder
 		TopicBriefDto dto = Instancio.create(TopicBriefDto.class);
 		when(topicService.getBySectionId(sectionId)).thenReturn(List.of());
 		when(contentMapper.toTopicBriefDtoList(List.of())).thenReturn(List.of(dto));
@@ -68,7 +76,6 @@ class ContentControllerTest {
 	void getTopic_shouldReturnMappedDto() {
 		// Given
 		Integer id = Instancio.create(Integer.class);
-		var topic = Instancio.create(Object.class);
 		TopicBriefDto dto = Instancio.create(TopicBriefDto.class);
 		when(topicService.existingById(id)).thenReturn(Instancio.create(ru.itmo.saferoad.content.domain.Topic.class));
 		when(contentMapper.toTopicBriefDto(any())).thenReturn(dto);
@@ -138,6 +145,58 @@ class ContentControllerTest {
 		assertEquals(HttpStatus.CREATED, resp.getStatusCode());
 		assertSame(dto, resp.getBody());
 		verify(topicService, times(1)).create(req.getSectionId(), req.getName(), req.getDescription(), req.getOrderIndex(), req.getXpReward());
+	}
+
+	@Test
+	void updateSection_shouldCallServiceAndReturnDto() {
+		UpdateSectionRequest req = Instancio.create(UpdateSectionRequest.class);
+		var section = Instancio.create(ru.itmo.saferoad.content.domain.Section.class);
+		SectionTreeDto dto = Instancio.create(SectionTreeDto.class);
+		when(sectionService.updateSection(5, req.getName(), req.getOrderIndex(), req.getIsActive())).thenReturn(section);
+		when(contentMapper.toSectionTreeDto(section)).thenReturn(dto);
+
+		ResponseEntity<?> resp = controller.updateSection(5, req);
+		assertEquals(HttpStatus.OK, resp.getStatusCode());
+		assertSame(dto, resp.getBody());
+		verify(sectionService, times(1)).updateSection(5, req.getName(), req.getOrderIndex(), req.getIsActive());
+	}
+
+	@Test
+	void archiveSection_shouldCallService() {
+		when(sectionService.updateSection(6, null, null, false)).thenReturn(Instancio.create(ru.itmo.saferoad.content.domain.Section.class));
+		ResponseEntity<?> resp = controller.archiveSection(6);
+		assertEquals(HttpStatus.OK, resp.getStatusCode());
+		verify(sectionService, times(1)).updateSection(6, null, null, false);
+	}
+
+	@org.junit.jupiter.api.Test
+	void updateTopic_shouldCallServiceAndReturnDto() {
+		UpdateTopicRequest req = Instancio.create(UpdateTopicRequest.class);
+		var topic = Instancio.create(ru.itmo.saferoad.content.domain.Topic.class);
+		TopicBriefDto dto = Instancio.create(TopicBriefDto.class);
+		when(topicService.updateTopic(7, req.getName(), req.getContent(), req.getOrderIndex(), req.getIsActive())).thenReturn(topic);
+		when(contentMapper.toTopicBriefDto(topic)).thenReturn(dto);
+
+		ResponseEntity<?> resp = controller.updateTopic(7, req);
+		assertEquals(HttpStatus.OK, resp.getStatusCode());
+		assertSame(dto, resp.getBody());
+		verify(topicService, times(1)).updateTopic(7, req.getName(), req.getContent(), req.getOrderIndex(), req.getIsActive());
+	}
+
+	@Test
+	void updateQuestion_shouldParseJsonAndSave() {
+		var q = Instancio.create(Question.class);
+		when(questionService.existingById(300L)).thenReturn(q);
+
+		UpdateQuestionRequest req = Instancio.create(UpdateQuestionRequest.class);
+		QuestionContent content = Instancio.create(QuestionContent.class);
+		when(jsonMapper.readValue(req.getContentJson(), QuestionContent.class)).thenReturn(content);
+
+		ResponseEntity<?> resp = controller.updateQuestion(300L, req);
+		assertEquals(HttpStatus.OK, resp.getStatusCode());
+		verify(questionService, times(1)).save(q);
+		assertNotNull(q.getContent());
+		assertEquals(q.getContent().getQuestionText(), content.getQuestionText());
 	}
 }
 
