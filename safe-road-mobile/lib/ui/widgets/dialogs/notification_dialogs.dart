@@ -42,6 +42,7 @@ class NotificationDialogs {
     return showDialog<void>(
       context: context,
       builder: (context) => Dialog(
+        backgroundColor: AppColors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -101,8 +102,8 @@ class NotificationDialogs {
   static Widget _buildRewardImage() {
     return Image.asset(
       'assets/images/congrats_600.png',
-      /*width: 96,
-      height: 96,*/
+      width: 150,
+      height: 150,
       errorBuilder: (c, e, s) => const Icon(
         Icons.card_giftcard,
         size: 64,
