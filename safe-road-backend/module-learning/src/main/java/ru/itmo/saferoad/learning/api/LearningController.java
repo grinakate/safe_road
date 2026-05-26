@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.itmo.saferoad.content.domain.repository.QuestionRepository;
 import ru.itmo.saferoad.core.security.AppUserDetails;
-import ru.itmo.saferoad.learning.domain.repository.UserQuestionStatsRepository;
 import ru.itmo.saferoad.learning.dto.SectionStatisticsResponse;
 import ru.itmo.saferoad.learning.dto.StartTestRequest;
 import ru.itmo.saferoad.learning.dto.StartTestResponse;
@@ -23,7 +21,6 @@ import ru.itmo.saferoad.learning.dto.TestResultResponse;
 import ru.itmo.saferoad.learning.dto.TestSessionSubmitResponse;
 import ru.itmo.saferoad.learning.dto.UserSectionResponse;
 import ru.itmo.saferoad.learning.service.TestSessionService;
-import ru.itmo.saferoad.learning.service.UserTopicProgressService;
 import ru.itmo.saferoad.learning.service.impl.StatisticsService;
 
 import java.util.List;
@@ -47,15 +44,14 @@ public class LearningController {
 
 	@GetMapping("/test/{sessionId}/questions")
 	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<List<TestQuestionResponse>> getTestQuestions(@PathVariable Integer sessionId,
+	public ResponseEntity<List<TestQuestionResponse>> getTestQuestions(@PathVariable Long sessionId,
 																	   @AuthenticationPrincipal AppUserDetails user) {
 		return ResponseEntity.ok(testSessionService.getTestQuestions(sessionId, user.getId()));
 	}
 
 	@PostMapping("/test/{sessionId}/submit-answer")
-	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<TestSessionSubmitResponse> submitSessionAnswer(
-			@PathVariable Integer sessionId,
+			@PathVariable Long sessionId,
 			@RequestBody SubmitSessionAnswerRequest request,
 			@AuthenticationPrincipal AppUserDetails user) {
 		return ResponseEntity.ok(testSessionService.submitSessionAnswer(sessionId, request, user.getId()));
@@ -63,7 +59,7 @@ public class LearningController {
 
 	@GetMapping("/test/{sessionId}/result")
 	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<TestResultResponse> getTestResult(@PathVariable Integer sessionId,
+	public ResponseEntity<TestResultResponse> getTestResult(@PathVariable Long sessionId,
 															@AuthenticationPrincipal AppUserDetails user) {
 		return ResponseEntity.ok(testSessionService.getTestResult(sessionId, user.getId()));
 	}

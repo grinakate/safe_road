@@ -1,7 +1,10 @@
 CREATE TYPE progress_status AS ENUM (
     'LOCKED',
     'UNLOCKED',
-    'COMPLETED'
+    'COMPLETED',
+    'PENDING',
+    'IN_PROGRESS',
+    'FAILED'
     );
 
 CREATE TYPE user_role AS ENUM (
@@ -102,8 +105,8 @@ CREATE TABLE IF NOT EXISTS sections
     title       TEXT    NOT NULL,
     order_index INTEGER NOT NULL UNIQUE,
     is_active   BOOLEAN NOT NULL,
-    description TEXT NOT NULL,
-    url         TEXT NOT NULL,
+    description TEXT    NOT NULL,
+    url         TEXT    NOT NULL,
     PRIMARY KEY (id)
 );
 

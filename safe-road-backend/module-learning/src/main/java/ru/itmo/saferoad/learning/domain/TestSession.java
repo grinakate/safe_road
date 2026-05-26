@@ -13,7 +13,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 import org.hibernate.type.SqlTypes;
 import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 
@@ -45,11 +47,13 @@ public class TestSession {
 
 	@NonNull
 	@Enumerated(EnumType.STRING)
+	@JdbcType(PostgreSQLEnumJdbcType.class)
 	@Column(name = "mode", nullable = false)
 	private TestMode mode;
 
 	@NonNull
 	@Enumerated(EnumType.STRING)
+	@JdbcType(PostgreSQLEnumJdbcType.class)
 	@Column(name = "status", nullable = false, columnDefinition = "progress_status")
 	private ProgressStatus status;
 

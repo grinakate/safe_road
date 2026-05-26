@@ -11,7 +11,10 @@ import java.util.List;
 
 public interface TestSessionService {
     StartTestResponse startTest(StartTestRequest request, Long userId);
-    List<TestQuestionResponse> getTestQuestions(Integer sessionId, Long userId);
-    TestSessionSubmitResponse submitSessionAnswer(Integer sessionId, SubmitSessionAnswerRequest request, Long userId);
-    TestResultResponse getTestResult(Integer sessionId, Long userId);
+
+	List<TestQuestionResponse> getTestQuestions(Long sessionId, Long userId);
+
+	TestSessionSubmitResponse submitSessionAnswer(Long sessionId, SubmitSessionAnswerRequest request, Long userId);
+
+	TestResultResponse getTestResult(Long sessionId, Long userId);
 }

@@ -12,6 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 
 @Getter
@@ -34,6 +36,7 @@ public class UserTopicProgress {
 	private Integer topicId;
 
 	@Enumerated(EnumType.STRING)
+	@JdbcType(PostgreSQLEnumJdbcType.class)
 	@Column(nullable = false, columnDefinition = "progress_status")
 	private ProgressStatus status;
 }

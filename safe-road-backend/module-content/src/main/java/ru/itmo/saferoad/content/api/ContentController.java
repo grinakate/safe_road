@@ -20,7 +20,6 @@ import ru.itmo.saferoad.content.dto.CreateSectionRequest;
 import ru.itmo.saferoad.content.dto.CreateTopicRequest;
 import ru.itmo.saferoad.content.dto.SectionTreeDto;
 import ru.itmo.saferoad.content.dto.TopicBriefDto;
-import ru.itmo.saferoad.content.service.QuestionService;
 import ru.itmo.saferoad.content.service.SectionService;
 import ru.itmo.saferoad.content.service.TopicService;
 import ru.itmo.saferoad.core.security.AppUserDetails;
@@ -32,6 +31,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/content")
 public class ContentController {
+
+	private final SectionService sectionService;
+	private final TopicService topicService;
+	private final ContentMapper contentMapper;
 
 	@GetMapping("/sections/{id}/topics")
 	@PreAuthorize("isAuthenticated()")
@@ -82,36 +85,11 @@ public class ContentController {
 		return ResponseEntity.ok().build();
 	}
 
-	private final SectionService sectionService;
-	private final TopicService topicService;
-	private final QuestionService questionService;
-	private final ContentMapper contentMapper;
-
 	@GetMapping("/sections")
 	@PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
 	public ResponseEntity<@NonNull List<SectionTreeDto>> getSectionTree(@AuthenticationPrincipal AppUserDetails currentUser) {
 		return ResponseEntity.ok(contentMapper.toSectionTreeDtoList(sectionService.getAllOrdered()));
 	}
-
-/*	@GetMapping("/topics/{topicId}/questions")
-	@PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
-	public ResponseEntity<List<QuestionWithAnswersDto>> getQuestionsByTopic(
-			@PathVariable Integer topicId,
-			@AuthenticationPrincipal AppUserDetails currentUser
-	) {
-		List<QuestionWithAnswersDto> response = questionService.getByTopicId(topicId).stream()
-				.map(question -> new QuestionWithAnswersDto(
-						question.getId(),
-						question.getType().title(),
-						question.getDifficultyLevel(),
-						question.getContent(),
-						answerService.getByQuestionId(question.getId()).stream()
-								.map(answer -> new AnswerDto(answer.getId(), answer.getText(), answer.getFeedback()))
-								.toList()
-				))
-				.toList();
-		return ResponseEntity.ok(response);
-	}*/
 
 	@PostMapping("/admin/sections")
 	@PreAuthorize("hasRole('ADMIN')")

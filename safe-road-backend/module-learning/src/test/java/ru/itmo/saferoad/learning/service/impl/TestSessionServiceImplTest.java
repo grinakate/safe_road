@@ -7,31 +7,38 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.itmo.saferoad.content.domain.Question;
-import ru.itmo.saferoad.learning.domain.TestSession;
-import ru.itmo.saferoad.learning.dto.StartTestRequest;
-import ru.itmo.saferoad.learning.dto.StartTestResponse;
-import ru.itmo.saferoad.learning.dto.SubmitSessionAnswerRequest;
-import ru.itmo.saferoad.learning.dto.SubmitAnswerResponse;
 import ru.itmo.saferoad.content.domain.Topic;
-import ru.itmo.saferoad.learning.domain.repository.TestSessionRepository;
-import ru.itmo.saferoad.learning.domain.repository.UserQuestionStatsRepository;
-import ru.itmo.saferoad.learning.service.UserQuestionStatsService;
 import ru.itmo.saferoad.content.domain.repository.QuestionRepository;
-import ru.itmo.saferoad.learning.config.LearningProperties;
-import ru.itmo.saferoad.learning.service.UserTopicProgressService;
 import ru.itmo.saferoad.content.service.TopicService;
 import ru.itmo.saferoad.core.event.CreatePendingEventsService;
 import ru.itmo.saferoad.core.time.CurrentTime;
+import ru.itmo.saferoad.learning.config.LearningProperties;
+import ru.itmo.saferoad.learning.domain.TestSession;
+import ru.itmo.saferoad.learning.domain.repository.TestSessionRepository;
+import ru.itmo.saferoad.learning.domain.repository.UserQuestionStatsRepository;
+import ru.itmo.saferoad.learning.dto.StartTestRequest;
+import ru.itmo.saferoad.learning.dto.StartTestResponse;
+import ru.itmo.saferoad.learning.dto.SubmitAnswerResponse;
+import ru.itmo.saferoad.learning.dto.SubmitSessionAnswerRequest;
+import ru.itmo.saferoad.learning.service.UserQuestionStatsService;
+import ru.itmo.saferoad.learning.service.UserTopicProgressService;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 import static org.instancio.Select.field;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TestSessionServiceImplTest {
@@ -107,7 +114,7 @@ class TestSessionServiceImplTest {
     @Test
     void submitSessionAnswer_allCorrect_shouldSaveAndPublishAndUpdateProgress() {
         // Given
-        Integer sessionId = Instancio.create(Integer.class);
+		Long sessionId = Instancio.create(Long.class);
         Long userId = Instancio.create(Long.class);
 
         // create a TestSession with totalQuestions = 5 and topicId not null

@@ -13,6 +13,7 @@ import ru.itmo.saferoad.core.domain.enums.ProgressStatus;
 import ru.itmo.saferoad.core.event.CreatePendingEventsService;
 import ru.itmo.saferoad.core.event.dto.TestSessionCompletedEvent;
 import ru.itmo.saferoad.core.time.CurrentTime;
+import ru.itmo.saferoad.learning.api.QuestionMapper;
 import ru.itmo.saferoad.learning.config.LearningProperties;
 import ru.itmo.saferoad.learning.domain.TestMode;
 import ru.itmo.saferoad.learning.domain.TestSession;
@@ -22,7 +23,6 @@ import ru.itmo.saferoad.learning.domain.repository.UserQuestionStatsRepository;
 import ru.itmo.saferoad.learning.dto.StartTestRequest;
 import ru.itmo.saferoad.learning.dto.StartTestResponse;
 import ru.itmo.saferoad.learning.dto.SubmitSessionAnswerRequest;
-// ...existing imports...
 import ru.itmo.saferoad.learning.dto.TestErrorResponse;
 import ru.itmo.saferoad.learning.dto.TestQuestionResponse;
 import ru.itmo.saferoad.learning.dto.TestResultResponse;
@@ -30,12 +30,9 @@ import ru.itmo.saferoad.learning.dto.TestSessionSubmitResponse;
 import ru.itmo.saferoad.learning.service.TestSessionService;
 import ru.itmo.saferoad.learning.service.UserQuestionStatsService;
 import ru.itmo.saferoad.learning.service.UserTopicProgressService;
-import ru.itmo.saferoad.learning.api.QuestionMapper;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,7 +89,7 @@ public class TestSessionServiceImpl implements TestSessionService {
 	}
 
 	@Override
-	public List<TestQuestionResponse> getTestQuestions(Integer sessionId, Long userId) {
+	public List<TestQuestionResponse> getTestQuestions(Long sessionId, Long userId) {
 		TestSession session = testSessionRepository.findById(sessionId)
 				.orElseThrow(() -> new RuntimeException("Session not found"));
 
@@ -125,7 +122,7 @@ public class TestSessionServiceImpl implements TestSessionService {
 
 	@Override
 	@Transactional
-	public TestSessionSubmitResponse submitSessionAnswer(@NotNull Integer sessionId,
+	public TestSessionSubmitResponse submitSessionAnswer(@NotNull Long sessionId,
 														 @NotNull SubmitSessionAnswerRequest request,
 														 @NotNull Long userId) {
 		TestSession session = testSessionRepository.findById(sessionId)
@@ -209,7 +206,7 @@ public class TestSessionServiceImpl implements TestSessionService {
 	}
 
 	@Override
-	public TestResultResponse getTestResult(Integer sessionId, Long userId) {
+	public TestResultResponse getTestResult(Long sessionId, Long userId) {
 		TestSession session = testSessionRepository.findById(sessionId)
 				.orElseThrow(() -> new RuntimeException("Session not found"));
 

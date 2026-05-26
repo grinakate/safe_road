@@ -80,6 +80,45 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+			<!-- Плагин JaCoCo для сбора покрытия -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<configuration>
+					<!-- Список исключений из анализа покрытия -->
+					<excludes>
+						<!-- Исключаем все DTO (Data Transfer Objects) -->
+						<exclude>**/dto/**</exclude>
+						<exclude>**/*Request*</exclude>
+						<exclude>**/*Response*</exclude>
+
+						<!-- Исключаем конфигурационные классы Spring -->
+						<exclude>**/config/**</exclude>
+						<exclude>**/*SecurityConfig*</exclude>
+
+						<!-- Исключаем сущности базы данных (Entities) -->
+						<exclude>**/domain/**</exclude>
+
+						<!-- Исключаем главный запускаемый класс приложения -->
+						<exclude>**/*Application*</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
         </plugins>
     </build>
 </project>
