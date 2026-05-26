@@ -194,6 +194,7 @@
 							<!-- Исключаем конфигурационные классы Spring -->
 							<exclude>**/config/**</exclude>
 							<exclude>**/*SecurityConfig*</exclude>
+							<exclude>**/security/**</exclude>
 
 							<!-- Исключаем сущности базы данных (Entities) -->
 							<exclude>**/domain/**</exclude>
