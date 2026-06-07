@@ -118,8 +118,6 @@ public class TestSessionServiceImpl implements TestSessionService {
 		return questionSelector.selectQuestionsAdaptively(allQuestions, userStats, targetCount);
 	}
 
-	// selection logic moved to QuestionSelector component
-
 	@Override
 	@Transactional
 	public TestSessionSubmitResponse submitSessionAnswer(@NotNull Long sessionId,

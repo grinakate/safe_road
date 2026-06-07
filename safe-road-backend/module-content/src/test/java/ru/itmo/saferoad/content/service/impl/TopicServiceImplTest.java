@@ -77,6 +77,14 @@ class TopicServiceImplTest {
 	}
 
 	@Test
+	void create_whenSectionMissing_throws() {
+		Integer sectionId = Instancio.create(Integer.class);
+		when(sectionService.existingById(sectionId)).thenThrow(new IllegalArgumentException("nope"));
+
+		assertThrows(IllegalArgumentException.class, () -> service.create(sectionId, "n", "d", 1, 5));
+	}
+
+	@Test
 	void existingById_shouldReturnWhenFound() {
 		// Given
 		Integer id = Instancio.create(Integer.class);

@@ -62,7 +62,8 @@ public class ContentController {
 	@PutMapping("/admin/sections/{id}")
 	public ResponseEntity<?> updateSection(@PathVariable Integer id,
 										   @Valid @RequestBody UpdateSectionRequest request) {
-		Section updated = sectionService.updateSection(id, request.getName(), request.getOrderIndex(), request.getIsActive());
+		Section updated = sectionService.updateSection(
+				id, request.getName(), request.getOrderIndex(), request.getIsActive());
 		return ResponseEntity.ok(contentMapper.toSectionTreeDto(updated));
 	}
 
@@ -75,7 +76,8 @@ public class ContentController {
 	@PutMapping("/admin/topics/{id}")
 	public ResponseEntity<?> updateTopic(@PathVariable Integer id,
 										 @Valid @RequestBody UpdateTopicRequest request) {
-		var updated = topicService.updateTopic(id, request.getName(), request.getContent(), request.getOrderIndex(), request.getIsActive());
+		var updated = topicService.updateTopic(
+				id, request.getName(), request.getContent(), request.getOrderIndex(), request.getIsActive());
 		return ResponseEntity.ok(contentMapper.toTopicBriefDto(updated));
 	}
 
@@ -98,11 +100,6 @@ public class ContentController {
 		}
 		questionService.save(q);
 		return ResponseEntity.ok().build();
-	}
-
-	@PostMapping("/admin/media/upload")
-	public ResponseEntity<?> uploadMedia() {
-		return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("Media upload is not implemented in tests");
 	}
 
 	@GetMapping("/sections")

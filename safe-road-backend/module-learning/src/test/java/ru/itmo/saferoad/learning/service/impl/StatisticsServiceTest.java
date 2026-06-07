@@ -10,8 +10,6 @@ import ru.itmo.saferoad.content.api.ContentService;
 import ru.itmo.saferoad.content.domain.Question;
 import ru.itmo.saferoad.content.domain.QuestionContent;
 import ru.itmo.saferoad.content.domain.repository.QuestionRepository;
-import ru.itmo.saferoad.content.dto.SectionTreeDto;
-import ru.itmo.saferoad.content.dto.TopicBriefDto;
 import ru.itmo.saferoad.learning.api.SectionMapper;
 import ru.itmo.saferoad.learning.domain.UserQuestionStats;
 import ru.itmo.saferoad.learning.domain.repository.UserQuestionStatsRepository;
@@ -124,6 +122,22 @@ class StatisticsServiceTest {
 		assertEquals(section.getId(), sectionDto.getSectionId());
 		assertEquals(2, sectionDto.getTopicStatistics().size());
 		assertEquals(completedTopicsCount, sectionDto.getCompletedTopics());
+	}
+
+	@Test
+	void computeTopicStat_whenNoQuestions_returnsZeros() {
+		Long userId = Instancio.create(Long.class);
+		TopicUserMapResponse topic = Instancio.of(TopicUserMapResponse.class).create();
+
+		when(questionRepository.findByTopicId(topic.getId())).thenReturn(List.of());
+
+		var dto = statisticsService.computeTopicStat(topic, userId);
+
+		assertNotNull(dto);
+		assertEquals(0, dto.getTotalQuestions());
+		assertEquals(0, dto.getCorrectAnswers());
+		assertEquals(0, dto.getWrongAnswers());
+		assertEquals(0, dto.getNotShown());
 	}
 }
 

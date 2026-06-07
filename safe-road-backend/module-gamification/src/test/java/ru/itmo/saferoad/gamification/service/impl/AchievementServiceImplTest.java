@@ -75,6 +75,21 @@ class AchievementServiceImplTest {
 		assertTrue(res.get(0).getIsActive());
 		verify(repository, times(1)).findByIsActiveTrue();
 	}
+
+	@Test
+	void getAll_shouldReturnAllFromRepository() {
+		// Given
+		Achievement a1 = Instancio.of(Achievement.class).set(field(Achievement::getId), 1).create();
+		Achievement a2 = Instancio.of(Achievement.class).set(field(Achievement::getId), 2).create();
+		when(repository.findAll()).thenReturn(List.of(a1, a2));
+
+		// When
+		var res = service.getAll();
+
+		// Then
+		assertEquals(2, res.size());
+		verify(repository, times(1)).findAll();
+	}
 }
 
 

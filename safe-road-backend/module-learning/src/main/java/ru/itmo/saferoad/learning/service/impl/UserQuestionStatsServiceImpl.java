@@ -10,12 +10,9 @@ import ru.itmo.saferoad.content.domain.repository.QuestionRepository;
 import ru.itmo.saferoad.core.time.CurrentTime;
 import ru.itmo.saferoad.learning.domain.UserQuestionStats;
 import ru.itmo.saferoad.learning.domain.UserQuestionStatsId;
-// ...existing imports...
 import ru.itmo.saferoad.learning.domain.repository.UserQuestionStatsRepository;
 import ru.itmo.saferoad.learning.dto.SubmitAnswerResponse;
 import ru.itmo.saferoad.learning.service.UserQuestionStatsService;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

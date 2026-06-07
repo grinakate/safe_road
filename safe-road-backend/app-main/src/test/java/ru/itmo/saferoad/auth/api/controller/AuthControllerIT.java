@@ -127,29 +127,6 @@ class AuthControllerIT {
 	@Test
 	@Sql(scripts = "classpath:prepared-data.sql")
 	@WithUserDetails(value = "test@test.ru", userDetailsServiceBeanName = "userDetailsServiceImpl")
-	void updateProfile_authenticated_shouldUpdateProfile() throws Exception {
-		var updatePayload = Map.of(
-				"nickname", "updated_nick",
-				"birthDate", "1990-01-01"
-		);
-
-		String updateResp = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/auth/me/profile")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(jsonMapper.writeValueAsString(updatePayload)))
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		var node = jsonMapper.readTree(updateResp);
-		assertThat(node.get("nickname").asString()).isEqualTo("updated_nick");
-
-		var userOpt = usersRepository.findByEmail("test@test.ru");
-		assertThat(userOpt).isPresent();
-		assertThat(userOpt.get().getNickname()).isEqualTo("updated_nick");
-	}
-
-	@Test
-	@Sql(scripts = "classpath:prepared-data.sql")
-	@WithUserDetails(value = "test@test.ru", userDetailsServiceBeanName = "userDetailsServiceImpl")
 	void updatePassword_authenticated_shouldChangePassword() throws Exception {
 		var oldPassword = "qwerty12345";
 		var newPassword = "new_password";

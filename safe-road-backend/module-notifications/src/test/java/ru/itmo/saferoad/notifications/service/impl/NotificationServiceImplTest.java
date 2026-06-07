@@ -87,5 +87,67 @@ class NotificationServiceImplTest {
 
 		assertThrows(IllegalArgumentException.class, () -> service.existingByIdAndLock(99L));
 	}
+
+	@Test
+	void getByUserId_shouldReturnOrderedList() {
+		Notification a = new Notification();
+		a.setId(1L);
+		Notification b = new Notification();
+		b.setId(2L);
+		when(repository.findByUserIdOrderByCreatedAtDesc(7L)).thenReturn(List.of(a, b));
+
+		var res = service.getByUserId(7L);
+		assertEquals(2, res.size());
+		assertEquals(a, res.get(0));
+		verify(repository, times(1)).findByUserIdOrderByCreatedAtDesc(7L);
+	}
+
+	@Test
+	void getUnreadByUserId_shouldReturnUnread() {
+		Notification a = new Notification();
+		a.setId(3L);
+		when(repository.findByUserIdInAndIsReadFalse(Set.of(8L))).thenReturn(List.of(a));
+
+		var res = service.getUnreadByUserId(8L);
+		assertEquals(1, res.size());
+		assertEquals(a, res.get(0));
+	}
+
+	@Test
+	void getUnreadIdsByUserIds_shouldReturnIds() {
+		when(repository.findIdsByUserIdInAndIsReadFalse(Set.of(1L, 2L))).thenReturn(List.of(10L, 11L));
+
+		var ids = service.getUnreadIdsByUserIds(Set.of(1L, 2L));
+		assertEquals(2, ids.size());
+		assertEquals(10L, ids.get(0));
+	}
+
+	@Test
+	void getUnreadByUserIds_shouldReturnList() {
+		Notification n = new Notification();
+		n.setId(4L);
+		when(repository.findByUserIdInAndIsReadFalse(Set.of(4L, 5L))).thenReturn(List.of(n));
+
+		var res = service.getUnreadByUserIds(Set.of(4L, 5L));
+		assertEquals(1, res.size());
+	}
+
+	@Test
+	void getUnreadCount_shouldReturnCountFromRepository() {
+		when(repository.countByUserIdAndIsReadFalse(9L)).thenReturn(7L);
+
+		long count = service.getUnreadCount(9L);
+		assertEquals(7L, count);
+	}
+
+	@Test
+	void save_shouldDelegateToRepository() {
+		Notification n = new Notification();
+		n.setId(88L);
+		when(repository.save(n)).thenReturn(n);
+
+		var res = service.save(n);
+		assertEquals(n, res);
+	}
 }
 

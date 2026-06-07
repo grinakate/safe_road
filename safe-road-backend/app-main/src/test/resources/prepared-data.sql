@@ -72,3 +72,12 @@ INSERT INTO game_profiles (user_id, level_id, avatar_id, current_xp, current_str
 VALUES (7, 1, 10, 0, 0, 0, false)
 ON CONFLICT (user_id) DO NOTHING;
 
+INSERT INTO notifications (id, user_id, title, content, created_at, is_read)
+VALUES (5, 7, 'REWARDS_EARNED', '{
+  "levelUp": false,
+  "totalXp": 90,
+  "earnedXp": 20,
+  "newLevel": 1
+}', '2026-05-19 02:56:34.929302', false);
+
+

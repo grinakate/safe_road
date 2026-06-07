@@ -124,5 +124,54 @@ class SectionServiceImplTest {
 		assertSame(next, nextOpt.get());
 		verify(repository, times(1)).findFirstByOrderIndexGreaterThanOrderByOrderIndexAsc(current);
 	}
+
+	@Test
+	void save_shouldDelegateToRepository() {
+		Section section = Instancio.create(Section.class);
+		when(repository.save(section)).thenReturn(section);
+
+		Section result = service.save(section);
+
+		assertSame(section, result);
+		verify(repository).save(section);
+	}
+
+	@Test
+	void updateSection_shouldApplyOnlyNonNullFields() {
+		Section existing = Instancio.of(Section.class)
+				.set(field(Section::getId), 10)
+				.set(field(Section::getTitle), "old")
+				.set(field(Section::getOrderIndex), 1)
+				.set(field(Section::getIsActive), true)
+				.create();
+		when(repository.findById(10)).thenReturn(Optional.of(existing));
+		when(repository.save(existing)).thenReturn(existing);
+
+		Section updated = service.updateSection(10, "new", null, false);
+
+		assertEquals("new", updated.getTitle());
+		assertEquals(1, updated.getOrderIndex());
+		assertEquals(false, updated.getIsActive());
+		verify(repository).save(existing);
+	}
+
+	@Test
+	void getFirstSection_shouldThrowWhenMissing() {
+		when(repository.findFirstByOrderByOrderIndexAsc()).thenReturn(Optional.empty());
+
+		assertThrows(IllegalArgumentException.class, () -> service.getFirstSection());
+		verify(repository).findFirstByOrderByOrderIndexAsc();
+	}
+
+	@Test
+	void getNextSection_shouldReturnEmptyWhenAbsent() {
+		Integer current = 100;
+		when(repository.findFirstByOrderIndexGreaterThanOrderByOrderIndexAsc(current)).thenReturn(Optional.empty());
+
+		var result = service.getNextSection(current);
+
+		assertTrue(result.isEmpty());
+		verify(repository).findFirstByOrderIndexGreaterThanOrderByOrderIndexAsc(current);
+	}
 }
 
