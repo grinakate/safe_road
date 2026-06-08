@@ -23,7 +23,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     final profile = context.read<GameProfileProvider>().profile;
-    _nameController.text = profile?.nickname ?? '';
+    _nameController.text = profile?.nickname ?? 'йцукен';
     _leaderboardEnabled = profile?.leaderboardEnabled ?? true;
   }
 

@@ -41,6 +41,7 @@ public class AchievementServiceImpl implements AchievementService {
 		return allAchievements.stream()
 				.filter(a -> a.getIsActive() || userAchievementIds.contains(a.getId()))
 				.map(a -> new UserAchievementsResponse(
+						a.getId(),
 						a.getName(),
 						a.getDescription(),
 						a.getIconUrl(),

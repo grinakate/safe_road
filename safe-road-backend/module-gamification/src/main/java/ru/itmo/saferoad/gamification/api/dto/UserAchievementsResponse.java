@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserAchievementsResponse {
+	private int achievementId;
 	private String title;
 	private String description;
 	private String iconUrl;

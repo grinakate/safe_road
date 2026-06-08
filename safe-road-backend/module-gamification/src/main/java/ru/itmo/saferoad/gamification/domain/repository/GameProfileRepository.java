@@ -14,7 +14,9 @@ public interface GameProfileRepository extends JpaRepository<GameProfile, Long> 
 				   + "FROM game_profiles gp "
 				   + "JOIN users u ON u.id = gp.user_id "
 				   + "JOIN avatars a ON a.id = gp.avatar_id "
-				   + "ORDER BY gp.current_xp DESC",
+				   + "WHERE gp.is_leaderboard_participant = true "
+				   + "ORDER BY gp.current_xp DESC "
+				   + "LIMIT 10",
 			nativeQuery = true)
 	List<LeaderboardProjection> findTop10ByOrderByCurrentXpDesc();
 

@@ -16,7 +16,7 @@ class Achievement {
   });
 
   factory Achievement.fromJson(Map<String, dynamic> json) => Achievement(
-    id: json['title'],
+    id: json['achievementId'],
     title: json['title'],
     description: json['description'],
     iconUrl: json['iconUrl'],

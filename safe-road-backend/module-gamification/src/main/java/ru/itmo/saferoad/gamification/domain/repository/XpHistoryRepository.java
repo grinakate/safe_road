@@ -32,7 +32,8 @@ public interface XpHistoryRepository extends JpaRepository<XpHistory, XpHistoryI
 				   + "JOIN users u ON u.id = x.user_id "
 				   + "JOIN avatars a ON a.id = gp.avatar_id "
 				   + "WHERE x.week_start = :weekStart "
-				   + "ORDER BY x.xp DESC",
+				   + "AND gp.is_leaderboard_participant = true "
+				   + "ORDER BY x.xp DESC ",
 			nativeQuery = true)
 	List<LeaderboardProjection> findWeekLeaderboardProjection(@Param("weekStart") LocalDate weekStart,
 															  Pageable pageable);
