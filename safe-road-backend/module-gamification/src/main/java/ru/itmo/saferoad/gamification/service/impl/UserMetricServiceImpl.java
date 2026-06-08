@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.saferoad.core.time.CurrentTime;
 import ru.itmo.saferoad.gamification.domain.UserMetric;
+import ru.itmo.saferoad.gamification.domain.UserMetricCode;
 import ru.itmo.saferoad.gamification.domain.UserMetricId;
 import ru.itmo.saferoad.gamification.domain.XpHistory;
 import ru.itmo.saferoad.gamification.domain.repository.UserMetricRepository;
@@ -20,8 +21,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserMetricServiceImpl implements UserMetricService {
 
-	private static final String XP_METRIC_CODE = "xp";
-
 	private final UserMetricRepository userMetricRepository;
 	private final XpHistoryRepository xpHistoryRepository;
 	private final CurrentTime currentTime;
@@ -31,13 +30,16 @@ public class UserMetricServiceImpl implements UserMetricService {
 	public void addXp(@NonNull Long userId, int deltaXp) {
 		if (deltaXp > 0) {
 			// Обновляем общую метрику XP пользователя
-			long currentTotalXp = getXp(userId);
-			long newTotalXp = currentTotalXp + deltaXp;
-			upsertUserTotalXpMetric(userId, newTotalXp);
+			increaseUserMetric(userId, deltaXp, UserMetricCode.XP);
 
 			// Обновляем историю XP за текущую неделю
 			updateWeeklyXpHistory(userId, deltaXp);
 		}
+	}
+
+	@Override
+	public UserMetric getUserMetric(@NonNull Long userId, @NonNull String metricCode) {
+		return userMetricRepository.findByUserIdAndMetricCode(userId, metricCode).orElse(null);
 	}
 
 	@Override
@@ -47,12 +49,12 @@ public class UserMetricServiceImpl implements UserMetricService {
 
 	@Override
 	public @NonNull List<UserMetric> getLeaderboardTop10ByXp() {
-		return userMetricRepository.findTop10ByMetricCodeOrderByValueDesc(XP_METRIC_CODE);
+		return userMetricRepository.findTop10ByMetricCodeOrderByValueDesc(UserMetricCode.XP.name());
 	}
 
 	@Override
 	public long getXp(@NonNull Long userId) {
-		return userMetricRepository.findByUserIdAndMetricCode(userId, XP_METRIC_CODE)
+		return userMetricRepository.findByUserIdAndMetricCode(userId, UserMetricCode.XP.name())
 				.map(UserMetric::getValue)
 				.orElse(0L);
 	}
@@ -60,16 +62,17 @@ public class UserMetricServiceImpl implements UserMetricService {
 	@Override
 	public long getRank(@NonNull Long userId) {
 		long xp = getXp(userId);
-		long higherCount = userMetricRepository.countByMetricCodeAndValueGreaterThan(XP_METRIC_CODE, xp);
+		long higherCount = userMetricRepository.countByMetricCodeAndValueGreaterThan(UserMetricCode.XP.name(), xp);
 		return higherCount + 1;
 	}
 
-	private void upsertUserTotalXpMetric(Long userId, long xpValue) {
-		UserMetricId metricId = new UserMetricId(userId, XP_METRIC_CODE);
+	@Override
+	public void increaseUserMetric(Long userId, long value, UserMetricCode metricCode) {
+		UserMetricId metricId = new UserMetricId(userId, metricCode.name());
 		UserMetric metric = userMetricRepository.findById(metricId)
-				.orElseGet(() -> new UserMetric(userId, XP_METRIC_CODE, 0L, currentTime.nowDateTime()));
+				.orElseGet(() -> new UserMetric(userId, metricCode.name(), 0L, currentTime.nowDateTime()));
 
-		metric.setValue(xpValue);
+		metric.setValue(metric.getValue() + value);
 		metric.setUpdatedAt(currentTime.nowDateTime());
 		userMetricRepository.save(metric);
 	}

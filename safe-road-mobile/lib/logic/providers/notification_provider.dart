@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:safe_road/data/models/gamification/achievement_notification.dart';
 
 import '../../core/service_locator.dart'; // Для getIt
 import '../../data/services/notification_service.dart';
@@ -23,7 +24,10 @@ class NotificationProvider extends ChangeNotifier {
     this._gameProfileProvider,
     this._navigatorKey,
   ) {
-    _handlers = {'REWARDS_EARNED': NotificationDialogs.showRewardDialog};
+    _handlers = {
+      'REWARDS_EARNED': NotificationDialogs.showRewardDialog,
+      'NEW_ACHIEVEMENT': NotificationDialogs.showAchievementDialog,
+    };
 
     _service.events.listen((evt) {
       _addNotificationToQueueOrHandle(evt);
@@ -51,12 +55,16 @@ class NotificationProvider extends ChangeNotifier {
     if (evt.title == 'REWARDS_EARNED') {
       _gameProfileProvider.handleRewardEvent(evt.content);
     }
+    if (evt.title == 'NEW_ACHIEVEMENT') {
+      _gameProfileProvider.handleAchievementEvent(evt.content);
+    }
 
     final showDialogAction =
         _handlers[evt.title] ?? NotificationDialogs.showSimpleDialog;
 
     await showDialogAction(context, evt);
   }
+
 
   bool get _canShowNotifications {
     final navigatorKey = getIt<GlobalKey<NavigatorState>>();
@@ -77,6 +85,8 @@ class NotificationProvider extends ChangeNotifier {
       return true; // В случае ошибки разрешаем, чтобы не сломать приложение
     }
   }
+
+
 
   // Обработка очереди уведомлений
   Future<void> _flushQueue() async {

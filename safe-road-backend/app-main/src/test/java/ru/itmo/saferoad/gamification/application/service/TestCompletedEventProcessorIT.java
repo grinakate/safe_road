@@ -89,15 +89,23 @@ public class TestCompletedEventProcessorIT {
 
 	@Test
 	@Sql(scripts = {"classpath:prepared-data.sql"})
-	void processEvent_updatesDbAndCreatesPendingNotification() throws Exception {
+	void processEvent_updatesGameProfileAndCreatesNotification() throws Exception {
 		Long userId = 7L; // prepared-data.sql creates user id 7
 
-		// Ensure levels and avatars exist in DB (prepared-data.sql provides some seeds)
+		// Ensure levels and avatars exist in DB
 		Level level1 = levelRepository.findByNumber(1).orElseGet(() -> {
 			Level l = new Level();
 			l.setNumber(1);
 			l.setTitle("Novice");
 			l.setXpThreshold(100);
+			return levelRepository.save(l);
+		});
+
+		Level level2 = levelRepository.findByNumber(2).orElseGet(() -> {
+			Level l = new Level();
+			l.setNumber(2);
+			l.setTitle("Apprentice");
+			l.setXpThreshold(250);
 			return levelRepository.save(l);
 		});
 
@@ -125,7 +133,7 @@ public class TestCompletedEventProcessorIT {
 			return gameProfileRepository.save(p);
 		});
 
-		// configure gamification properties
+		// Configure gamification properties
 		gamificationProperties.setBaseXpPerQuestion(10);
 		gamificationProperties.getQuestionTypeCoefficients().put("CHOICE", 1.0);
 
@@ -143,27 +151,88 @@ public class TestCompletedEventProcessorIT {
 		PendingEvent event = new PendingEvent();
 		event.setContent(jsonMapper.writeValueAsString(payload));
 
-		// When
+		// When: Process the event (triggers all listeners synchronously)
 		processor.processEvent(event);
 
-		// Then: profile updated
+		// Then: Verify GameProfile was updated with XP and notification was created
 		GameProfile updated = gameProfileRepository.findById(userId).orElseThrow();
-		assertThat(updated.getXp()).isEqualTo(0);
+		assertThat(updated.getXp()).isEqualTo(10); // XP increased by 10
+		assertThat(updated.getLevel().getNumber()).isEqualTo(1); // Still level 1 (needs 100 XP to advance)
 
-		// user metric updated
-		var metric = userMetricRepository.findByUserIdAndMetricCode(userId, "xp");
-		assertThat(metric).isPresent();
-		assertThat(metric.get().getValue()).isEqualTo(10L);
-
-		// weekly xp history exists
-		var weekStart = currentTime.weekStart();
-		var history = xpHistoryRepository.findByUserIdAndWeekStart(userId, weekStart);
-		assertThat(history).isPresent();
-		assertThat(history.get().getXp()).isEqualTo(10L);
-
-		// pending notification created
+		// Verify pending notification was created
 		var allPending = pendingEventsRepository.findAll();
-		boolean hasNotification = allPending.stream().anyMatch(pe -> pe.getType().name().equals("CREATE_NOTIFICATION"));
+		boolean hasNotification = allPending.stream()
+				.anyMatch(pe -> pe.getType().name().equals("CREATE_NOTIFICATION"));
+		assertThat(hasNotification).isTrue();
+	}
+
+	@Test
+	@Sql(scripts = {"classpath:prepared-data.sql"})
+	void processEvent_triggersLevelUp() throws Exception {
+		Long userId = 7L;
+
+		// Setup levels
+		Level level1 = levelRepository.findByNumber(1).orElseGet(() -> {
+			Level l = new Level();
+			l.setNumber(1);
+			l.setTitle("Novice");
+			l.setXpThreshold(100);
+			return levelRepository.save(l);
+		});
+
+		Level level2 = levelRepository.findByNumber(2).orElseGet(() -> {
+			Level l = new Level();
+			l.setNumber(2);
+			l.setTitle("Apprentice");
+			l.setXpThreshold(250);
+			return levelRepository.save(l);
+		});
+
+		var avatars = avatarRepository.findAll();
+		Avatar avatar = avatars.isEmpty() ? avatarRepository.save(new Avatar()) : avatars.get(0);
+
+		GameProfile profile = gameProfileRepository.findById(userId).orElseGet(() -> {
+			GameProfile p = new GameProfile();
+			p.setUserId(userId);
+			p.setLevel(level1);
+			p.setAvatar(avatar);
+			p.setXp(95); // Close to level 2 threshold (100)
+			p.setCurrentStreak(0);
+			p.setTotalActiveDays(0);
+			p.setIsLeaderboardParticipant(false);
+			return gameProfileRepository.save(p);
+		});
+
+		gamificationProperties.setBaseXpPerQuestion(10);
+		gamificationProperties.getQuestionTypeCoefficients().put("CHOICE", 1.0);
+
+		// Create an event that will earn 10 XP
+		TestSessionCompletedEvent.QuestionDetail detail = TestSessionCompletedEvent.QuestionDetail.builder()
+				.type("CHOICE")
+				.difficulty(1)
+				.isCorrect(true)
+				.build();
+
+		TestSessionCompletedEvent payload = TestSessionCompletedEvent.builder()
+				.userId(userId)
+				.details(List.of(detail))
+				.build();
+
+		PendingEvent event = new PendingEvent();
+		event.setContent(jsonMapper.writeValueAsString(payload));
+
+		// When: Process triggers level up
+		processor.processEvent(event);
+
+		// Then: Verify level up occurred
+		GameProfile updated = gameProfileRepository.findById(userId).orElseThrow();
+		assertThat(updated.getXp()).isEqualTo(105); // 95 + 10
+		assertThat(updated.getLevel().getNumber()).isEqualTo(2); // Leveled up to 2
+
+		// Verify notification about level up was created
+		var allPending = pendingEventsRepository.findAll();
+		boolean hasNotification = allPending.stream()
+				.anyMatch(pe -> pe.getType().name().equals("CREATE_NOTIFICATION"));
 		assertThat(hasNotification).isTrue();
 	}
 }

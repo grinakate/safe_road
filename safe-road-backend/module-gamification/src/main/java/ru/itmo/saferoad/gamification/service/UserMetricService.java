@@ -2,12 +2,15 @@ package ru.itmo.saferoad.gamification.service;
 
 import lombok.NonNull;
 import ru.itmo.saferoad.gamification.domain.UserMetric;
+import ru.itmo.saferoad.gamification.domain.UserMetricCode;
 
 import java.util.List;
 
 public interface UserMetricService {
 
 	void addXp(@NonNull Long userId, int deltaXp);
+
+	UserMetric getUserMetric(@NonNull Long userId, @NonNull String metricCode);
 
 	@NonNull
 	List<UserMetric> getUserMetrics(@NonNull Long userId);
@@ -21,4 +24,6 @@ public interface UserMetricService {
 	 * Returns 1-based rank of the given user by XP (1 = top). If user has no XP metric, returns rank for 0 XP.
 	 */
 	long getRank(@NonNull Long userId);
+
+	void increaseUserMetric(Long userId, long value, UserMetricCode metricCode);
 }

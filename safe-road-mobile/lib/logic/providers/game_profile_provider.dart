@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:safe_road/data/models/gamification/achievement.dart';
+import 'package:safe_road/data/models/gamification/achievement_notification.dart';
 import 'package:safe_road/data/models/gamification/game_profile.dart';
 import 'package:safe_road/data/models/gamification/reward_notification.dart';
 import 'package:safe_road/data/services/game_profile_service.dart';
@@ -139,39 +140,72 @@ class GameProfileProvider extends ChangeNotifier {
       final payload = jsonDecode(jsonString) as Map<String, dynamic>;
       final reward = RewardNotification.fromJson(payload);
 
-      updateXpAndLevel(reward.totalXp, reward.newLevel);
+      updateXp(reward.totalXp);
+      updateLevel(reward.newLevel);
     } catch (e) {
       debugPrint('Ошибка при обработке награды: $e');
     }
   }
 
-  /// Обновление профиля при получении награды.
-  void updateXpAndLevel(int totalXp, int newLevel) {
-    if (_profile == null) return;
+  /// Обработчик входящих уведомлений о новых достижениях (SSE)
+  void handleAchievementEvent(String jsonString) {
+    try {
+      final payload = jsonDecode(jsonString) as Map<String, dynamic>;
+      final achievement = AchievementNotification.fromJson(payload);
 
-    bool hasChanges = false;
+      updateAchievement(achievement.achievementId);
+    } catch (e) {
+      debugPrint('Ошибка при обработке полученного достижения: $e');
+    }
+  }
+
+  /// Обновление профиля при получении награды.
+  void updateXp(int totalXp) {
+    if (_profile == null) return;
 
     int updatedXp = _profile!.currentXp;
     if (totalXp > _profile!.currentXp) {
       updatedXp = totalXp;
-      hasChanges = true;
+      _profile = _profile!.copyWith(currentXp: updatedXp);
+      notifyListeners();
+    } else {
+      debugPrint(
+        'Уведомление проигнорировано: пришедший XP ($totalXp) <= текущего (${_profile!.currentXp})',
+      );
     }
+  }
+
+  /// Обновление профиля при получении награды.
+  void updateLevel(int newLevel) {
+    if (_profile == null) return;
 
     int updatedLevel = _profile!.level;
     if (newLevel > _profile!.level) {
       updatedLevel = newLevel;
-      hasChanges = true;
+      _profile = _profile!.copyWith(level: updatedLevel);
+      notifyListeners();
     }
+  }
 
-    if (!hasChanges) {
+  /// Обновление профиля при получении достижения.
+  void updateAchievement(int achievementId) {
+    if (_profile == null) return;
+
+    final index = _achievements.indexWhere((a) => a.id == achievementId);
+
+    if (index == -1) {
       debugPrint(
-        'Уведомление проигнорировано: пришедший XP ($totalXp) <= текущего (${_profile!.currentXp})',
+        'Ошибка: Достижение с ID $achievementId не найдено в локальном кэше.',
       );
       return;
     }
 
-    _profile = _profile!.copyWith(currentXp: updatedXp, level: updatedLevel);
+    if (_achievements[index].isUnlocked) {
+      return;
+    }
 
+    final updatedAchievement = _achievements[index].copyWith(isUnlocked: true);
+    _achievements[index] = updatedAchievement;
     notifyListeners();
   }
 
