@@ -66,6 +66,11 @@ public class TestSessionServiceImpl implements TestSessionService {
 		List<Question> selectedQuestions;
 		if (request.getTopicId() != null) {
 			session.setMode(TestMode.TOPIC);
+			var userTopicProgress = userTopicProgressService.getByUserIdAndTopicId(userId, request.getTopicId())
+					.orElseThrow(() -> new IllegalArgumentException("Невозможно начать тест по недоступному топику"));
+			if (!userTopicProgress.getStatus().equals(ProgressStatus.UNLOCKED)) {
+				throw new IllegalArgumentException("Невозможно начать тест по недоступному/пройденному топику");
+			}
 			selectedQuestions = selectQuestionsByTopic(userId, request.getTopicId());
 		} else if (request.getSectionId() != null) {
 			session.setMode(TestMode.SECTION);

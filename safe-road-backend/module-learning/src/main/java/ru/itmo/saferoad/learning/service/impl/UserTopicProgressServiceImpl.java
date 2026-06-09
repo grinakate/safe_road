@@ -11,6 +11,7 @@ import ru.itmo.saferoad.learning.domain.repository.UserTopicProgressRepository;
 import ru.itmo.saferoad.learning.service.UserTopicProgressService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,11 @@ public class UserTopicProgressServiceImpl implements UserTopicProgressService {
 	@Override
 	public @NonNull List<UserTopicProgress> getByUserId(@NonNull Long userId) {
 		return repository.findByUserId(userId);
+	}
+
+	@Override
+	public @NonNull Optional<UserTopicProgress> getByUserIdAndTopicId(@NonNull Long userId, @NonNull Integer topicId) {
+		return repository.findByUserIdAndTopicId(userId, topicId);
 	}
 
 	@Override

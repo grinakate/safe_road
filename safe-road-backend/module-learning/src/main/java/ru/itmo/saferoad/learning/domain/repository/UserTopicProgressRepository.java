@@ -7,6 +7,7 @@ import ru.itmo.saferoad.learning.domain.UserTopicProgress;
 import ru.itmo.saferoad.learning.domain.UserTopicProgressId;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserTopicProgressRepository
 		extends JpaRepository<UserTopicProgress, UserTopicProgressId> {
@@ -21,4 +22,6 @@ public interface UserTopicProgressRepository
 			    AND p.status = 'COMPLETED'
 			""")
 	int countCompletedTopicsInSection(@NonNull Long userId, @NonNull Integer sectionId);
+
+	Optional<UserTopicProgress> findByUserIdAndTopicId(@NonNull Long userId, @NonNull Integer topicId);
 }
