@@ -1,6 +1,7 @@
 package ru.itmo.saferoad.auth.api.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,5 +17,7 @@ public class ChangePasswordRequest {
 
 	@NotBlank(message = "Новый пароль не может быть пустым")
     @Size(min = 8, max = 64, message = "Длина пароля — от 8 до 64 символов")
+	@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[@#$%^&+=!_\\-]).*$",
+			message = "Пароль должен содержать как минимум одну букву, одну цифру и один спецсимвол (@#$%^&+=!_-)")
 	private String newPassword;
 }

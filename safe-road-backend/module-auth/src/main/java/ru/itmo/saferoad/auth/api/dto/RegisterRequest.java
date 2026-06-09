@@ -34,6 +34,8 @@ public class RegisterRequest {
 
 	@NotBlank(message = "Пароль не может быть пустым")
 	@Size(min = 8, max = 64, message = "Длина пароля — от 8 до 64 символов")
+	@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[@#$%^&+=!_\\-]).*$",
+			message = "Пароль должен содержать как минимум одну букву, одну цифру и один спецсимвол (@#$%^&+=!_-)")
 	private String password;
 }
 
